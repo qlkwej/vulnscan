@@ -4,19 +4,16 @@
 
 WARNING: This project is in very early stages, it is incomplete, unstable and under rapid development. Except breaking changes.
 
-- Website: https://www.simplycubed.com
-
 Security Bench is an opinionated static source code, binary, and configuration analyzer for iOS applications.
 
-Written in Golang the key features and goals of the project are to provide developers with an easy to use tool which can be used as part of the local development tool chain or integrated into an automated CI/CD pipeline.
+Written in Golang the key features and goals of the project are to provide developers with an easy to use tool which can be used as part of the local development tool chain or integrated into an automated CI/CD pipeline with smart defaults.
 
-With this in mine the following can be assumed:
+Smart defaults:
 
-- automatically checks for updates
+- **updates** - automatically check for updates
 - **target directory** - the current directory is assumed unless specificied
 - **target binary** - binary check is ignored unless directory path is specified
-- **output** - supports, text and JSON formatted logs
-
+- **output** - supports text (default) and JSON formatted logs
 
 ## License
 
