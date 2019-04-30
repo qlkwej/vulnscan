@@ -16,3 +16,8 @@ With this in mine the following can be assumed:
 - **target directory** - the current directory is assumed unless specificied
 - **target binary** - binary check is ignored unless directory path is specified
 - **output** - supports, text and JSON formatted logs
+
+
+## License
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench?ref=badge_large)
