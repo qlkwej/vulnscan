@@ -1,5 +1,6 @@
-Security Bench
-=========
+# Security Bench
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench?ref=badge_shield)
 
 WARNING: This project is in very early stages, it is incomplete, unstable and under rapid development. Except breaking changes.
 
