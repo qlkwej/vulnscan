@@ -5,7 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/e69d743886f1599d7c39/maintainability)](https://codeclimate.com/github/SimplyCubed/security-bench/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/e69d743886f1599d7c39/test_coverage)](https://codeclimate.com/github/SimplyCubed/security-bench/test_coverage)
 
-> :warning: **WARNING** :warning:
+> :warning: **WARNING**
 > This project is in very early stages, it is incomplete, unstable and under rapid development.
 > Expect breaking changes!
 
