@@ -1,8 +1,11 @@
 # Security Bench
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench?ref=badge_shield) [![Gitter chat](https://badges.gitter.im/simplycubed/Lobby.png)](https://gitter.im/simplycubed/Lobby)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench?ref=badge_shield)
+[![Gitter chat](https://badges.gitter.im/simplycubed/Lobby.png)](https://gitter.im/simplycubed/Lobby)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e69d743886f1599d7c39/maintainability)](https://codeclimate.com/github/SimplyCubed/security-bench/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e69d743886f1599d7c39/test_coverage)](https://codeclimate.com/github/SimplyCubed/security-bench/test_coverage)
 
-WARNING: This project is in very early stages, it is incomplete, unstable and under rapid development. Except breaking changes.
+**WARNING**: This project is in very early stages, it is incomplete, unstable and under rapid development. Except breaking changes.
 
 Security Bench is an opinionated static source code, binary, and configuration analyzer for iOS applications.
 
