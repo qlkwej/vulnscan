@@ -23,7 +23,7 @@ Written in Golang with smart defaults to make it it highly portable and easy to 
 
 - **updates** - automatically check for updates
 - **target directory** - the current directory is assumed unless specificied
-- **target binary** - binary check is ignored unless directory path is specified
+- **target binary** - binary file check is ignored unless full path is specified
 - **output** - supports text (default) and JSON formatted logs
 
 ## Developing Security Bench
