@@ -17,7 +17,7 @@
 
 Security Bench is an opinionated static source code, binary, configuration, and dependency analyzer for iOS and MacOS applications.
 
-Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process.
+Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
 
 ### Smart defaults
 
@@ -49,9 +49,9 @@ Security Bench uses Go Modules and [dep](https://golang.github.io/dep/) for depe
 
 ### Adding a dependency
 
-If you're adding a dependency, you'll need to vendor it in the same Pull Request as the code that depends on it. You should do this in a separate commit from your code, as makes PR review easier and Git history simpler to read in the future.
+If you're adding a dependency, you'll need to add it in the same Pull Request as the code that depends on it. This should be done in a separate commit from your code, as it makes PR review easier and Git history simpler to read in the future.
 
-To add a dependency:
+#### To add a dependency
 
 Assuming your work is on a branch called my-feature-branch, the steps look like this:
 
@@ -63,7 +63,7 @@ Assuming your work is on a branch called my-feature-branch, the steps look like 
 
 ### Updating a dependency
 
-To update a dependency:
+#### To update a dependency
 
 1. Manually update the Gopkg.toml with the desired version number.
 
@@ -73,7 +73,7 @@ To update a dependency:
 
 ## Acceptance Tests
 
-Security Bench has a comprehensive [acceptance test](https://en.wikipedia.org/wiki/Acceptance_testing) suite. Our [Contributing Guide]() includes details about how and when to write and run acceptance tests in order to help contributions get accepted quickly.
+Security Bench as a security tool will be highly dependent on having a comprehensive [acceptance test](https://en.wikipedia.org/wiki/Acceptance_testing) suite. Our [Contributing Guide](https://github.com/simplycubed/security-bench/blob/master/CONTRIBUTING.md) includes details about how and when to write and run acceptance tests in order to help contributions get accepted quickly.
 
 ## License
 
