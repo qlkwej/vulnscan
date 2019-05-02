@@ -28,9 +28,9 @@ Written in Golang with smart defaults to make it it highly portable and easy to 
 
 ## Developing Security Bench
 
-If you wish to work on Security Bench you'll first need Go installed on your machine (version 1.11+ is required). Confirm Go is properly installed and that a GOPATH has been set. You will also need to add $GOPATH/bin to your $PATH.
+If you wish to work on Security Bench you'll first need Go installed on your machine (version 1.11+ is required). Confirm Go is properly installed and that a [GOPATH](https://golang.org/doc/code.html#GOPATH) has been set. You will also need to add $GOPATH/bin to your $PATH.
 
-Next, using Git, clone this repository into $GOPATH/src/github.com/simplycubed/security-bench.
+Next, using [Git](https://git-scm.com/), clone this repository into $GOPATH/src/github.com/simplycubed/security-bench.
 
 Lastly, build and run the tests. If this exists with an exit status 0, and tests pass then everything is working!
 
@@ -47,6 +47,33 @@ go test
 
 Security Bench uses Go Modules and [dep](https://golang.github.io/dep/) for dependency management.
 
+### Adding a dependency
+
+If you're adding a dependency, you'll need to vendor it in the same Pull Request as the code that depends on it. You should do this in a separate commit from your code, as makes PR review easier and Git history simpler to read in the future.
+
+To add a dependency:
+
+Assuming your work is on a branch called my-feature-branch, the steps look like this:
+
+1. Add an import statement to a suitable package in the Security Bench code.
+
+1. Run `dep ensure` to download the latest version of the module containing the imported package into the vendor/ directory, and update the Gopkg.toml and Gopkg.lock files.
+
+1. Review the changes in git and commit them.
+
+### Updating a dependency
+
+To update a dependency:
+
+1. Manually update the Gopkg.toml with the desired version number.
+
+1. Run `dep ensure`
+
+1. Review the changes in git and commit them.
+
+## Acceptance Tests
+
+Security Bench has a comprehensive [acceptance test](https://en.wikipedia.org/wiki/Acceptance_testing) suite. Our [Contributing Guide]() includes details about how and when to write and run acceptance tests in order to help contributions get accepted quickly.
 
 ## License
 
