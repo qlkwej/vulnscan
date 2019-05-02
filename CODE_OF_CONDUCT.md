@@ -43,7 +43,7 @@ Harassment and other exclusionary behavior are not acceptable. This includes, bu
 
 Disagreements happen all the time. When they occur, we seek to resolve disagreements and differing views constructively and with the help of the community and community processes. When disagreements escalate, we ask our community advocates to step in to moderate, mediate, and help resolve tense situations.
 
-The SimplyCubed support team are well-informed and trained on how to deal with incidents. Report the incident to support@simplycubed.com and try to include the following:
+The SimplyCubed support team are well-informed and trained on how to deal with incidents. Report the incident to [support@simplycubed.com](mailto:support@simplycubed.com) and try to include the following:
 
 - Identifying information (name, email address, IRC nick, etc.) of the person doing the harassing.
 - The behavior that was in violation.
@@ -53,7 +53,7 @@ The SimplyCubed support team are well-informed and trained on how to deal with i
 
 If you feel your safety is in jeopardy please do not hesitate to contact local law enforcement.
 
-If you are experiencing an incident that involves a SimplyCubed employee, you can email legal@simplycubed.com and it will be handled appropriately.
+If you are experiencing an incident that involves a SimplyCubed employee, you can email [legal@simplycubed.com](mailto:legal@simplycubed.com) and it will be handled appropriately.
 
 ## Punitive Actions
 
@@ -70,7 +70,7 @@ In severe cases, we reserve the right to ban immediately without warning.
 
 ## Appeals
 
-A user subjected to punitive action may appeal the action by emailing support@simplycubed.com with the contents of their appeal. An appeal will be acknowledged within 48 hours and processed within seven days.
+A user subjected to punitive action may appeal the action by emailing [support@simplycubed.com](mailto:support@simplycubed.com) with the contents of their appeal. An appeal will be acknowledged within 48 hours and processed within seven days.
 
 ## Influences & Copyright
 
