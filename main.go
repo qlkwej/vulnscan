@@ -10,37 +10,32 @@ import (
 
 func main() {
 	app := cli.NewApp()
-
+	app.Version = "0.0.1"
+	app.Authors = []cli.Author{
+		cli.Author{
+			Name:  "Charles @ SimplyCubed",
+			Email: "info@simplycubed.com",
+		},
+	}
+	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "lang, l",
-			Value: "english",
-			Usage: "Language for the greeting",
+			Name:  "source, s",
+			Value: ".",
+			Usage: "Full path to source code directory",
 		},
 		cli.StringFlag{
-			Name:  "config, c",
-			Usage: "Load configuration from `FILE`",
+			Name:  "binary, b",
+			Usage: "Full path to binary file",
+		},
+		cli.StringFlag{
+			Name:  "output format",
+			Value: "terminal",
+			Usage: "Output format (terminal, json)",
 		},
 	}
 
-	app.Commands = []cli.Command{
-		{
-			Name:    "complete",
-			Aliases: []string{"c"},
-			Usage:   "complete a task on the list",
-			Action: func(c *cli.Context) error {
-				return nil
-			},
-		},
-		{
-			Name:    "add",
-			Aliases: []string{"a"},
-			Usage:   "add a task to the list",
-			Action: func(c *cli.Context) error {
-				return nil
-			},
-		},
-	}
+	app.EnableBashCompletion = true
 
 	sort.Sort(cli.FlagsByName(app.Flags))
 	sort.Sort(cli.CommandsByName(app.Commands))
