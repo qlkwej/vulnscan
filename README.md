@@ -75,6 +75,10 @@ Assuming your work is on a branch called my-feature-branch, the steps look like 
 
 Security Bench as a security tool will be highly dependent on having a comprehensive [acceptance test](https://en.wikipedia.org/wiki/Acceptance_testing) suite. Our [Contributing Guide](https://github.com/simplycubed/security-bench/blob/master/CONTRIBUTING.md) includes details about how and when to write and run acceptance tests in order to help contributions get accepted quickly.
 
+## Acknowledgements
+
+This project borrows heavily from the concepts in [OWASP Mobile Security Testing Guide](https://www.owasp.org/index.php/OWASP_Mobile_Security_Testing_Guide), [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF), and [HashiCorp's](https://github.com/hashicorp/) approach to GitHub projects.
+
 ## License
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FSimplyCubed%2Fsecurity-bench?ref=badge_large)
