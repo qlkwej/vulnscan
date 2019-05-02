@@ -8,20 +8,45 @@
 [![codecov](https://codecov.io/gh/simplycubed/security-bench/branch/master/graph/badge.svg)](https://codecov.io/gh/simplycubed/security-bench)
 [![golangci](https://golangci.com/badges/github.com/simplycubed/security-bench.svg)](https://golangci.com/r/github.com/simplycubed/security-bench)
 
-> :warning: **WARNING**
-> This project is in very early stages, it is incomplete, unstable and under rapid development.
-> Expect breaking changes!
+## :warning: **WARNING**
 
-Security Bench is an opinionated static source code, binary, and configuration analyzer for iOS applications.
+- This project is in very early stages, it is incomplete, unstable and under rapid development.
+- Expect breaking changes!
 
-Written in Golang the key features and goals of the project are to provide developers with an easy to use tool which can be used as part of the local development tool chain or integrated into an automated CI/CD pipeline with smart defaults.
+## Overview
 
-Smart defaults:
+Security Bench is an opinionated static source code, binary, configuration, and dependency analyzer for iOS and MacOS applications.
+
+Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process.
+
+### Smart defaults
 
 - **updates** - automatically check for updates
 - **target directory** - the current directory is assumed unless specificied
 - **target binary** - binary check is ignored unless directory path is specified
 - **output** - supports text (default) and JSON formatted logs
+
+## Developing Security Bench
+
+If you wish to work on Security Bench you'll first need Go installed on your machine (version 1.11+ is required). Confirm Go is properly installed and that a GOPATH has been set. You will also need to add $GOPATH/bin to your $PATH.
+
+Next, using Git, clone this repository into $GOPATH/src/github.com/simplycubed/security-bench.
+
+Lastly, build and run the tests. If this exists with an exit status 0, and tests pass then everything is working!
+
+```bash
+
+cd "$GOPATH/src/github.com/simplycubed/security-bench"
+go build
+echo $?
+go test
+
+```
+
+## Dependencies
+
+Security Bench uses Go Modules and [dep](https://golang.github.io/dep/) for dependency management.
+
 
 ## License
 
