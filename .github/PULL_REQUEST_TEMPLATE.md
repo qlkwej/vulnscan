@@ -2,20 +2,20 @@
 
 ### Describe the Pull Request
 
-```text
+```
 DESCRIBE THE DETAILS OF PULL REQUEST HERE
 ```
 
 ### Checklist for PR
 
-- [ ] Review Code of Conduct
-- [ ] Review Contributing
+- [ ] Review & Agree to Code of Conduct
+- [ ] Review & Agree to Contributing
 - [ ] Run Security Bench unit tests.
-- [ ] Tested Working on Mac.
-- [ ] Make sure build is passing on your PR. [![Build Status](https://travis-ci.com/simplycubed/security-bench.svg?branch=master)](https://travis-ci.com/simplycubed/security-bench/pull_requests)
+- [ ] Tests Working on MacOS.
+- [ ] Make sure the Travis-CI build is passing on your PR.
 
 ### Additional Comments (if any)
 
-```text
+```
 DESCRIBE HERE
 ```

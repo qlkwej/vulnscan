@@ -7,7 +7,7 @@
 
 ## STEPS TO REPRODUCE THE ISSUE
 
-```text
+```
 1. This is the first step
 2. This is the second step
 3. Further steps, etc.
@@ -15,7 +15,7 @@
 
 ## CONSOLE OUTPUT
 
-```text
+```
 Paste the output generated at your console/terminal while scanning the mobile app.
 The console log should contain the error or bug you are seeing
 (NOT REQUIRED FOR FEATURE REQUEST/ENHANCEMENT)
@@ -23,7 +23,7 @@ The console log should contain the error or bug you are seeing
 
 ## CONTENTS OF LOG FILES
 
-```text
+```
 Paste the contents of logs/security-bench.log here
 (NOT REQUIRED FOR FEATURE REQUEST/ENHANCEMENT)
 ```
