@@ -37,7 +37,7 @@ issues of each type.
    along with any logs, with secrets removed, so we can try to
    reproduce it. Without this, it makes it much harder to fix the issue.
 
- - [ ] __For panics, include `crash.log`__: If you experienced a panic, please
+ - [ ] __For panics, include `security-bench.log`__: If you experienced a panic, please
    create a [gist](https://gist.github.com) of the *entire* generated crash log
    for us to look at. Double check no sensitive items were in the log.
 
