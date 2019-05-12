@@ -19,12 +19,43 @@ Security Bench is an opinionated static source code, binary, configuration, and 
 
 Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
 
-### Smart defaults
+## Help
 
-- **updates** - automatically check for updates
-- **target directory** - the current directory is assumed unless specificied
-- **target binary** - binary file check is ignored unless full path is specified
-- **output** - supports text (default) and JSON formatted logs
+```bash
+$ security-bench -h
+
+NAME:
+   security-bench - A new cli application
+
+USAGE:
+   security-bench [global options] command [command options] [arguments...]
+
+VERSION:
+   0.0.1
+
+AUTHOR:
+   Charles @ SimplyCubed <info@simplycubed.com>
+
+COMMANDS:
+     help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --app value, -a value      iTunes lookup application ID (i.e. com.easilydo.mail)
+   --binary value, -b value   Full path to binary (ipa) file
+   --country value, -c value  iTunes country/region (default: "us")
+   --output format value      Output format (stdout, json) (default: "stdout")
+   --source value, -s value   Full path to source code directory (default: "[current execution directory]")
+   --help, -h                 show help
+   --version, -v              print the version
+
+COPYRIGHT:
+   (c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0
+
+```
+
+### Country Codes
+
+- A complete list of [iTunes supported country codes](https://github.com/simplycubed/security-bench/blob/master/ITUNES_COUNTRY_CODES)
 
 ## Developing Security Bench
 

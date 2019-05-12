@@ -43,7 +43,7 @@ func main() {
 		cli.StringFlag{
 			Name:        "country, c",
 			Value:       "us",
-			Usage:       "iTunes country/region",
+			Usage:       "iTunes search country code (i.e. us, jp)",
 			Destination: &country,
 		},
 		cli.StringFlag{
