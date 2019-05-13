@@ -11,11 +11,9 @@ import (
 )
 
 func main() {
-
 	var appID string
 	var binaryPath string
 	var country string
-	var outputFormat string
 	var sourcePath string
 
 	app := cli.NewApp()
@@ -27,59 +25,76 @@ func main() {
 		},
 	}
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
-	app.Flags = []cli.Flag{
-		cli.StringFlag{
-			Name:        "source, s",
-			Value:       defaultPath(),
-			Usage:       "Full path to source code directory",
-			Destination: &sourcePath,
+	app.Commands = []cli.Command{
+		{
+			Name:    "lookup",
+			Aliases: []string{"l"},
+			Usage:   "itunes lookup",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "app, a",
+					Value:       "",
+					Usage:       "itunes lookup application ID (i.e. com.easilydo.mail)",
+					Destination: &appID,
+				},
+				cli.StringFlag{
+					Name:        "country, c",
+					Value:       "us",
+					Usage:       "iTunes search country code (i.e. us, jp)",
+					Destination: &country,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if appID != "" {
+					printiTunesResults(appID, country)
+				}
+				return nil
+			},
 		},
-		cli.StringFlag{
-			Name:        "app, a",
-			Value:       "",
-			Usage:       "iTunes lookup application ID (i.e. com.easilydo.mail)",
-			Destination: &appID,
-		},
-		cli.StringFlag{
-			Name:        "country, c",
-			Value:       "us",
-			Usage:       "iTunes search country code (i.e. us, jp)",
-			Destination: &country,
-		},
-		cli.StringFlag{
-			Name:        "binary, b",
-			Value:       "",
-			Usage:       "Full path to binary (ipa) file",
-			Destination: &binaryPath,
-		},
-		cli.StringFlag{
-			Name:        "output format",
-			Value:       "stdout",
-			Usage:       "Output format (stdout, json)",
-			Destination: &outputFormat,
+		{
+			Name:    "scan",
+			Aliases: []string{"s"},
+			Usage:   "source code vulnerability scaning",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "binary, b",
+					Value:       "",
+					Usage:       "Full path to binary (ipa) file",
+					Destination: &binaryPath,
+				},
+				cli.StringFlag{
+					Name:        "source, s",
+					Value:       defaultPath(),
+					Usage:       "Full path to source code directory",
+					Destination: &sourcePath,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				sourceOK, sourceErr := exists(sourcePath)
+				if sourceErr != nil {
+					log.Fatal(sourceErr)
+				}
+
+				if sourceOK == true {
+					log.Printf("Source Path: %s", sourcePath)
+				}
+
+				binaryOK, binaryErr := exists(binaryPath)
+				if binaryErr != nil {
+					log.Fatal(binaryErr)
+				}
+
+				if binaryOK == true {
+					log.Printf("Binary Path: %s", binaryPath)
+				}
+
+				return nil
+			},
 		},
 	}
 
 	sort.Sort(cli.FlagsByName(app.Flags))
 	sort.Sort(cli.CommandsByName(app.Commands))
-
-	app.Action = func(c *cli.Context) error {
-
-		ok, err := exists(sourcePath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if ok == true {
-			log.Printf("Source Path: %s", sourcePath)
-		}
-
-		if appID != "" {
-			printiTunesResults(appID, country)
-		}
-
-		return nil
-	}
 
 	err := app.Run(os.Args)
 	if err != nil {
