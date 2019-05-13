@@ -25,16 +25,13 @@ Written in Golang with smart defaults to make it it highly portable and easy to 
 $ security-bench -h
 
 NAME:
-   Security Bench - A new cli application
+   Security Bench - iOS and MacOS vulnerability scanner
 
 USAGE:
    security-bench [global options] command [command options] [arguments...]
 
 VERSION:
    0.0.1
-
-DESCRIPTION:
-   iOS and MacOS vulnerability scanner
 
 AUTHOR:
    Engineering <info@simplycubed.com>
