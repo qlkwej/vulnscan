@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -31,24 +32,26 @@ func main() {
 		{
 			Name:    "lookup",
 			Aliases: []string{"l"},
-			Usage:   "itunes lookup",
+			Usage:   "itunes app lookup",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "app, a",
 					Value:       "",
-					Usage:       "itunes lookup application ID (i.e. com.easilydo.mail)",
+					Usage:       "itunes app/bundle ID (i.e. com.easilydo.mail)",
 					Destination: &appID,
 				},
 				cli.StringFlag{
 					Name:        "country, c",
 					Value:       "us",
-					Usage:       "iTunes search country code (i.e. us, jp)",
+					Usage:       "itunes country ID (i.e. us, jp)",
 					Destination: &country,
 				},
 			},
 			Action: func(c *cli.Context) error {
 				if appID != "" {
 					printiTunesResults(appID, country)
+				} else {
+					return errors.New("appID is required: `--app appID`")
 				}
 				return nil
 			},
@@ -56,7 +59,7 @@ func main() {
 		{
 			Name:    "scan",
 			Aliases: []string{"s"},
-			Usage:   "source code vulnerability scaning",
+			Usage:   "scans source directory and binary file security scan",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "binary, b",
