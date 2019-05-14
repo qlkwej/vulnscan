@@ -25,7 +25,6 @@ type App struct {
 	Price            float32  `json:"price"`
 	ItunesURL        string   `json:"trackViewUrl"`
 	Score            float32  `json:"averageUserRating"`
-	Error            bool
 }
 
 // SearchResult is the Apple Store lookup results for a specifc application
