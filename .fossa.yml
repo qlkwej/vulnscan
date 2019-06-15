@@ -5,10 +5,10 @@ version: 2
 cli:
   server: https://app.fossa.com
   fetcher: custom
-  project: git@github.com:simplycubed/security-bench.git
+  project: git@github.com:simplycubed/vulnscan.git
 analyze:
   modules:
-  - name: github.com/simplycubed/security-bench
+  - name: github.com/simplycubed/vulnscan
     type: go
-    target: github.com/simplycubed/security-bench
+    target: github.com/simplycubed/vulnscan
     path: .

@@ -24,7 +24,7 @@ The console log should contain the error or bug you are seeing
 ## CONTENTS OF LOG FILES
 
 ```
-Paste the contents of logs/security-bench.log here
+Paste the contents of logs/vulnscan.log here
 (NOT REQUIRED FOR FEATURE REQUEST/ENHANCEMENT)
 ```
 

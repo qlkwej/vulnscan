@@ -1,4 +1,4 @@
-<!-- Thank you for your contribution to Security Bench! -->
+<!-- Thank you for your contribution to Vulnerability Scanner! -->
 
 ### Describe the Pull Request
 
@@ -10,7 +10,7 @@ DESCRIBE THE DETAILS OF PULL REQUEST HERE
 
 - [ ] Review & Agree to Code of Conduct
 - [ ] Review & Agree to Contributing
-- [ ] Run Security Bench unit tests.
+- [ ] Run Vulnerability Scanner unit tests.
 - [ ] Tests Working on MacOS.
 - [ ] Make sure the Travis-CI build is passing on your PR.
 
