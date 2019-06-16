@@ -23,6 +23,7 @@ func main() {
 	app.Usage = "iOS and MacOS vulnerability scanner"
 	app.Authors = []cli.Author{
 		cli.Author{
+			Name:  "Vulnscan Team",
 			Email: "vulnscan@simplycubed.com",
 		},
 	}

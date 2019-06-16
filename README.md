@@ -34,7 +34,7 @@ VERSION:
    0.0.1
 
 AUTHOR:
-   Engineering <vulnscan@simplycubed.com>
+   Vulnscan Team <vulnscan@simplycubed.com>
 
 COMMANDS:
      lookup, l  itunes lookup
