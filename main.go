@@ -19,7 +19,7 @@ func main() {
 
 	app := cli.NewApp()
 	app.Version = "0.0.1"
-	app.Name = "Vulnerability Scanner"
+	app.Name = "vulnscan"
 	app.Usage = "iOS and MacOS vulnerability scanner"
 	app.Authors = []cli.Author{
 		cli.Author{
