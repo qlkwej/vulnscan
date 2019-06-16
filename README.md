@@ -67,7 +67,7 @@ Lastly, build and run the tests. If this exists with an exit status 0, and tests
 cd "$GOPATH/src/github.com/simplycubed/vulnscan"
 go build
 echo $?
-go test
+go test ./...
 
 ```
 
