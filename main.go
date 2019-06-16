@@ -23,8 +23,7 @@ func main() {
 	app.Usage = "iOS and MacOS vulnerability scanner"
 	app.Authors = []cli.Author{
 		cli.Author{
-			Name:  "Engineering",
-			Email: "info@simplycubed.com",
+			Email: "vulnscan@simplycubed.com",
 		},
 	}
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"

@@ -34,7 +34,7 @@ VERSION:
    0.0.1
 
 AUTHOR:
-   Engineering <info@simplycubed.com>
+   Engineering <vulnscan@simplycubed.com>
 
 COMMANDS:
      lookup, l  itunes lookup
@@ -105,7 +105,7 @@ Vulnerability Scanner as a security tool will be highly dependent on having a co
 
 ## Acknowledgements
 
-This project borrows heavily from the concepts in [OWASP Mobile Security Testing Guide](https://www.owasp.org/index.php/OWASP_Mobile_Security_Testing_Guide) and [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF). It's also based on my understanding of [HashiCorp's](https://github.com/hashicorp/) approach to open source projects.
+This project borrows heavily from the concepts in [OWASP Mobile Security Testing Guide](https://www.owasp.org/index.php/OWASP_Mobile_Security_Testing_Guide) and [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF). It's also based on our understanding of [HashiCorp's](https://github.com/hashicorp/) approach to open source projects.
 
 ## License
 
