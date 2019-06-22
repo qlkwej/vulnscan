@@ -11,7 +11,36 @@ import (
 	"gopkg.in/urfave/cli.v1"
 )
 
-func main() {
+func defaultPath() string {
+	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	return dir
+}
+
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
+}
+
+func printiTunesResults(appID string, country string) {
+	resp := ios.Search(appID, country)
+	if resp.ResultCount > 0 {
+		log.Printf("Total Results: %d\n", resp.ResultCount)
+		for _, r := range resp.Results {
+			log.Printf("Title: %s\n", r.Title)
+			log.Printf("URL: %s\n", r.ItunesURL)
+		}
+	} else {
+		log.Printf("No results found: %s\n", appID)
+	}
+}
+
+func getApp() *cli.App {
 	var appID string
 	var binaryPath string
 	var country string
@@ -22,7 +51,7 @@ func main() {
 	app.Name = "vulnscan"
 	app.Usage = "iOS and MacOS vulnerability scanner"
 	app.Authors = []cli.Author{
-		cli.Author{
+		{
 			Name:  "Vulnscan Team",
 			Email: "vulnscan@simplycubed.com",
 		},
@@ -101,37 +130,16 @@ func main() {
 	sort.Sort(cli.FlagsByName(app.Flags))
 	sort.Sort(cli.CommandsByName(app.Commands))
 
+	return app
+}
+
+func main() {
+	app := getApp()
+
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func defaultPath() string {
-	dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	return dir
-}
 
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
-}
-
-func printiTunesResults(appID string, country string) {
-	resp := ios.Search(appID, country)
-	if resp.ResultCount > 0 {
-		log.Printf("Total Results: %d\n", resp.ResultCount)
-		for _, r := range resp.Results {
-			log.Printf("Title: %s\n", r.Title)
-			log.Printf("URL: %s\n", r.ItunesURL)
-		}
-	} else {
-		log.Printf("No results found: %s\n", appID)
-	}
-}
