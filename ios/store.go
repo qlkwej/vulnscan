@@ -33,7 +33,7 @@ type SearchResult struct {
 	Results     []App `json:"results"`
 }
 
-// Search gets iOS app details from App Store. If the call to the App Store
+// Search gets iOS app details from App Store.
 func Search(appID string, country string) SearchResult {
 	log.Printf("Fetching Details from App Store: %s", appID)
 	lookupURL := "https://itunes.apple.com/lookup"
