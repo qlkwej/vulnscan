@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"flag"
 	"fmt"
 	"gopkg.in/urfave/cli.v1"
@@ -110,8 +109,8 @@ func TestHelp(t *testing.T) {
 
 		// Check for the error
 		if stripSpaces(out) != stripSpaces(test) {
-			return errors.New(fmt.Sprintf(
-				"%s help message differs from expected:\nFound:\n %s\nExpected:\n %s", key, out, test))
+			return fmt.Errorf(
+				"%s help message differs from expected:\nFound:\n %s\nExpected:\n %s", key, out, test)
 		}
 		return nil
 	}
