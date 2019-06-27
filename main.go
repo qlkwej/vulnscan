@@ -2,12 +2,12 @@ package main
 
 import (
 	"errors"
+	"github.com/joseincandenza/vulnscan/printer"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
 
-	"github.com/simplycubed/vulnscan/ios"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -27,24 +27,12 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
-func printiTunesResults(appID string, country string) {
-	resp := ios.Search(appID, country)
-	if resp.ResultCount > 0 {
-		log.Printf("Total Results: %d\n", resp.ResultCount)
-		for _, r := range resp.Results {
-			log.Printf("Title: %s\n", r.Title)
-			log.Printf("URL: %s\n", r.ItunesURL)
-		}
-	} else {
-		log.Printf("No results found: %s\n", appID)
-	}
-}
-
 func getApp() *cli.App {
 	var appID string
 	var binaryPath string
 	var country string
 	var sourcePath string
+	var print string = "log"
 
 	app := cli.NewApp()
 	app.Version = "0.0.1"
@@ -57,6 +45,13 @@ func getApp() *cli.App {
 		},
 	}
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:        "json, j",
+			Value:       "",
+			Destination: &print,
+		},
+	}
 	app.Commands = []cli.Command{
 		{
 			Name:    "lookup",
@@ -78,7 +73,11 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				if appID != "" {
-					printiTunesResults(appID, country)
+					if print == "log" {
+						printer.LogPrinter{}.PrintiTunesResults(appID, country)
+					} else {
+						printer.JsonPrinter{}.PrintiTunesResults(appID, country)
+					}
 				} else {
 					return errors.New("appID is required: `--app appID`")
 				}
