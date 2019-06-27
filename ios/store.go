@@ -33,7 +33,7 @@ type SearchResult struct {
 	Results     []App `json:"results"`
 }
 
-// Search gets iOS app details from App Store
+// Search gets iOS app details from App Store.
 func Search(appID string, country string) SearchResult {
 	log.Printf("Fetching Details from App Store: %s", appID)
 	lookupURL := "https://itunes.apple.com/lookup"
@@ -41,12 +41,18 @@ func Search(appID string, country string) SearchResult {
 
 	fmt.Println(reqURL)
 
+	searchResult := SearchResult{}
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", reqURL, nil)
-	req.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36")
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Add("User-Agent",
+		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36")
 	res, err := client.Do(req)
-	searchResult := SearchResult{}
-
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer res.Body.Close()
 	err = json.NewDecoder(res.Body).Decode(&searchResult)
 	if err != nil {
