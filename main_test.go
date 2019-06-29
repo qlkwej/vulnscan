@@ -57,20 +57,28 @@ func TestCommandsHelp(t *testing.T) {
 		},
 	}
 
-	a.Run([]string{"command", "lookup"})
+	err := a.Run([]string{"command", "lookup"})
+	if err != nil {
+		t.Error(err)
+	}
 	expect(t, counts.CommandNotFound, 0)
 	expect(t, counts.SubCommand, 1)
 	expect(t, counts.Total, 1)
-
 	resetCounts()
 
-	a.Run([]string{"command", "scan"})
+	err = a.Run([]string{"command", "scan"})
+	if err != nil {
+		t.Error(err)
+	}
 	expect(t, counts.CommandNotFound, 0)
 	expect(t, counts.SubCommand, 1)
 	expect(t, counts.Total, 1)
-
 	resetCounts()
-	a.Run([]string{"command", "foo"})
+
+	err = a.Run([]string{"command", "foo"})
+	if err != nil {
+		t.Error(err)
+	}
 	expect(t, counts.CommandNotFound, 1)
 	expect(t, counts.SubCommand, 0)
 	expect(t, counts.Total, 1)
