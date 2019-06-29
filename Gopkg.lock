@@ -2,6 +2,22 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:97abeeebbde562cbf7fbc33b4dd2bbe2d888f95bece7d5fce2e7de9e152cb699"
+  name = "github.com/groob/plist"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a99fbe489d03c90cfeff2db2643d13916e9a3898"
+
+[[projects]]
+  branch = "master"
+  digest = "1:92d8e1caa7bcb8370842f6f5a989ee727e892a23c6bafc7bc6999c8da9b36b89"
+  name = "github.com/simplycubed/vulnscan"
+  packages = ["ios"]
+  pruneopts = "UT"
+  revision = "eca66542766c34017715ecab3a6c5262a43ba407"
+
+[[projects]]
   digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
   name = "gopkg.in/urfave/cli.v1"
   packages = ["."]
@@ -12,6 +28,10 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["gopkg.in/urfave/cli.v1"]
+  input-imports = [
+    "github.com/groob/plist",
+    "github.com/simplycubed/vulnscan/ios",
+    "gopkg.in/urfave/cli.v1",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
