@@ -26,7 +26,7 @@ type opCounts struct {
 	Total, BashComplete, OnUsageError, Before, CommandNotFound, Action, After, SubCommand int
 }
 
-func TestCommandsHelp(t *testing.T) {
+func TestCommands(t *testing.T) {
 	counts := &opCounts{}
 
 	resetCounts := func() { counts = &opCounts{} }
