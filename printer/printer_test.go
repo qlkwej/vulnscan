@@ -2,11 +2,13 @@ package printer
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/joseincandenza/vulnscan/test_files"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -173,10 +175,27 @@ func TestPrinterToString(t *testing.T) {
 	path, _ := filepath.Abs("../test_files/plist/source")
 	if err:= test_files.WithUnzip(zipFile, path, func() {
 		logTextPrinter := Get(Log, Text)
-		logTextPrinter.PrintiTunesResults("com.easilydo.mail", "us")
-		logTextPrinter.PrintPlistResults(path, true)
-		s, _ := logTextPrinter.ToString()
-		t.Errorf("%s", s)
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			logTextPrinter.PrintiTunesResults("com.easilydo.mail", "us")
+		}()
+		go func() {
+			defer wg.Done()
+			logTextPrinter.PrintPlistResults(path, true)
+		}()
+		wg.Wait()
+		s, e := logTextPrinter.ToString()
+		if e != nil {
+			fmt.Printf("Error %s\n", e)
+		}
+		results := strings.Split(s, "\n")
+		for i, test := range []string{"iTunes", "iTunes", "plist", "plist", "plist" }{
+			if pos := strings.Index(results[i], "analysis") + len("analysis="); results[i][pos:pos+len(test)] != test {
+				t.Errorf("Error, expected to find analysis %s, found %s", test, results[i][pos:pos+len(test)] )
+			}
+		}
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}

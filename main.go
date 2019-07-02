@@ -57,7 +57,6 @@ func getApp() *cli.App {
 	var binaryPath string
 	var country string
 	var sourcePath string
-	var print string = "log"
 
 	app := cli.NewApp()
 	app.Version = "0.0.1"
@@ -71,10 +70,8 @@ func getApp() *cli.App {
 	}
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
 	app.Flags = []cli.Flag{
-		cli.StringFlag{
+		cli.BoolFlag{
 			Name:        "json, j",
-			Value:       "",
-			Destination: &print,
 		},
 	}
 	app.Commands = []cli.Command{
@@ -98,7 +95,11 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				if appID != "" {
-					printer.Get(print).PrintiTunesResults(appID, country)
+					if c.Bool("json") {
+						printer.Get(printer.Json, printer.StdOut).PrintiTunesResults(appID, country)
+					} else {
+						printer.Get(printer.Log, printer.StdOut).PrintiTunesResults(appID, country)
+					}
 				} else {
 					return errors.New("appID is required: `--app appID`")
 				}
@@ -124,7 +125,11 @@ func getApp() *cli.App {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				printer.Get(print).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				if c.Bool("json") {
+					printer.Get(printer.Json, printer.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				} else {
+					printer.Get(printer.Log, printer.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				}
 				return nil
 			},
 		},
@@ -147,7 +152,11 @@ func getApp() *cli.App {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				printer.Get(print).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				if c.Bool("json") {
+					printer.Get(printer.Json, printer.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				} else {
+					printer.Get(printer.Log, printer.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				}
 				return nil
 			},
 		},

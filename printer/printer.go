@@ -116,7 +116,7 @@ func (p Printer) ToString() (string, error) {
 					if ordErr != nil {
 						return false
 					}
-					t[i], ordErr = time.Parse(layout, m["time"])
+					t[i], ordErr = time.Parse(layout, m["time"[1:len(m["time"])-1]])
 					if ordErr != nil {
 						return false
 					}
@@ -127,7 +127,8 @@ func (p Printer) ToString() (string, error) {
 					ss := strings.Split(s, " ")
 					for _, w := range ss {
 						if strings.HasPrefix(w, "time") {
-							t[i], ordErr = time.Parse(layout, strings.Split(w, "=")[1])
+							timeS := strings.Split(w, "=")[1]
+							t[i], ordErr = time.Parse(layout, timeS[1:len(timeS)-1])
 						} else if strings.HasPrefix(w,"analysis") {
 							a[i] = strings.Split(w, "=")[1]
 						}
@@ -147,7 +148,6 @@ func (p Printer) ToString() (string, error) {
 		var b strings.Builder
 		for _, s := range writer.inner {
 			b.WriteString(s)
-			b.WriteString("\n")
 		}
 		return b.String(), nil
 	}
