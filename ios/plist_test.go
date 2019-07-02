@@ -49,7 +49,7 @@ func TestPlistSourceAnalysis(t *testing.T) {
 	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../test_files/plist/source")
 	if err:= test_files.WithUnzip(zipFile, path, func() {
-		if result, err := PListAnalysis(path, true); err != nil || len(result.PListXML) == 0 {
+		if result, err := PListAnalysis(path, true); err != nil || len(result["plist_XML"].(string)) == 0 {
 			t.Errorf("Plist source analysis failed with error %s", err)
 		}
 	}); err != nil {
@@ -61,7 +61,7 @@ func TestPListBinaryAnalysis(t *testing.T) {
 	zipFile, _ := filepath.Abs("../test_files/plist/binary.zip")
 	path, _ := filepath.Abs("../test_files/plist/binary")
 	if err:= test_files.WithUnzip(zipFile, path, func() {
-		if result, err := PListAnalysis(path, false); err != nil || len(result.PListXML) == 0 {
+		if result, err := PListAnalysis(path, false); err != nil || len(result["plist_XML"].(string)) == 0 {
 			t.Errorf("Plist source analysis failed with error %s", err)
 		}
 	}); err != nil {

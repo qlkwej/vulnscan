@@ -120,17 +120,64 @@ func TestPrintPListJson(t *testing.T) {
 	if err:= test_files.WithUnzip(zipFile, path, func() {
 		jsonTextPrinter := Get(Json, Text)
 		jsonTextPrinter.PrintPlistResults(path, true)
-		jsonResults := make([]map[string]interface{}, 10)
-		for _, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
-			jsonResult := map[string]interface{}{}
-			_ = json.Unmarshal([]byte(s), &jsonResult)
-			jsonResults = append(jsonResults, jsonResult)
+		var jsonResults [3]map[string]interface{}
+		for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
+			jsonResults[i] = map[string]interface{}{}
+			_ = json.Unmarshal([]byte(s), &jsonResults[i])
 		}
-		t.Errorf("%s", jsonResults)
+		for _, test := range [][3]interface{}{
+			{0, "allow_arbitrary_loads", false},
+			{0, "msg", "Insecure connections"},
+			{1, "build", "1"},
+			{1, "msg", "General information"},
+			{2, "msg", "Bundle information"},
+		} {
+			if out, expected := jsonResults[test[0].(int)][test[1].(string)], test[2]; out != expected {
+				t.Errorf("error in itunes result json: got %#v, expected %#v", out, expected)
+			}
+		}
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
-
 }
 
-func TestPrintPListLog(t *testing.T) {}
+func TestPrintPListLog(t *testing.T) {
+	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
+	path, _ := filepath.Abs("../test_files/plist/source")
+	if err:= test_files.WithUnzip(zipFile, path, func() {
+		logTextPrinter := Get(Log, Text)
+		logTextPrinter.PrintPlistResults(path, true)
+		results := logTextPrinter.log.Out.(*TextWriter).inner
+		for _, test := range [][3]interface{}{
+			{0, "allow_arbitrary_loads", "=false"},
+			{0, "msg", "=\"Insecure connections"},
+			{1, "build", "=1"},
+			{1, "msg", "=\"General information"},
+			{2, "msg", "=\"Bundle information"},
+		} {
+			keyPosition := strings.Index(results[test[0].(int)], test[1].(string))
+			if expected, got := keyPosition + len(test[1].(string)),
+				strings.Index(results[test[0].(int)], test[2].(string));
+				expected != got {
+				t.Errorf("error in itunes result log for result %d, key %s, expected position %d, got %d. " +
+					"Complete output: %s", test[0].(int), test[1].(string), expected, got, results[test[0].(int)])
+			}
+		}
+	}); err != nil {
+		t.Errorf("Unzip error %s", err)
+	}
+}
+
+func TestPrinterToString(t *testing.T) {
+	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
+	path, _ := filepath.Abs("../test_files/plist/source")
+	if err:= test_files.WithUnzip(zipFile, path, func() {
+		logTextPrinter := Get(Log, Text)
+		logTextPrinter.PrintiTunesResults("com.easilydo.mail", "us")
+		logTextPrinter.PrintPlistResults(path, true)
+		s, _ := logTextPrinter.ToString()
+		t.Errorf("%s", s)
+	}); err != nil {
+		t.Errorf("Unzip error %s", err)
+	}
+}

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -68,22 +67,37 @@ func (p Printer) PrintiTunesResults(appID string, country string) {
 	entry := p.log.WithFields(logrus.Fields{"analysis": "iTunes"})
 	entry.WithFields(logrus.Fields{"count": resp.ResultCount}).Info("Total results")
 	for i, r := range resp.Results {
-		p.log.WithFields(logrus.Fields{"title": r.Title, "url": r.ItunesURL}).
+		entry.WithFields(logrus.Fields{"title": r.Title, "url": r.ItunesURL}).
 			Info(fmt.Sprintf("Result %d", i + 1))
 	}
 }
+
+
 
 func (p Printer) PrintPlistResults(src string, isSrc bool) {
 	resp, err := ios.PListAnalysis(src, isSrc)
 	entry := p.log.WithFields(logrus.Fields{"analysis": "plist"})
 	if err != nil {
-		entry.WithFields(logrus.Fields{"message": err}).Info("Error")
+		p.log.WithFields(logrus.Fields{"analysis": "plist"}).WithFields(logrus.Fields{"message": err}).Info("Error")
 	}
-	v := reflect.ValueOf(resp).Elem()
-	t := v.Type()
-	for i := 0; i < v.NumField(); i++ {
-		entry.WithFields(logrus.Fields{"element":t.Field(i).Name, "value": v.Field(i).Interface()}).Info("Plist analysis")
+	generalMap, bundleMap := map[string]interface{}{}, map[string]interface{}{}
+	for k, v := range resp {
+		if k == "permissions"{
+			for i, m := range v.([]map[string]interface{}) {
+				entry.WithFields(m).Info(fmt.Sprintf("Permission %d", i + 1))
+			}
+		} else if k == "insecure_connections" {
+			connMap := v.(map[string]interface{})
+			entry.WithFields(logrus.Fields{"allow_arbitrary_loads": connMap["allow_arbitrary_loads"],
+				"domains": strings.Join(connMap["domains"].([]string), ", ")}).Info("Insecure connections")
+		} else if strings.HasPrefix(k, "bundle") {
+			bundleMap[k] = v
+		} else {
+			generalMap[k] = v
+		}
 	}
+	entry.WithFields(generalMap).Info("General information")
+	entry.WithFields(bundleMap).Info("Bundle information")
 }
 
 func (p Printer) ToString() (string, error) {
