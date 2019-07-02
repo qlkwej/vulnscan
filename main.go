@@ -27,6 +27,31 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
+
+func checkPathIsSrc(binaryPath, sourcePath string) (string, bool) {
+	sourceOK, sourceErr := exists(sourcePath)
+	if sourceErr != nil {
+		log.Fatal(sourceErr)
+	}
+
+	if sourceOK == true {
+		log.Printf("Source Path: %s", sourcePath)
+		return sourcePath, true
+	}
+
+	binaryOK, binaryErr := exists(binaryPath)
+	if binaryErr != nil {
+		log.Fatal(binaryErr)
+	}
+
+	if binaryOK == true {
+		log.Printf("Binary Path: %s", binaryPath)
+		return binaryPath, false
+	}
+	log.Fatal("Path doesn't exists")
+	return "", false
+}
+
 func getApp() *cli.App {
 	var appID string
 	var binaryPath string
@@ -73,11 +98,7 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				if appID != "" {
-					if print == "log" {
-						printer.LogPrinter{}.PrintiTunesResults(appID, country)
-					} else {
-						printer.JsonPrinter{}.PrintiTunesResults(appID, country)
-					}
+					printer.Get(print).PrintiTunesResults(appID, country)
 				} else {
 					return errors.New("appID is required: `--app appID`")
 				}
@@ -85,13 +106,13 @@ func getApp() *cli.App {
 			},
 		},
 		{
-			Name:    "scan",
-			Aliases: []string{"s"},
-			Usage:   "scans source directory and binary file security scan",
+			Name: "plist",
+			Aliases: []string{"p"},
+			Usage:   "plists scan",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "binary, b",
-					Value:       "",
+					Value:       defaultPath(),
 					Usage:       "Full path to binary (ipa) file",
 					Destination: &binaryPath,
 				},
@@ -103,24 +124,30 @@ func getApp() *cli.App {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				sourceOK, sourceErr := exists(sourcePath)
-				if sourceErr != nil {
-					log.Fatal(sourceErr)
-				}
-
-				if sourceOK == true {
-					log.Printf("Source Path: %s", sourcePath)
-				}
-
-				binaryOK, binaryErr := exists(binaryPath)
-				if binaryErr != nil {
-					log.Fatal(binaryErr)
-				}
-
-				if binaryOK == true {
-					log.Printf("Binary Path: %s", binaryPath)
-				}
-
+				printer.Get(print).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				return nil
+			},
+		},
+		{
+			Name:    "scan",
+			Aliases: []string{"s"},
+			Usage:   "source directory and binary file security scan",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "binary, b",
+					Value:       defaultPath(),
+					Usage:       "Full path to binary (ipa) file",
+					Destination: &binaryPath,
+				},
+				cli.StringFlag{
+					Name:        "source, s",
+					Value:       defaultPath(),
+					Usage:       "Full path to source code directory",
+					Destination: &sourcePath,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				printer.Get(print).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
 				return nil
 			},
 		},
