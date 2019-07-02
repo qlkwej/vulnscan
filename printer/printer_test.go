@@ -3,7 +3,7 @@ package printer
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/joseincandenza/vulnscan/test_files"
+	"github.com/simplycubed/vulnscan/test_files"
 	"os"
 	"path/filepath"
 	"reflect"

@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"github.com/joseincandenza/vulnscan/printer"
+	"github.com/simplycubed/vulnscan/printer"
 	"log"
 	"os"
 	"path/filepath"
