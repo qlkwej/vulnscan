@@ -2,7 +2,7 @@ package ios
 
 import (
 	"fmt"
-	"github.com/simplycubed/vulnscan/test_files"
+	"github.com/joseincandenza/vulnscan/test_files"
 	"path/filepath"
 	"testing"
 )

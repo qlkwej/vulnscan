@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"github.com/simplycubed/vulnscan/printer"
+	"github.com/joseincandenza/vulnscan/printer/logrus"
 	"log"
 	"os"
 	"path/filepath"
@@ -96,9 +96,9 @@ func getApp() *cli.App {
 			Action: func(c *cli.Context) error {
 				if appID != "" {
 					if c.Bool("json") {
-						printer.Get(printer.Json, printer.StdOut).PrintiTunesResults(appID, country)
+						logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintiTunesResults(appID, country)
 					} else {
-						printer.Get(printer.Log, printer.StdOut).PrintiTunesResults(appID, country)
+						logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintiTunesResults(appID, country)
 					}
 				} else {
 					return errors.New("appID is required: `--app appID`")
@@ -126,9 +126,9 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				if c.Bool("json") {
-					printer.Get(printer.Json, printer.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+					logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
 				} else {
-					printer.Get(printer.Log, printer.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+					logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
 				}
 				return nil
 			},
@@ -153,9 +153,9 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				if c.Bool("json") {
-					printer.Get(printer.Json, printer.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+					logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
 				} else {
-					printer.Get(printer.Log, printer.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+					logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
 				}
 				return nil
 			},

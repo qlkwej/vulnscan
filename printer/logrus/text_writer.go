@@ -1,4 +1,4 @@
-package printer
+package logrus
 
 type TextWriter struct {
 	inner []string

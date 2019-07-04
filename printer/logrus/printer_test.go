@@ -1,88 +1,97 @@
-package printer
+package logrus
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/simplycubed/vulnscan/test_files"
+	"github.com/joseincandenza/vulnscan/ios"
+	"github.com/joseincandenza/vulnscan/printer"
+	"github.com/joseincandenza/vulnscan/test_files"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"sync"
+
 	"testing"
 
 	"github.com/sirupsen/logrus"
 )
 
-func TestGet(t *testing.T) {
-	jsonStdOutPrinter := Get(Json, StdOut)
-	jsonTextPrinter := Get(Json, Text)
-	logStdOutPrinter := Get(Log, StdOut)
-	logTextPrinter := Get(Log, Text)
-	for _, printers := range [][]*Printer{
+func TestNewPrinter(t *testing.T) {
+	jsonStdOutPrinter := NewPrinter(Json, StdOut, DefaultFormat)
+	jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
+	logStdOutPrinter := NewPrinter(Log, StdOut, DefaultFormat)
+	logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
+	for i, printers := range [][]*Printer{
 		{
-			{&logrus.Logger{
-				Out:       os.Stdout,
-				Formatter: new(logrus.JSONFormatter),
-				Hooks:     make(logrus.LevelHooks),
-				Level:     logrus.DebugLevel,
-			},
+			{
+				logrus.Logger{
+					Out:       os.Stdout,
+					Formatter: new(logrus.JSONFormatter),
+					Hooks:     make(logrus.LevelHooks),
+					Level:     logrus.DebugLevel,
+			    },
+				DefaultFormat,
 				Json,
 				StdOut,
 			},
-			&jsonStdOutPrinter,
+			jsonStdOutPrinter,
 		},
 		{
-			{&logrus.Logger{
+			{logrus.Logger{
 				Out:       new(TextWriter),
 				Formatter: new(logrus.JSONFormatter),
 				Hooks:     make(logrus.LevelHooks),
 				Level:     logrus.DebugLevel,
 			},
+				DefaultFormat,
 				Json,
 				Text,
 			},
-			&jsonTextPrinter,
+			jsonTextPrinter,
 		},
 		{
-			{&logrus.Logger{
+			{logrus.Logger{
 				Out:       os.Stdout,
 				Formatter: new(logrus.TextFormatter),
 				Hooks:     make(logrus.LevelHooks),
 				Level:     logrus.DebugLevel,
 			},
+				DefaultFormat,
 				Log,
 				StdOut,
 			},
-			&logStdOutPrinter,
+			logStdOutPrinter,
 		},
 		{
-			{&logrus.Logger{
+			{logrus.Logger{
 				Out:       new(TextWriter),
 				Formatter: new(logrus.JSONFormatter),
 				Hooks:     make(logrus.LevelHooks),
 				Level:     logrus.DebugLevel,
 			},
-				Json,
+				DefaultFormat,
+				Log,
 				Text,
 			},
-			&logTextPrinter,
+			logTextPrinter,
 		},
 	}{
-		if !reflect.DeepEqual(printers[0], printers[1]) {
-			t.Errorf("Generation of printer failed, expected %+v, gor %+v", printers[0], printers[1])
+		if printers[0].output != printers[1].output || printers[0].kind != printers[1].kind {
+			t.Errorf("Generation of printer %d failed, expected %+v, got %+v", i, printers[0], printers[1])
 		}
 	}
 }
 
 func TestPrintItunesJson(t *testing.T) {
-	jsonTextPrinter := Get(Json, Text)
-	jsonTextPrinter.PrintiTunesResults("com.easilydo.mail", "us")
+	jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
+	res := ios.Search("com.easilydo.mail", "us")
+	jsonTextPrinter.Log(res, nil, printer.Store)
 	var jsonResults [2]map[string]interface{}
 	for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
 		_ = json.Unmarshal([]byte(s), &jsonResults[i])
 	}
-	for _, test := range [][3]interface{}{
+	for i, test := range [][3]interface{}{
 		{ 0, "count", float64(1) },
 		{ 0, "msg", "Total results" },
 		{ 1, "msg", "Result 1" },
@@ -90,14 +99,15 @@ func TestPrintItunesJson(t *testing.T) {
 		{ 1, "url",  "https://apps.apple.com/us/app/email-edison-mail/id922793622?uo=4"},
 	} {
 		if out, expected := jsonResults[test[0].(int)][test[1].(string)], test[2]; out != expected {
-			t.Errorf("error in itunes result json: got %#v, expected %#v", out, expected)
+			t.Errorf("error in itunes result json %d: got %#v, expected %#v", i, out, expected)
 		}
 	}
 }
 
 func TestPrintItunesLog(t *testing.T) {
-	logTextPrinter := Get(Log, Text)
-	logTextPrinter.PrintiTunesResults("com.easilydo.mail", "us")
+	logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
+	res := ios.Search("com.easilydo.mail", "us")
+	logTextPrinter.Log(res, nil, printer.Store)
 	results := logTextPrinter.log.Out.(*TextWriter).inner
 	for _, test := range [][3]interface{}{
 		{ 0, "count", "=1" },
@@ -117,11 +127,12 @@ func TestPrintItunesLog(t *testing.T) {
 }
 
 func TestPrintPListJson(t *testing.T) {
-	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../test_files/plist/source")
+	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
+	path, _ := filepath.Abs("../../test_files/plist/source")
 	if err:= test_files.WithUnzip(zipFile, path, func() {
-		jsonTextPrinter := Get(Json, Text)
-		jsonTextPrinter.PrintPlistResults(path, true)
+		jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
+		res, err := ios.PListAnalysis(path, true)
+		jsonTextPrinter.Log(res, err, printer.PList)
 		var jsonResults [3]map[string]interface{}
 		for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
 			jsonResults[i] = map[string]interface{}{}
@@ -144,11 +155,12 @@ func TestPrintPListJson(t *testing.T) {
 }
 
 func TestPrintPListLog(t *testing.T) {
-	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../test_files/plist/source")
+	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
+	path, _ := filepath.Abs("../../test_files/plist/source")
 	if err:= test_files.WithUnzip(zipFile, path, func() {
-		logTextPrinter := Get(Log, Text)
-		logTextPrinter.PrintPlistResults(path, true)
+		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
+		res, err := ios.PListAnalysis(path, true)
+		logTextPrinter.Log(res, err, printer.PList)
 		results := logTextPrinter.log.Out.(*TextWriter).inner
 		for _, test := range [][3]interface{}{
 			{0, "allow_arbitrary_loads", "=false"},
@@ -171,29 +183,32 @@ func TestPrintPListLog(t *testing.T) {
 }
 
 func TestPrinterToString(t *testing.T) {
-	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../test_files/plist/source")
+	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
+	path, _ := filepath.Abs("../../test_files/plist/source")
 	if err:= test_files.WithUnzip(zipFile, path, func() {
-		logTextPrinter := Get(Log, Text)
+		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		var wg sync.WaitGroup
 		wg.Add(2)
 		go func() {
 			defer wg.Done()
-			logTextPrinter.PrintiTunesResults("com.easilydo.mail", "us")
+			res := ios.Search("com.easilydo.mail", "us")
+			logTextPrinter.Log(res, nil, printer.Store)
 		}()
 		go func() {
 			defer wg.Done()
-			logTextPrinter.PrintPlistResults(path, true)
+			res, err := ios.PListAnalysis(path, true)
+			logTextPrinter.Log(res, err, printer.PList)
 		}()
 		wg.Wait()
-		s, e := logTextPrinter.ToString()
+		buf := new(bytes.Buffer)
+		e := logTextPrinter.Generate(buf)
 		if e != nil {
 			fmt.Printf("Error %s\n", e)
 		}
-		results := strings.Split(s, "\n")
-		for i, test := range []string{"iTunes", "iTunes", "plist", "plist", "plist" }{
+		results := strings.Split(buf.String(), "\n")
+		for i, test := range []string{"plist", "plist", "plist", "store", "store" }{
 			if pos := strings.Index(results[i], "analysis") + len("analysis="); results[i][pos:pos+len(test)] != test {
-				t.Errorf("Error, expected to find analysis %s, found %s", test, results[i][pos:pos+len(test)] )
+				t.Errorf("Error in %d iteration, expected to find analysis %s, found %s", i, test, results[i][pos:pos+len(test)] )
 			}
 		}
 	}); err != nil {
