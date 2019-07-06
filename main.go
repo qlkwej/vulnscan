@@ -2,12 +2,12 @@ package main
 
 import (
 	"errors"
+	"github.com/joseincandenza/vulnscan/printer/logrus"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
 
-	"github.com/simplycubed/vulnscan/ios"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -27,17 +27,29 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
-func printiTunesResults(appID string, country string) {
-	resp := ios.Search(appID, country)
-	if resp.ResultCount > 0 {
-		log.Printf("Total Results: %d\n", resp.ResultCount)
-		for _, r := range resp.Results {
-			log.Printf("Title: %s\n", r.Title)
-			log.Printf("URL: %s\n", r.ItunesURL)
-		}
-	} else {
-		log.Printf("No results found: %s\n", appID)
+
+func checkPathIsSrc(binaryPath, sourcePath string) (string, bool) {
+	sourceOK, sourceErr := exists(sourcePath)
+	if sourceErr != nil {
+		log.Fatal(sourceErr)
 	}
+
+	if sourceOK == true {
+		log.Printf("Source Path: %s", sourcePath)
+		return sourcePath, true
+	}
+
+	binaryOK, binaryErr := exists(binaryPath)
+	if binaryErr != nil {
+		log.Fatal(binaryErr)
+	}
+
+	if binaryOK == true {
+		log.Printf("Binary Path: %s", binaryPath)
+		return binaryPath, false
+	}
+	log.Fatal("Path doesn't exists")
+	return "", false
 }
 
 func getApp() *cli.App {
@@ -57,6 +69,11 @@ func getApp() *cli.App {
 		},
 	}
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:        "json, j",
+		},
+	}
 	app.Commands = []cli.Command{
 		{
 			Name:    "lookup",
@@ -78,7 +95,11 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				if appID != "" {
-					printiTunesResults(appID, country)
+					if c.Bool("json") {
+						logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintiTunesResults(appID, country)
+					} else {
+						logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintiTunesResults(appID, country)
+					}
 				} else {
 					return errors.New("appID is required: `--app appID`")
 				}
@@ -86,13 +107,13 @@ func getApp() *cli.App {
 			},
 		},
 		{
-			Name:    "scan",
-			Aliases: []string{"s"},
-			Usage:   "scans source directory and binary file security scan",
+			Name: "plist",
+			Aliases: []string{"p"},
+			Usage:   "plists scan",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:        "binary, b",
-					Value:       "",
+					Value:       defaultPath(),
 					Usage:       "Full path to binary (ipa) file",
 					Destination: &binaryPath,
 				},
@@ -104,24 +125,38 @@ func getApp() *cli.App {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				sourceOK, sourceErr := exists(sourcePath)
-				if sourceErr != nil {
-					log.Fatal(sourceErr)
+				if c.Bool("json") {
+					logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				} else {
+					logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
 				}
-
-				if sourceOK == true {
-					log.Printf("Source Path: %s", sourcePath)
+				return nil
+			},
+		},
+		{
+			Name:    "scan",
+			Aliases: []string{"s"},
+			Usage:   "source directory and binary file security scan",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "binary, b",
+					Value:       defaultPath(),
+					Usage:       "Full path to binary (ipa) file",
+					Destination: &binaryPath,
+				},
+				cli.StringFlag{
+					Name:        "source, s",
+					Value:       defaultPath(),
+					Usage:       "Full path to source code directory",
+					Destination: &sourcePath,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if c.Bool("json") {
+					logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+				} else {
+					logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
 				}
-
-				binaryOK, binaryErr := exists(binaryPath)
-				if binaryErr != nil {
-					log.Fatal(binaryErr)
-				}
-
-				if binaryOK == true {
-					log.Printf("Binary Path: %s", binaryPath)
-				}
-
 				return nil
 			},
 		},

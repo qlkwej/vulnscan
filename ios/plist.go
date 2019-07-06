@@ -77,9 +77,6 @@ type PListObject struct {
 	MinimumOSVersion string
 	CFBundleName string
 	CFBundleShortVersionString string
-	CFBundleURLTypes []CFBundleURLType
-	CFBundleSupportedPlatforms []string
-	CFBundleLocalizations []string
 	NSAppleMusicUsageDescription string
 	NSBluetoothPeripheralUsageDescription string
 	NSCalendarsUsageDescription string
@@ -97,6 +94,9 @@ type PListObject struct {
 	NSRemindersUsageDescription string
 	NSVideoSubscriberAccountUsageDescription string
 	NSAppTransportSecurity NSAppTransportSecurityObject
+	CFBundleURLTypes []CFBundleURLType
+	CFBundleSupportedPlatforms []string
+	CFBundleLocalizations []string
 }
 
 func findPListFile(src string, isSrc bool) (string, string, error) {
@@ -141,9 +141,9 @@ func findPListFile(src string, isSrc bool) (string, string, error) {
 	return pListFile, appname, nil
 }
 
-func makePListAnalysis(pListFile, appName string, isSrc bool) (*PList, error) {
+func makePListAnalysis(pListFile, appName string, isSrc bool) (map[string]interface{}, error) {
 	var plistObject PListObject
-	var plist = &PList{}
+	plist := map[string]interface{}{}
 	dat, err := ioutil.ReadFile(pListFile)
 	if err != nil {
 		return nil, fmt.Errorf("error opening Info.plist file. Skipping PList Analysis")
@@ -155,31 +155,57 @@ func makePListAnalysis(pListFile, appName string, isSrc bool) (*PList, error) {
 	xmlBytes, err := plistlib.MarshalIndent(plistObject, "\t")
 	if err != nil {
 		log.Println(err)
-		plist.PListXML = "error"
+		plist["plist_XML"] = "error"
 	} else {
-		plist.PListXML = string(xmlBytes)
+		plist["plist_XML"] = string(xmlBytes)
 	}
-	plist.BinName = plistObject.CFBundleDisplayName
-	if plist.BinName == "" && !isSrc {
-		plist.BinName = strings.Replace(appName, ".app", "", 1)
+	if plistObject.CFBundleDisplayName == "" {
+		if !isSrc {
+			plist["bin name"] = strings.Replace(appName, ".app", "", 1)
+		}
+	} else {
+		plist["bin name"] = plistObject.CFBundleDisplayName
 	}
-	plist.Bin = plistObject.CFBundleExecutable
-	plist.Id = plistObject.CFBundleIdentifier
-	plist.Build = plistObject.CFBundleVersion
-	plist.SDK = plistObject.DTSDKName
-	plist.Platform = plistObject.DTPlatformVersion
-	plist.Min = plistObject.MinimumOSVersion
-	plist.BundleName = plistObject.CFBundleName
-	plist.BundleVersionName = plistObject.CFBundleVersion
-	plist.BundleUrlTypes = plistObject.CFBundleURLTypes
-	plist.BundleSupportedPlatforms = plistObject.CFBundleSupportedPlatforms
-	plist.BundleLocalizations = plistObject.CFBundleLocalizations
-	plist.Permissions = checkPermissions(&plistObject)
-	plist.InsecureConnections = checkInsecureConnections(&plistObject)
+
+	for k, v := range map[string]string {
+		"bin": plistObject.CFBundleExecutable,
+		"id": plistObject.CFBundleIdentifier,
+		"build": plistObject.CFBundleVersion,
+		"sdk": plistObject.DTSDKName,
+		"platform": plistObject.DTPlatformVersion,
+		"min": plistObject.MinimumOSVersion,
+		"bundle_name": plistObject.CFBundleName,
+		"bundle_version_name": plistObject.CFBundleVersion,
+	} {
+		if v != "" {
+			plist[k] = v
+		}
+	}
+	for k, v := range map[string][]string{
+		"bundle_supported_platforms": plistObject.CFBundleSupportedPlatforms,
+		"bundle_localizations":  plistObject.CFBundleLocalizations,
+	} {
+		if len(v) != 0 {
+			plist[k] = v
+		}
+	}
+	if len(plistObject.CFBundleURLTypes) > 0 {
+		urlTypes := make([]map[string]interface{}, len(plistObject.CFBundleURLTypes))
+		for i, url := range plistObject.CFBundleURLTypes {
+			urlTypes[i] = map[string]interface{}{}
+			urlTypes[i]["name"] = url.CFBundleURLName
+			urlTypes[i]["schemas"] = url.CFBundleURLSchemes
+		}
+		plist["bundle_url_types"] = urlTypes
+	}
+	if permissions := checkPermissions(&plistObject); len(permissions) > 0 {
+		plist["permissions"] = permissions
+	}
+	plist["insecure_connections"] = checkInsecureConnections(&plistObject)
 	return plist, nil
 }
 
-func PListAnalysis(src string, isSrc bool) (*PList, error) {
+func PListAnalysis(src string, isSrc bool) (map[string]interface{}, error) {
 	pListFile, appName, err := findPListFile(src, isSrc)
 	if err != nil {
 		return nil, err
@@ -187,88 +213,88 @@ func PListAnalysis(src string, isSrc bool) (*PList, error) {
 	return makePListAnalysis(pListFile, appName, isSrc)
 }
 
-func checkPermissions(plistObj *PListObject) []PListPermission {
-	var list []PListPermission
-	for k, v := range map[interface{}]PListPermission{
+func checkPermissions(plistObj *PListObject) []map[string]interface{} {
+	var list []map[string]interface{}
+	for k, v := range map[interface{}]map[string]interface{}{
 		plistObj.NSAppleMusicUsageDescription: {
-			Name:        "NSAppleMusicUsageDescription",
-			Description: "Access Apple Media Library.",
-			Reason:      plistObj.NSAppleMusicUsageDescription,
+			"name":        "NSAppleMusicUsageDescription",
+			"description": "Access Apple Media Library.",
+			"reason":      plistObj.NSAppleMusicUsageDescription,
 		},
 		plistObj.NSBluetoothPeripheralUsageDescription : {
-			Name:        "NSBluetoothPeripheralUsageDescription",
-			Description: "Access Bluetooth Interface.",
-			Reason:      plistObj.NSBluetoothPeripheralUsageDescription,
+			"name":        "NSBluetoothPeripheralUsageDescription",
+			"description": "Access Bluetooth Interface.",
+			"reason":      plistObj.NSBluetoothPeripheralUsageDescription,
 		},
 		plistObj.NSCalendarsUsageDescription : {
-			Name: 		 "NSCalendarsUsageDescription",
-			Description: "Access Calendars.",
-			Reason: 	 plistObj.NSCalendarsUsageDescription,
+			"name": 		 "NSCalendarsUsageDescription",
+			"description": 	 "Access Calendars.",
+			"reason": 	 	 plistObj.NSCalendarsUsageDescription,
 		},
 		plistObj.NSCameraUsageDescription : {
-			Name: 		 "NSCameraUsageDescription",
-			Description: "Access the Camera.",
-			Reason: 	 plistObj.NSCameraUsageDescription,
+			"name": 		 "NSCameraUsageDescription",
+			"description": 	 "Access the Camera.",
+			"reason": 	 	 plistObj.NSCameraUsageDescription,
 		},
 		plistObj.NSContactsUsageDescription : {
-			Name: "NSContactsUsageDescription",
-			Description: "Access Contacts.",
-			Reason: plistObj.NSContactsUsageDescription,
+			"name": 		"NSContactsUsageDescription",
+			"description": 	"Access Contacts.",
+			"reason": 		plistObj.NSContactsUsageDescription,
 		},
 		plistObj.NSHealthShareUsageDescription : {
-			Name: "NSHealthShareUsageDescription",
-			Description: "Read Health Data.",
-			Reason: plistObj.NSHealthShareUsageDescription,
+			"name": 		"NSHealthShareUsageDescription",
+			"description": 	"Read Health Data.",
+			"reason": 		plistObj.NSHealthShareUsageDescription,
 		},
 		plistObj.NSHealthUpdateUsageDescription : {
-			Name: "NSHealthUpdateUsageDescription",
-			Description: "Write Health Data.",
-			Reason: plistObj.NSHealthUpdateUsageDescription,
+			"name": 		"NSHealthUpdateUsageDescription",
+			"description": 	"Write Health Data.",
+			"reason": 		plistObj.NSHealthUpdateUsageDescription,
 		},
 		plistObj.NSHomeKitUsageDescription : {
-			Name: "NSHomeKitUsageDescription",
-			Description: "Access HomeKit configuration data.",
-			Reason: plistObj.NSHomeKitUsageDescription,
+			"name": 		"NSHomeKitUsageDescription",
+			"description": 	"Access HomeKit configuration data.",
+			"reason": 		plistObj.NSHomeKitUsageDescription,
 		},
 		plistObj.NSLocationAlwaysUsageDescription : {
-			Name: "NSLocationAlwaysUsageDescription",
-			Description: "Access location information at all times.",
-			Reason: plistObj.NSLocationAlwaysUsageDescription,
+			"name": 		"NSLocationAlwaysUsageDescription",
+			"description":	"Access location information at all times.",
+			"reason": 		plistObj.NSLocationAlwaysUsageDescription,
 		},
 		plistObj.NSLocationUsageDescription : {
-			Name: "NSLocationUsageDescription",
-			Description: "Access location information at all times (< iOS 8).",
-			Reason: plistObj.NSLocationUsageDescription,
+			"name": 		"NSLocationUsageDescription",
+			"description": 	"Access location information at all times (< iOS 8).",
+			"reason": 		plistObj.NSLocationUsageDescription,
 		},
 		plistObj.NSLocationWhenInUseUsageDescription : {
-			Name: "NSLocationWhenInUseUsageDescription",
-			Description: "Access location information when app is in the foreground.",
-			Reason: plistObj.NSLocationWhenInUseUsageDescription,
+			"name": 		"NSLocationWhenInUseUsageDescription",
+			"description": 	"Access location information when app is in the foreground.",
+			"reason": 		plistObj.NSLocationWhenInUseUsageDescription,
 		},
 		plistObj.NSMicrophoneUsageDescription : {
-			Name: "NSMicrophoneUsageDescription",
-			Description: "Access microphone.",
-			Reason: plistObj.NSMicrophoneUsageDescription,
+			"name": 		"NSMicrophoneUsageDescription",
+			"description": 	"Access microphone.",
+			"reason": 		plistObj.NSMicrophoneUsageDescription,
 		},
 		plistObj.NSMotionUsageDescription : {
-			Name: "NSMotionUsageDescription",
-			Description: "Access the device’s accelerometer.",
-			Reason: plistObj.NSMotionUsageDescription,
+			"name": 		"NSMotionUsageDescription",
+			"description": 	"Access the device’s accelerometer.",
+			"reason": 		plistObj.NSMotionUsageDescription,
 		},
 		plistObj.NSPhotoLibraryUsageDescription : {
-			Name: "NSPhotoLibraryUsageDescription",
-			Description: "Access the user’s photo library.",
-			Reason: plistObj.NSPhotoLibraryUsageDescription,
+			"name": 		"NSPhotoLibraryUsageDescription",
+			"description": 	"Access the user’s photo library.",
+			"reason": 		plistObj.NSPhotoLibraryUsageDescription,
 		},
 		plistObj.NSRemindersUsageDescription : {
-			Name: "NSRemindersUsageDescription",
-			Description: "Access the user’s reminders.",
-			Reason: plistObj.NSRemindersUsageDescription,
+			"name": "NSRemindersUsageDescription",
+			"description": "Access the user’s reminders.",
+			"reason": plistObj.NSRemindersUsageDescription,
 		},
 		plistObj.NSVideoSubscriberAccountUsageDescription : {
-			Name: "NSVideoSubscriberAccountUsageDescription",
-			Description: "Access the user’s TV provider account.",
-			Reason: plistObj.NSVideoSubscriberAccountUsageDescription,
+			"name": "NSVideoSubscriberAccountUsageDescription",
+			"description": "Access the user’s TV provider account.",
+			"reason": plistObj.NSVideoSubscriberAccountUsageDescription,
 		},
 	} {
 		if k != "" {
@@ -278,11 +304,13 @@ func checkPermissions(plistObj *PListObject) []PListPermission {
 	return list
 }
 
-func checkInsecureConnections(plistObj *PListObject) PListInsecureConnections {
-	var insecureConnections PListInsecureConnections
-	insecureConnections.AllowArbitraryLoads = plistObj.NSAppTransportSecurity.NSAllowsArbitraryLoads
+func checkInsecureConnections(plistObj *PListObject) map[string]interface{} {
+	var insecureConnections = map[string]interface{}{}
+	insecureConnections["allow_arbitrary_loads"] = plistObj.NSAppTransportSecurity.NSAllowsArbitraryLoads
+	var domains []string
 	for k := range plistObj.NSAppTransportSecurity.NSExceptionDomains {
-		insecureConnections.Domains = append(insecureConnections.Domains, k)
+		domains = append(domains, k)
 	}
+	insecureConnections["domains"] = domains
 	return insecureConnections
 }

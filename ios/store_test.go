@@ -13,25 +13,33 @@ func TestSearch(t *testing.T) {
 	// Call method
 	searchResult := Search("com.easilydo.mail", "us")
 	// And get comparable value
-	testStoreLookup := SearchResult{}
+	testStoreLookup := map[string]interface{}{}
 	sampleLookupFile, _ := ioutil.ReadFile("sample-store-lookup.json")
 	_ = json.Unmarshal([]byte(sampleLookupFile), &testStoreLookup)
 	// Assert the number of results is right
-	if count := searchResult.ResultCount; count != 1 {
+	if count := searchResult["count"]; count != 1 {
 		t.Errorf("Search result = %d; wanted 1", count)
 	}
 	// And check some fields of the result (the ones that are more unlikely to change)
 	var sb strings.Builder
 	var errorCount int
-	searchResultValue := reflect.ValueOf(searchResult.Results[0])
-	testResultValue := reflect.ValueOf(testStoreLookup.Results[0])
-	for _, name := range []string{
-		"DeveloperID", "DeveloperName", "DeveloperURL", "DeveloperWebsite", "Title", "AppID", "Categories", "Price",
-		"ItunesURL"} {
-		if sF, tF := searchResultValue.FieldByName(name).Interface(), testResultValue.FieldByName(name).Interface();
+	searchResultValue := searchResult["results"].([]map[string]interface{})[0]
+	testResultValue := testStoreLookup["results"].([]interface{})[0].(map[string]interface{})
+	for k, v := range map[string]string{
+		"developer_id":  		"artistId",
+		"developer_name": 		"artistName",
+		"developer_url": 		"artistViewUrl",
+		"developer_website": 	"sellerUrl",
+		"title": 				"trackName",
+		"app_id": 				"bundleId",
+		"categories": 			"genres",
+		"price": 				"price",
+		"url": 					"trackViewUrl",
+	} {
+		if sF, tF := searchResultValue[v], testResultValue[k];
 			!reflect.DeepEqual(sF, tF) {
 			errorCount += 1
-			sb.WriteString(fmt.Sprintf("%s: expected value -> %s, found value -> %s\n", name, tF, sF))
+			sb.WriteString(fmt.Sprintf("%s: expected value -> %s, found value -> %s\n", v, tF, sF))
 		}
 	}
 	if errorCount > 0 {
