@@ -2,13 +2,16 @@ package main
 
 import (
 	"errors"
-	"github.com/joseincandenza/vulnscan/printer/logrus"
 	"log"
 	"os"
 	"path/filepath"
 	"sort"
 
 	"gopkg.in/urfave/cli.v1"
+
+	"github.com/simplycubed/vulnscan/ios"
+	"github.com/simplycubed/vulnscan/printer"
+	"github.com/simplycubed/vulnscan/printer/logrus"
 )
 
 func defaultPath() string {
@@ -95,10 +98,11 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				if appID != "" {
+					res := ios.Search(appID, country)
 					if c.Bool("json") {
-						logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintiTunesResults(appID, country)
+						logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, nil, printer.Store)
 					} else {
-						logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintiTunesResults(appID, country)
+						logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, nil, printer.Store)
 					}
 				} else {
 					return errors.New("appID is required: `--app appID`")
@@ -125,10 +129,11 @@ func getApp() *cli.App {
 				},
 			},
 			Action: func(c *cli.Context) error {
+				res, err := ios.PListAnalysis(checkPathIsSrc(binaryPath, sourcePath))
 				if c.Bool("json") {
-					logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
 				} else {
-					logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
 				}
 				return nil
 			},
@@ -152,10 +157,11 @@ func getApp() *cli.App {
 				},
 			},
 			Action: func(c *cli.Context) error {
+				res, err := ios.PListAnalysis(checkPathIsSrc(binaryPath, sourcePath))
 				if c.Bool("json") {
-					logrus.NewPrinter(logrus.Json, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
 				} else {
-					logrus.NewPrinter(logrus.Log, logrus.StdOut).PrintPlistResults(checkPathIsSrc(binaryPath, sourcePath))
+					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
 				}
 				return nil
 			},

@@ -1,4 +1,4 @@
-package test_files
+package utils
 
 import (
 	"archive/zip"

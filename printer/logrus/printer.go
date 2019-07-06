@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/joseincandenza/vulnscan/printer"
+	"github.com/simplycubed/vulnscan/printer"
 	"github.com/sirupsen/logrus"
 )
 
