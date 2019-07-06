@@ -116,7 +116,7 @@ var CodeRules = [...]CodeRule{
 	{
 		"Untrusted user input to \"NSTemporaryDirectory()\" will result in path traversal vulnerability.",
 		func(s string) bool {
-			return strings.Contains(s, "NSTemporaryDirectory(),")
+			return strings.Contains(s, "NSTemporaryDirectory()")
 		},
 		Warning,
 		7.5,
