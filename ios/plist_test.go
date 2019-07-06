@@ -2,16 +2,17 @@ package ios
 
 import (
 	"fmt"
-	"github.com/joseincandenza/vulnscan/test_files"
 	"path/filepath"
 	"testing"
+
+	"github.com/simplycubed/vulnscan/utils"
 )
 
 
 func TestPlistSourceSearch(t *testing.T) {
 	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../test_files/plist/source")
-	if err:= test_files.WithUnzip(zipFile, path, func() {
+	if err:= utils.WithUnzip(zipFile, path, func() {
 		if file, name, err := findPListFile(path, true); err != nil || len(file) == 0 {
 			t.Errorf("Failed to find plist file in source with error %s", err)
 		} else if len(name) == 0 {
@@ -25,7 +26,7 @@ func TestPlistSourceSearch(t *testing.T) {
 func TestPListBinarySearch(t *testing.T) {
 	zipFile, _ := filepath.Abs("../test_files/plist/binary.zip")
 	path, _ := filepath.Abs("../test_files/plist/binary")
-	if err:= test_files.WithUnzip(zipFile, path, func() {
+	if err:= utils.WithUnzip(zipFile, path, func() {
 		if file, name, err := findPListFile(path, false); err != nil || len(file) == 0 {
 			t.Errorf("Failed to find plist file in source with error %s", err)
 		} else if len(name) == 0 {
@@ -48,7 +49,7 @@ func TestMultiplePListAnalysis(t *testing.T) {
 func TestPlistSourceAnalysis(t *testing.T) {
 	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../test_files/plist/source")
-	if err:= test_files.WithUnzip(zipFile, path, func() {
+	if err:= utils.WithUnzip(zipFile, path, func() {
 		if result, err := PListAnalysis(path, true); err != nil || len(result["plist_XML"].(string)) == 0 {
 			t.Errorf("Plist source analysis failed with error %s", err)
 		}
@@ -60,7 +61,7 @@ func TestPlistSourceAnalysis(t *testing.T) {
 func TestPListBinaryAnalysis(t *testing.T) {
 	zipFile, _ := filepath.Abs("../test_files/plist/binary.zip")
 	path, _ := filepath.Abs("../test_files/plist/binary")
-	if err:= test_files.WithUnzip(zipFile, path, func() {
+	if err:= utils.WithUnzip(zipFile, path, func() {
 		if result, err := PListAnalysis(path, false); err != nil || len(result["plist_XML"].(string)) == 0 {
 			t.Errorf("Plist source analysis failed with error %s", err)
 		}

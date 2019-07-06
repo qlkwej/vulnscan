@@ -2,8 +2,9 @@ package logrus
 
 import (
 	"fmt"
-	"github.com/joseincandenza/vulnscan/printer"
 	"strings"
+
+	"github.com/simplycubed/vulnscan/printer"
 )
 
 type Formatter func(printer.AnalysisResult, error, printer.FormatMethod) map[string]map[string]interface{}

@@ -21,3 +21,9 @@ coverage.txt
 
 # local scratch pad
 temp.txt
+
+# Idea files
+.idea
+
+# Vendor system files
+vendor/golang.org

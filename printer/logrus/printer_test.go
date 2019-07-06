@@ -4,17 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/joseincandenza/vulnscan/ios"
-	"github.com/joseincandenza/vulnscan/printer"
-	"github.com/joseincandenza/vulnscan/test_files"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
-
 	"testing"
 
 	"github.com/sirupsen/logrus"
+
+	"github.com/simplycubed/vulnscan/ios"
+	"github.com/simplycubed/vulnscan/printer"
+	"github.com/simplycubed/vulnscan/utils"
 )
 
 func TestNewPrinter(t *testing.T) {
@@ -129,7 +129,7 @@ func TestPrintItunesLog(t *testing.T) {
 func TestPrintPListJson(t *testing.T) {
 	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err:= test_files.WithUnzip(zipFile, path, func() {
+	if err:= utils.WithUnzip(zipFile, path, func() {
 		jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
 		res, err := ios.PListAnalysis(path, true)
 		jsonTextPrinter.Log(res, err, printer.PList)
@@ -157,7 +157,7 @@ func TestPrintPListJson(t *testing.T) {
 func TestPrintPListLog(t *testing.T) {
 	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err:= test_files.WithUnzip(zipFile, path, func() {
+	if err:= utils.WithUnzip(zipFile, path, func() {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		res, err := ios.PListAnalysis(path, true)
 		logTextPrinter.Log(res, err, printer.PList)
@@ -185,7 +185,7 @@ func TestPrintPListLog(t *testing.T) {
 func TestPrinterToString(t *testing.T) {
 	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err:= test_files.WithUnzip(zipFile, path, func() {
+	if err:= utils.WithUnzip(zipFile, path, func() {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		var wg sync.WaitGroup
 		wg.Add(2)
