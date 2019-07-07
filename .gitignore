@@ -26,4 +26,4 @@ temp.txt
 .idea
 
 # Vendor system files	
-vendor/golang.org
+vendor
