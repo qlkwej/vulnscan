@@ -30,7 +30,7 @@ func TestNewPrinter(t *testing.T) {
 					Formatter: new(logrus.JSONFormatter),
 					Hooks:     make(logrus.LevelHooks),
 					Level:     logrus.DebugLevel,
-			    },
+				},
 				DefaultFormat,
 				Json,
 				StdOut,
@@ -76,7 +76,7 @@ func TestNewPrinter(t *testing.T) {
 			},
 			logTextPrinter,
 		},
-	}{
+	} {
 		if printers[0].output != printers[1].output || printers[0].kind != printers[1].kind {
 			t.Errorf("Generation of printer %d failed, expected %+v, got %+v", i, printers[0], printers[1])
 		}
@@ -92,11 +92,11 @@ func TestPrintItunesJson(t *testing.T) {
 		_ = json.Unmarshal([]byte(s), &jsonResults[i])
 	}
 	for i, test := range [][3]interface{}{
-		{ 0, "count", float64(1) },
-		{ 0, "msg", "Total results" },
-		{ 1, "msg", "Result 1" },
-		{ 1, "title", "Email - Edison Mail"},
-		{ 1, "url",  "https://apps.apple.com/us/app/email-edison-mail/id922793622?uo=4"},
+		{0, "count", float64(1)},
+		{0, "msg", "Total results"},
+		{1, "msg", "Result 1"},
+		{1, "title", "Email - Edison Mail"},
+		{1, "url", "https://apps.apple.com/us/app/email-edison-mail/id922793622?uo=4"},
 	} {
 		if out, expected := jsonResults[test[0].(int)][test[1].(string)], test[2]; out != expected {
 			t.Errorf("error in itunes result json %d: got %#v, expected %#v", i, out, expected)
@@ -110,17 +110,16 @@ func TestPrintItunesLog(t *testing.T) {
 	logTextPrinter.Log(res, nil, printer.Store)
 	results := logTextPrinter.log.Out.(*TextWriter).inner
 	for _, test := range [][3]interface{}{
-		{ 0, "count", "=1" },
-		{ 0, "msg", "=\"Total results\"" },
-		{ 1, "msg", "=\"Result 1\"" },
-		{ 1, "title", "=\"Email - Edison Mail\""},
-		{ 1, "url",  "=\"https://apps.apple.com/us/app/email-edison-mail/id922793622?uo=4\""},
+		{0, "count", "=1"},
+		{0, "msg", "=\"Total results\""},
+		{1, "msg", "=\"Result 1\""},
+		{1, "title", "=\"Email - Edison Mail\""},
+		{1, "url", "=\"https://apps.apple.com/us/app/email-edison-mail/id922793622?uo=4\""},
 	} {
 		keyPosition := strings.Index(results[test[0].(int)], test[1].(string))
-		if expected, got := keyPosition + len(test[1].(string)),
-		                    strings.Index(results[test[0].(int)], test[2].(string));
-		expected != got {
-			t.Errorf("error in itunes result log for result %d, key %s, expected position %d, got %d. " +
+		if expected, got := keyPosition+len(test[1].(string)),
+			strings.Index(results[test[0].(int)], test[2].(string)); expected != got {
+			t.Errorf("error in itunes result log for result %d, key %s, expected position %d, got %d. "+
 				"Complete output: %s", test[0].(int), test[1].(string), expected, got, results[test[0].(int)])
 		}
 	}
@@ -129,7 +128,7 @@ func TestPrintItunesLog(t *testing.T) {
 func TestPrintPListJson(t *testing.T) {
 	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err:= utils.WithUnzip(zipFile, path, func() {
+	if err := utils.WithUnzip(zipFile, path, func() {
 		jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
 		res, err := ios.PListAnalysis(path, true)
 		jsonTextPrinter.Log(res, err, printer.PList)
@@ -157,7 +156,7 @@ func TestPrintPListJson(t *testing.T) {
 func TestPrintPListLog(t *testing.T) {
 	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err:= utils.WithUnzip(zipFile, path, func() {
+	if err := utils.WithUnzip(zipFile, path, func() {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		res, err := ios.PListAnalysis(path, true)
 		logTextPrinter.Log(res, err, printer.PList)
@@ -170,10 +169,9 @@ func TestPrintPListLog(t *testing.T) {
 			{2, "msg", "=\"Bundle information"},
 		} {
 			keyPosition := strings.Index(results[test[0].(int)], test[1].(string))
-			if expected, got := keyPosition + len(test[1].(string)),
-				strings.Index(results[test[0].(int)], test[2].(string));
-				expected != got {
-				t.Errorf("error in itunes result log for result %d, key %s, expected position %d, got %d. " +
+			if expected, got := keyPosition+len(test[1].(string)),
+				strings.Index(results[test[0].(int)], test[2].(string)); expected != got {
+				t.Errorf("error in itunes result log for result %d, key %s, expected position %d, got %d. "+
 					"Complete output: %s", test[0].(int), test[1].(string), expected, got, results[test[0].(int)])
 			}
 		}
@@ -185,7 +183,7 @@ func TestPrintPListLog(t *testing.T) {
 func TestPrinterToString(t *testing.T) {
 	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
 	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err:= utils.WithUnzip(zipFile, path, func() {
+	if err := utils.WithUnzip(zipFile, path, func() {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		var wg sync.WaitGroup
 		wg.Add(2)
@@ -206,9 +204,9 @@ func TestPrinterToString(t *testing.T) {
 			fmt.Printf("Error %s\n", e)
 		}
 		results := strings.Split(buf.String(), "\n")
-		for i, test := range []string{"plist", "plist", "plist", "store", "store" }{
+		for i, test := range []string{"plist", "plist", "plist", "store", "store"} {
 			if pos := strings.Index(results[i], "analysis") + len("analysis="); results[i][pos:pos+len(test)] != test {
-				t.Errorf("Error in %d iteration, expected to find analysis %s, found %s", i, test, results[i][pos:pos+len(test)] )
+				t.Errorf("Error in %d iteration, expected to find analysis %s, found %s", i, test, results[i][pos:pos+len(test)])
 			}
 		}
 	}); err != nil {

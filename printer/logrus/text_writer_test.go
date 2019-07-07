@@ -6,6 +6,9 @@ func TestTextWriter(t *testing.T) {
 	s0, s1 := "- Hi, my name is Sullivan", "- Nice to meet you, Sullivan"
 	tw := new(TextWriter)
 	_, err := tw.Write([]byte(s0))
+	if err != nil {
+		t.Errorf("Failed with error %s", err)
+	}
 	_, err = tw.Write([]byte(s1))
 	if err != nil {
 		t.Errorf("Failed with error %s", err)
