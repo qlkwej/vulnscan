@@ -113,15 +113,19 @@ func findPListFile(src string, isSrc bool) (string, string, error) {
 				appname = strings.Replace(appname, ".xcodeproj", "", 1)
 			}
 		}
-		var walkErr = filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		walkErr := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
 			if !strings.Contains(path, "__MACOSX") && strings.HasSuffix(info.Name(), "Info.plist") {
 				pListFile = path
 			}
-			if walkErr != nil {
-				return walkErr
+			if err != nil {
+				return err
 			}
 			return nil
 		})
+		if walkErr != nil {
+			log.Fatal(walkErr)
+		}
+
 	} else {
 		files, err := ioutil.ReadDir(src)
 		if err != nil {
