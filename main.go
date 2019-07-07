@@ -30,7 +30,6 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
-
 func checkPathIsSrc(binaryPath, sourcePath string) (string, bool) {
 	sourceOK, sourceErr := exists(sourcePath)
 	if sourceErr != nil {
@@ -60,6 +59,7 @@ func getApp() *cli.App {
 	var binaryPath string
 	var country string
 	var sourcePath string
+	var jsonFlag bool
 
 	app := cli.NewApp()
 	app.Version = "0.0.1"
@@ -75,6 +75,7 @@ func getApp() *cli.App {
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
 			Name:        "json, j",
+			Destination: &jsonFlag,
 		},
 	}
 	app.Commands = []cli.Command{
@@ -99,7 +100,7 @@ func getApp() *cli.App {
 			Action: func(c *cli.Context) error {
 				if appID != "" {
 					res := ios.Search(appID, country)
-					if c.Bool("json") {
+					if jsonFlag {
 						logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, nil, printer.Store)
 					} else {
 						logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, nil, printer.Store)
@@ -111,7 +112,7 @@ func getApp() *cli.App {
 			},
 		},
 		{
-			Name: "plist",
+			Name:    "plist",
 			Aliases: []string{"p"},
 			Usage:   "plists scan",
 			Flags: []cli.Flag{
@@ -130,7 +131,7 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				res, err := ios.PListAnalysis(checkPathIsSrc(binaryPath, sourcePath))
-				if c.Bool("json") {
+				if jsonFlag {
 					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
 				} else {
 					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
@@ -158,7 +159,7 @@ func getApp() *cli.App {
 			},
 			Action: func(c *cli.Context) error {
 				res, err := ios.PListAnalysis(checkPathIsSrc(binaryPath, sourcePath))
-				if c.Bool("json") {
+				if jsonFlag {
 					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
 				} else {
 					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
@@ -182,5 +183,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
-
