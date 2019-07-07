@@ -17,11 +17,11 @@ const (
 )
 
 type CodeRule struct {
-	Desc string
+	Desc  string
 	Match Match
 	Level Level
-	Cvss float32
-	Cwe string
+	Cvss  float32
+	Cwe   string
 }
 
 var CodeRules = [...]CodeRule{
@@ -39,9 +39,9 @@ var CodeRules = [...]CodeRule{
 		"App allows self signed or invalid SSL certificates. App is vulnerable to MITM attacks.",
 		func(s string) bool {
 			r, _ := regexp.MatchString(
-				`canAuthenticateAgainstProtectionSpace|continueWithoutCredentialForAuthenticationChallenge|` +
-					`kCFStreamSSLAllowsExpiredCertificates|kCFStreamSSLAllowsAnyRoot|` +
-					`kCFStreamSSLAllowsExpiredRoots|validatesSecureCertificate\s*=\s*(no|NO)|` +
+				`canAuthenticateAgainstProtectionSpace|continueWithoutCredentialForAuthenticationChallenge|`+
+					`kCFStreamSSLAllowsExpiredCertificates|kCFStreamSSLAllowsAnyRoot|`+
+					`kCFStreamSSLAllowsExpiredRoots|validatesSecureCertificate\s*=\s*(no|NO)|`+
 					`allowInvalidCertificates\s*=\s*(YES|yes)`, s)
 			return r
 		},
@@ -53,8 +53,8 @@ var CodeRules = [...]CodeRule{
 		"UIWebView in App ignore SSL errors and accept any SSL Certificate. App is vulnerable to MITM attacks.",
 		func(s string) bool {
 			r, _ := regexp.MatchString(
-				`setAllowsAnyHTTPSCertificate:\s*YES|allowsAnyHTTPSCertificateForHost|` +
-				`loadingUnvalidatedHTTPSPage\s*=\s*(YES|yes)`, s)
+				`setAllowsAnyHTTPSCertificate:\s*YES|allowsAnyHTTPSCertificateForHost|`+
+					`loadingUnvalidatedHTTPSPage\s*=\s*(YES|yes)`, s)
 			return r
 		},
 		High,
@@ -65,8 +65,8 @@ var CodeRules = [...]CodeRule{
 		"Files may contain hardcoded sensitive informations like usernames, passwords, keys etc.",
 		func(s string) bool {
 			r, _ := regexp.MatchString(
-				`(password\s*=\s*@*\s*['|"].+['|"]\s{0,5})|(pass\s*=\s*@*\s*['|"].+['|"]\s{0,5})|` +
-					`(username\s*=\s*@*\s*['|"].+['|"]\s{0,5})|(secret\s*=\s*@*\s*['|"].+['|"]\s{0,5})|` +
+				`(password\s*=\s*@*\s*['|"].+['|"]\s{0,5})|(pass\s*=\s*@*\s*['|"].+['|"]\s{0,5})|`+
+					`(username\s*=\s*@*\s*['|"].+['|"]\s{0,5})|(secret\s*=\s*@*\s*['|"].+['|"]\s{0,5})|`+
 					`(key\s*=\s*@*\s*['|"].+['|"]\s{0,5})`, strings.ToLower(s))
 			return r
 		},
@@ -180,7 +180,7 @@ var CodeRules = [...]CodeRule{
 		"CWE-327",
 	},
 	{
-		"The App has ant-debugger code using ptrace()",
+		"The App has anti-debugger code using ptrace()",
 		func(s string) bool {
 			return strings.Contains(s, "ptrace_ptr") && strings.Contains(s, "PT_DENY_ATTACH")
 		},
