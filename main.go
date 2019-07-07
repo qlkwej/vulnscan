@@ -31,22 +31,22 @@ func exists(path string) (bool, error) {
 }
 
 func checkPathIsSrc(binaryPath, sourcePath string) (string, bool) {
-	sourceOK, sourceErr := exists(sourcePath)
-	if sourceErr != nil {
-		log.Fatal(sourceErr)
+	ok, err := exists(sourcePath)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	if sourceOK == true {
+	if ok {
 		log.Printf("Source Path: %s", sourcePath)
 		return sourcePath, true
 	}
 
-	binaryOK, binaryErr := exists(binaryPath)
-	if binaryErr != nil {
-		log.Fatal(binaryErr)
+	ok, err = exists(binaryPath)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	if binaryOK == true {
+	if ok {
 		log.Printf("Binary Path: %s", binaryPath)
 		return binaryPath, false
 	}

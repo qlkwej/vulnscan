@@ -14,89 +14,89 @@ import (
 // types
 
 type CFBundleURLType struct {
-	CFBundleURLName string
+	CFBundleURLName    string
 	CFBundleURLSchemes []string
 }
 
 // PList
 
 type PListPermission struct {
-	Name string
+	Name        string
 	Description string
-	Reason string
+	Reason      string
 }
 
 type PListInsecureConnections struct {
-	Domains []string
+	Domains             []string
 	AllowArbitraryLoads bool
 }
 
 type PList struct {
-	BinName string
-	Bin string
-	Id string
-	Version string
-	Build string
-	SDK string
-	Platform string
-	Min string
-	PListXML string
-	Permissions []PListPermission
-	InsecureConnections PListInsecureConnections
-	BundleName string
-	BundleVersionName string
-	BundleUrlTypes []CFBundleURLType
+	BinName                  string
+	Bin                      string
+	Id                       string
+	Version                  string
+	Build                    string
+	SDK                      string
+	Platform                 string
+	Min                      string
+	PListXML                 string
+	Permissions              []PListPermission
+	InsecureConnections      PListInsecureConnections
+	BundleName               string
+	BundleVersionName        string
+	BundleUrlTypes           []CFBundleURLType
 	BundleSupportedPlatforms []string
-	BundleLocalizations []string
+	BundleLocalizations      []string
 }
 
 // NSAppTransportSecurityObject
 
 type NSExceptionDomain struct {
-	NSIncludesSubdomains bool
+	NSIncludesSubdomains                        bool
 	NSTemporaryExceptionAllowsInsecureHTTPLoads bool
-	NSTemporaryExceptionMinimumTLSVersion string
+	NSTemporaryExceptionMinimumTLSVersion       string
 }
 
 type NSExceptionDomains map[string]NSExceptionDomain
 
 type NSAppTransportSecurityObject struct {
 	NSAllowsArbitraryLoads bool
-	NSExceptionDomains NSExceptionDomains
+	NSExceptionDomains     NSExceptionDomains
 }
 
 // PListObject
 
 type PListObject struct {
-	CFBundleDisplayName string
-	CFBundleExecutable string
-	CFBundleIdentifier string
-	CFBundleVersion string
-	DTSDKName string
-	DTPlatformVersion string
-	MinimumOSVersion string
-	CFBundleName string
-	CFBundleShortVersionString string
-	NSAppleMusicUsageDescription string
-	NSBluetoothPeripheralUsageDescription string
-	NSCalendarsUsageDescription string
-	NSCameraUsageDescription string
-	NSContactsUsageDescription string
-	NSHealthShareUsageDescription string
-	NSHealthUpdateUsageDescription string
-	NSHomeKitUsageDescription string
-	NSLocationAlwaysUsageDescription string
-	NSLocationUsageDescription string
-	NSLocationWhenInUseUsageDescription string
-	NSMicrophoneUsageDescription string
-	NSMotionUsageDescription string
-	NSPhotoLibraryUsageDescription string
-	NSRemindersUsageDescription string
+	CFBundleDisplayName                      string
+	CFBundleExecutable                       string
+	CFBundleIdentifier                       string
+	CFBundleVersion                          string
+	DTSDKName                                string
+	DTPlatformVersion                        string
+	MinimumOSVersion                         string
+	CFBundleName                             string
+	CFBundleShortVersionString               string
+	NSAppleMusicUsageDescription             string
+	NSBluetoothPeripheralUsageDescription    string
+	NSCalendarsUsageDescription              string
+	NSCameraUsageDescription                 string
+	NSContactsUsageDescription               string
+	NSHealthShareUsageDescription            string
+	NSHealthUpdateUsageDescription           string
+	NSHomeKitUsageDescription                string
+	NSLocationAlwaysUsageDescription         string
+	NSLocationUsageDescription               string
+	NSLocationWhenInUseUsageDescription      string
+	NSMicrophoneUsageDescription             string
+	NSMotionUsageDescription                 string
+	NSPhotoLibraryUsageDescription           string
+	NSRemindersUsageDescription              string
 	NSVideoSubscriberAccountUsageDescription string
-	NSAppTransportSecurity NSAppTransportSecurityObject
-	CFBundleURLTypes []CFBundleURLType
-	CFBundleSupportedPlatforms []string
-	CFBundleLocalizations []string
+	NSAppTransportSecurity                   NSAppTransportSecurityObject
+	CFBundleURLTypes                         []CFBundleURLType
+	CFBundleSupportedPlatforms               []string
+	CFBundleLocalizations                    []string
 }
 
 func findPListFile(src string, isSrc bool) (string, string, error) {
@@ -113,12 +113,12 @@ func findPListFile(src string, isSrc bool) (string, string, error) {
 				appname = strings.Replace(appname, ".xcodeproj", "", 1)
 			}
 		}
-		err = filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		var walkErr = filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
 			if !strings.Contains(path, "__MACOSX") && strings.HasSuffix(info.Name(), "Info.plist") {
 				pListFile = path
 			}
-			if err != nil {
-				return err
+			if walkErr != nil {
+				return walkErr
 			}
 			return nil
 		})
@@ -167,14 +167,14 @@ func makePListAnalysis(pListFile, appName string, isSrc bool) (map[string]interf
 		plist["bin name"] = plistObject.CFBundleDisplayName
 	}
 
-	for k, v := range map[string]string {
-		"bin": plistObject.CFBundleExecutable,
-		"id": plistObject.CFBundleIdentifier,
-		"build": plistObject.CFBundleVersion,
-		"sdk": plistObject.DTSDKName,
-		"platform": plistObject.DTPlatformVersion,
-		"min": plistObject.MinimumOSVersion,
-		"bundle_name": plistObject.CFBundleName,
+	for k, v := range map[string]string{
+		"bin":                 plistObject.CFBundleExecutable,
+		"id":                  plistObject.CFBundleIdentifier,
+		"build":               plistObject.CFBundleVersion,
+		"sdk":                 plistObject.DTSDKName,
+		"platform":            plistObject.DTPlatformVersion,
+		"min":                 plistObject.MinimumOSVersion,
+		"bundle_name":         plistObject.CFBundleName,
 		"bundle_version_name": plistObject.CFBundleVersion,
 	} {
 		if v != "" {
@@ -183,7 +183,7 @@ func makePListAnalysis(pListFile, appName string, isSrc bool) (map[string]interf
 	}
 	for k, v := range map[string][]string{
 		"bundle_supported_platforms": plistObject.CFBundleSupportedPlatforms,
-		"bundle_localizations":  plistObject.CFBundleLocalizations,
+		"bundle_localizations":       plistObject.CFBundleLocalizations,
 	} {
 		if len(v) != 0 {
 			plist[k] = v
@@ -221,80 +221,80 @@ func checkPermissions(plistObj *PListObject) []map[string]interface{} {
 			"description": "Access Apple Media Library.",
 			"reason":      plistObj.NSAppleMusicUsageDescription,
 		},
-		plistObj.NSBluetoothPeripheralUsageDescription : {
+		plistObj.NSBluetoothPeripheralUsageDescription: {
 			"name":        "NSBluetoothPeripheralUsageDescription",
 			"description": "Access Bluetooth Interface.",
 			"reason":      plistObj.NSBluetoothPeripheralUsageDescription,
 		},
-		plistObj.NSCalendarsUsageDescription : {
-			"name": 		 "NSCalendarsUsageDescription",
-			"description": 	 "Access Calendars.",
-			"reason": 	 	 plistObj.NSCalendarsUsageDescription,
+		plistObj.NSCalendarsUsageDescription: {
+			"name":        "NSCalendarsUsageDescription",
+			"description": "Access Calendars.",
+			"reason":      plistObj.NSCalendarsUsageDescription,
 		},
-		plistObj.NSCameraUsageDescription : {
-			"name": 		 "NSCameraUsageDescription",
-			"description": 	 "Access the Camera.",
-			"reason": 	 	 plistObj.NSCameraUsageDescription,
+		plistObj.NSCameraUsageDescription: {
+			"name":        "NSCameraUsageDescription",
+			"description": "Access the Camera.",
+			"reason":      plistObj.NSCameraUsageDescription,
 		},
-		plistObj.NSContactsUsageDescription : {
-			"name": 		"NSContactsUsageDescription",
-			"description": 	"Access Contacts.",
-			"reason": 		plistObj.NSContactsUsageDescription,
+		plistObj.NSContactsUsageDescription: {
+			"name":        "NSContactsUsageDescription",
+			"description": "Access Contacts.",
+			"reason":      plistObj.NSContactsUsageDescription,
 		},
-		plistObj.NSHealthShareUsageDescription : {
-			"name": 		"NSHealthShareUsageDescription",
-			"description": 	"Read Health Data.",
-			"reason": 		plistObj.NSHealthShareUsageDescription,
+		plistObj.NSHealthShareUsageDescription: {
+			"name":        "NSHealthShareUsageDescription",
+			"description": "Read Health Data.",
+			"reason":      plistObj.NSHealthShareUsageDescription,
 		},
-		plistObj.NSHealthUpdateUsageDescription : {
-			"name": 		"NSHealthUpdateUsageDescription",
-			"description": 	"Write Health Data.",
-			"reason": 		plistObj.NSHealthUpdateUsageDescription,
+		plistObj.NSHealthUpdateUsageDescription: {
+			"name":        "NSHealthUpdateUsageDescription",
+			"description": "Write Health Data.",
+			"reason":      plistObj.NSHealthUpdateUsageDescription,
 		},
-		plistObj.NSHomeKitUsageDescription : {
-			"name": 		"NSHomeKitUsageDescription",
-			"description": 	"Access HomeKit configuration data.",
-			"reason": 		plistObj.NSHomeKitUsageDescription,
+		plistObj.NSHomeKitUsageDescription: {
+			"name":        "NSHomeKitUsageDescription",
+			"description": "Access HomeKit configuration data.",
+			"reason":      plistObj.NSHomeKitUsageDescription,
 		},
-		plistObj.NSLocationAlwaysUsageDescription : {
-			"name": 		"NSLocationAlwaysUsageDescription",
-			"description":	"Access location information at all times.",
-			"reason": 		plistObj.NSLocationAlwaysUsageDescription,
+		plistObj.NSLocationAlwaysUsageDescription: {
+			"name":        "NSLocationAlwaysUsageDescription",
+			"description": "Access location information at all times.",
+			"reason":      plistObj.NSLocationAlwaysUsageDescription,
 		},
-		plistObj.NSLocationUsageDescription : {
-			"name": 		"NSLocationUsageDescription",
-			"description": 	"Access location information at all times (< iOS 8).",
-			"reason": 		plistObj.NSLocationUsageDescription,
+		plistObj.NSLocationUsageDescription: {
+			"name":        "NSLocationUsageDescription",
+			"description": "Access location information at all times (< iOS 8).",
+			"reason":      plistObj.NSLocationUsageDescription,
 		},
-		plistObj.NSLocationWhenInUseUsageDescription : {
-			"name": 		"NSLocationWhenInUseUsageDescription",
-			"description": 	"Access location information when app is in the foreground.",
-			"reason": 		plistObj.NSLocationWhenInUseUsageDescription,
+		plistObj.NSLocationWhenInUseUsageDescription: {
+			"name":        "NSLocationWhenInUseUsageDescription",
+			"description": "Access location information when app is in the foreground.",
+			"reason":      plistObj.NSLocationWhenInUseUsageDescription,
 		},
-		plistObj.NSMicrophoneUsageDescription : {
-			"name": 		"NSMicrophoneUsageDescription",
-			"description": 	"Access microphone.",
-			"reason": 		plistObj.NSMicrophoneUsageDescription,
+		plistObj.NSMicrophoneUsageDescription: {
+			"name":        "NSMicrophoneUsageDescription",
+			"description": "Access microphone.",
+			"reason":      plistObj.NSMicrophoneUsageDescription,
 		},
-		plistObj.NSMotionUsageDescription : {
-			"name": 		"NSMotionUsageDescription",
-			"description": 	"Access the device’s accelerometer.",
-			"reason": 		plistObj.NSMotionUsageDescription,
+		plistObj.NSMotionUsageDescription: {
+			"name":        "NSMotionUsageDescription",
+			"description": "Access the device’s accelerometer.",
+			"reason":      plistObj.NSMotionUsageDescription,
 		},
-		plistObj.NSPhotoLibraryUsageDescription : {
-			"name": 		"NSPhotoLibraryUsageDescription",
-			"description": 	"Access the user’s photo library.",
-			"reason": 		plistObj.NSPhotoLibraryUsageDescription,
+		plistObj.NSPhotoLibraryUsageDescription: {
+			"name":        "NSPhotoLibraryUsageDescription",
+			"description": "Access the user’s photo library.",
+			"reason":      plistObj.NSPhotoLibraryUsageDescription,
 		},
-		plistObj.NSRemindersUsageDescription : {
-			"name": "NSRemindersUsageDescription",
+		plistObj.NSRemindersUsageDescription: {
+			"name":        "NSRemindersUsageDescription",
 			"description": "Access the user’s reminders.",
-			"reason": plistObj.NSRemindersUsageDescription,
+			"reason":      plistObj.NSRemindersUsageDescription,
 		},
-		plistObj.NSVideoSubscriberAccountUsageDescription : {
-			"name": "NSVideoSubscriberAccountUsageDescription",
+		plistObj.NSVideoSubscriberAccountUsageDescription: {
+			"name":        "NSVideoSubscriberAccountUsageDescription",
 			"description": "Access the user’s TV provider account.",
-			"reason": plistObj.NSVideoSubscriberAccountUsageDescription,
+			"reason":      plistObj.NSVideoSubscriberAccountUsageDescription,
 		},
 	} {
 		if k != "" {
