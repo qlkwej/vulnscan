@@ -11,13 +11,14 @@ type AnalysisResult = map[string]interface{}
 const (
 	// Store is the apple store lookup
 	Store FormatMethod = iota
-
 	// PList is the plist scan
 	PList
+	ListFiles
+	VirusScan
 )
 
 // Printer is the interface used to decouple scans from printing
 type Printer interface {
 	Log(*AnalysisResult, error, FormatMethod)
-	Generate(*io.Writer) error
+	Generate(io.Writer) error
 }

@@ -2,9 +2,13 @@ package utils
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func unzip(src, dest string) error {
@@ -54,13 +58,46 @@ func unzip(src, dest string) error {
 	return nil
 }
 
-func WithUnzip(zipFile, path string, fn func()) error {
+func WithUnzip(zipFile, path string, fn func(p string) error) error {
 	_ = os.MkdirAll(path, os.ModePerm)
 	defer os.RemoveAll(path)
 	err := unzip(zipFile, path)
 	if err != nil {
 		return err
 	}
-	fn()
+	if e:= fn(path); e != nil {
+		return e
+	}
 	return nil
+}
+
+func Normalize(path string, isSrc bool, fn func(p string)error) error {
+	if isSrc {
+		if e := fn(path); e != nil {
+			return e
+		}
+	} else if filepath.Ext(path) == "zip" || filepath.Ext(path) == "ipa" {
+		tempDir := filepath.Join(filepath.Dir(path), "temp")
+		return WithUnzip(path, tempDir, fn)
+	} else if filepath.Ext(path) == "app" {
+		if e := fn(path); e != nil {
+			return e
+		}
+	} else {
+		files, err := ioutil.ReadDir(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var tempDir string
+		for _, f := range files {
+			if strings.HasSuffix(f.Name(), ".app") {
+				tempDir = f.Name()
+				break
+			}
+		}
+		if tempDir != "" {
+			return WithUnzip(path, tempDir, fn)
+		}
+	}
+	return fmt.Errorf("unable to normalize path %s", path)
 }
