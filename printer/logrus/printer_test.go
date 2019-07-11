@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -126,11 +125,15 @@ func TestPrintItunesLog(t *testing.T) {
 }
 
 func TestPrintPListJson(t *testing.T) {
-	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err := utils.WithUnzip(zipFile, path, func() {
+	zipFile, e := utils.FindTest("apps", "source.zip")
+	path, e := utils.FindTest("apps", "source")
+	if e != nil { t.Error(e) }
+	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
-		res, err := ios.PListAnalysis(path, true)
+		res, err := ios.PListAnalysis(p, true)
+		if err != nil {
+			return err
+		}
 		jsonTextPrinter.Log(res, err, printer.PList)
 		var jsonResults [3]map[string]interface{}
 		for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
@@ -148,17 +151,19 @@ func TestPrintPListJson(t *testing.T) {
 				t.Errorf("error in itunes result json: got %#v, expected %#v", out, expected)
 			}
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
 }
 
 func TestPrintPListLog(t *testing.T) {
-	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err := utils.WithUnzip(zipFile, path, func() {
+	zipFile, e := utils.FindTest("apps", "source.zip")
+	path, e := utils.FindTest("apps", "source")
+	if e != nil { t.Error(e) }
+	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
-		res, err := ios.PListAnalysis(path, true)
+		res, err := ios.PListAnalysis(p, true)
 		logTextPrinter.Log(res, err, printer.PList)
 		results := logTextPrinter.log.Out.(*TextWriter).inner
 		for _, test := range [][3]interface{}{
@@ -175,15 +180,17 @@ func TestPrintPListLog(t *testing.T) {
 					"Complete output: %s", test[0].(int), test[1].(string), expected, got, results[test[0].(int)])
 			}
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
 }
 
 func TestPrinterToString(t *testing.T) {
-	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err := utils.WithUnzip(zipFile, path, func() {
+	zipFile, e := utils.FindTest("apps", "source.zip")
+	path, e := utils.FindTest("apps", "source")
+	if e != nil { t.Error(e) }
+	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		var wg sync.WaitGroup
 		wg.Add(2)
@@ -194,7 +201,7 @@ func TestPrinterToString(t *testing.T) {
 		}()
 		go func() {
 			defer wg.Done()
-			res, err := ios.PListAnalysis(path, true)
+			res, err := ios.PListAnalysis(p, true)
 			logTextPrinter.Log(res, err, printer.PList)
 		}()
 		wg.Wait()
@@ -209,6 +216,7 @@ func TestPrinterToString(t *testing.T) {
 				t.Errorf("Error in %d iteration, expected to find analysis %s, found %s", i, test, results[i][pos:pos+len(test)])
 			}
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}

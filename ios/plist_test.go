@@ -2,7 +2,6 @@ package ios
 
 import (
 	"fmt"
-	"path/filepath"
 	"testing"
 
 	"github.com/simplycubed/vulnscan/utils"
@@ -10,28 +9,30 @@ import (
 
 
 func TestPlistSourceSearch(t *testing.T) {
-	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../test_files/plist/source")
-	if err:= utils.WithUnzip(zipFile, path, func() {
-		if file, name, err := findPListFile(path, true); err != nil || len(file) == 0 {
+	zipFile, _ := utils.FindTest("apps", "source.zip")
+	path, _ := utils.FindTest("apps", "source")
+	if err:= utils.WithUnzip(zipFile, path, func(p string) error {
+		if file, name, err := findPListFile(p, true); err != nil || len(file) == 0 {
 			t.Errorf("Failed to find plist file in source with error %s", err)
 		} else if len(name) == 0 {
 			t.Errorf("Failed to extract name from source")
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
 }
 
 func TestPListBinarySearch(t *testing.T) {
-	zipFile, _ := filepath.Abs("../test_files/plist/binary.zip")
-	path, _ := filepath.Abs("../test_files/plist/binary")
-	if err:= utils.WithUnzip(zipFile, path, func() {
-		if file, name, err := findPListFile(path, false); err != nil || len(file) == 0 {
+	zipFile, _ := utils.FindTest("apps", "binary.ipa")
+	path, _ := utils.FindTest("apps", "binary")
+	if err:= utils.WithUnzip(zipFile, path, func(p string) error {
+		if file, name, err := findPListFile(p, false); err != nil || len(file) == 0 {
 			t.Errorf("Failed to find plist file in source with error %s", err)
 		} else if len(name) == 0 {
 			t.Errorf("Failed to extract name from source")
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
@@ -39,7 +40,7 @@ func TestPListBinarySearch(t *testing.T) {
 
 func TestMultiplePListAnalysis(t *testing.T) {
 	for i := 1; i <= 5; i++ {
-		path, _ := filepath.Abs(fmt.Sprintf("../test_files/plist/plistfiles/plist%d.plist", i))
+		path, _ := utils.FindTest("plist", fmt.Sprintf("plist%d.plist", i))
 		if _, err := makePListAnalysis(path, fmt.Sprintf("App%d", i), true); err != nil {
 			t.Errorf("Failed to extract plist data from %s with error %s", path, err)
 		}
@@ -47,24 +48,26 @@ func TestMultiplePListAnalysis(t *testing.T) {
 }
 
 func TestPlistSourceAnalysis(t *testing.T) {
-	zipFile, _ := filepath.Abs("../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../test_files/plist/source")
-	if err:= utils.WithUnzip(zipFile, path, func() {
-		if result, err := PListAnalysis(path, true); err != nil || len(result["plist_XML"].(string)) == 0 {
+	zipFile, _ := utils.FindTest("apps", "source.zip")
+	path, _ := utils.FindTest("apps", "source")
+	if err:= utils.WithUnzip(zipFile, path, func(p string) error {
+		if result, err := PListAnalysis(p, true); err != nil || len(result["plist_XML"].(string)) == 0 {
 			t.Errorf("Plist source analysis failed with error %s", err)
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
 }
 
 func TestPListBinaryAnalysis(t *testing.T) {
-	zipFile, _ := filepath.Abs("../test_files/plist/binary.zip")
-	path, _ := filepath.Abs("../test_files/plist/binary")
-	if err:= utils.WithUnzip(zipFile, path, func() {
-		if result, err := PListAnalysis(path, false); err != nil || len(result["plist_XML"].(string)) == 0 {
+	zipFile, _ := utils.FindTest("apps", "binary.ipa")
+	path, _ := utils.FindTest("apps", "binary")
+	if err:= utils.WithUnzip(zipFile, path, func(p string) error {
+		if result, err := PListAnalysis(p, false); err != nil || len(result["plist_XML"].(string)) == 0 {
 			t.Errorf("Plist source analysis failed with error %s", err)
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
