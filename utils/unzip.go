@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/otiai10/copy"
 )
 
 func unzip(src, dest string) error {
@@ -18,9 +20,6 @@ func unzip(src, dest string) error {
 		return err
 	}
 	defer r.Close()
-
-	// Use the dest as direct parent
-	dest = filepath.Dir(dest)
 
 	for _, f := range r.File {
 
@@ -65,38 +64,77 @@ func WithUnzip(zipFile, path string, fn func(p string) error) error {
 	if err != nil {
 		return err
 	}
-	if e:= fn(path); e != nil {
-		return e
+	// Here we have two situations: either we have a subfolder  with the app file or we have the app file inside a
+	// subfolder
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return err
 	}
-	return nil
+	if len(files) == 0 {
+		return fmt.Errorf("extraction failed: the folder is empty")
+	}
+	if len(files) > 1 || filepath.Ext(files[0].Name()) == ".app" {
+		return fn(path)
+	}
+	// We have to run the function into the uncompressed folder in temp, that is named as the zipFile
+	return fn(filepath.Join(path, files[0].Name()))
 }
 
+
+// Tries to adapt the input folder to different cases, so all the analysis can start from a common
+// folder structure, independently of how the user has passed the address to scan.
+// It follows these rules:
+//
+//		If isSrc flag is true, the folder is treated as the main folder without further analysis.
+//
+//		If the file extension is zip of ipa, the folder is uncompressed into a temporary one, that
+//		will be later be deleted. It's expected that this folder contains a .app folder as the content.
+//
+//		If the file extension is app, the file is moved to another temporary empty folder where the analysis
+// 		is performed. This is because we don't know if the user may have other app folders in the same route
+//		and we wan't to treat the route as in the case where an ipa or zip is passed to the app.
+//
+//		If the file is a directory, we look for an app, ipa or zip file and call Normalize again with it.
 func Normalize(path string, isSrc bool, fn func(p string)error) error {
 	if isSrc {
-		if e := fn(path); e != nil {
-			return e
-		}
-	} else if filepath.Ext(path) == "zip" || filepath.Ext(path) == "ipa" {
+		return fn(path)  // And don't look back
+	} else if filepath.Ext(path) == ".zip" || filepath.Ext(path) == ".ipa" {
+		// This unzips the content into the temp folder and remove it afterwards.
 		tempDir := filepath.Join(filepath.Dir(path), "temp")
 		return WithUnzip(path, tempDir, fn)
-	} else if filepath.Ext(path) == "app" {
-		if e := fn(path); e != nil {
+	} else if filepath.Ext(path) == ".app" {
+		// Create a temp folder
+		tempDir := filepath.Join(filepath.Dir(path), "temp")
+		_ = os.MkdirAll(tempDir, os.ModePerm)
+		_ = os.Chmod(tempDir, 0777)
+		// Copy the app to the temp folder
+		if e := copy.Copy(path, filepath.Join(tempDir, filepath.Base(path))); e != nil {
 			return e
 		}
-	} else {
+		// Return the function over the tempDir folder and delete it afterwards
+		return func(p string) error {
+			defer os.RemoveAll(p)
+			return fn(p)
+		}(tempDir)
+
+	} else if len(filepath.Ext(path)) == 0 {
+		// We have a directory, so let's search for a file suspicious of being our app
 		files, err := ioutil.ReadDir(path)
 		if err != nil {
 			log.Fatal(err)
 		}
-		var tempDir string
+		var appObj string
 		for _, f := range files {
-			if strings.HasSuffix(f.Name(), ".app") {
-				tempDir = f.Name()
-				break
+			for _, suffix := range []string{".app", ".ipa", ".zip"} {
+				if strings.HasSuffix(f.Name(), suffix) {
+					appObj = f.Name()
+					break
+				}
 			}
+
 		}
-		if tempDir != "" {
-			return WithUnzip(path, tempDir, fn)
+		if appObj != "" {
+			return Normalize(filepath.Join(path, appObj), false, fn)
 		}
 	}
 	return fmt.Errorf("unable to normalize path %s", path)
