@@ -11,8 +11,14 @@ import (
 )
 
 
+//
 func ListFiles(src string) (map[string]interface{}, error) {
-	var fileList = map[string]interface{}{}
+	var fileList = map[string]interface{}{
+		"files": []string{},
+		"certs": []string{},
+		"database": []string{},
+		"plist": []string{},
+	}
 	walkErr := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
 		filePath := path
 		dirName, fileName := filepath.Split(path)
@@ -20,7 +26,9 @@ func ListFiles(src string) (map[string]interface{}, error) {
 			if strings.Contains(fileName, "+") {
 				plus2X := filepath.Join(dirName, strings.Replace(fileName, "+", "x", -1))
 				err := os.Rename(filePath, plus2X)
-				if err != nil { return err }
+				if err != nil {
+					return err
+				}
 				filePath = plus2X
 			}
 			fileParam := strings.Replace(filePath, src, "", 1)
