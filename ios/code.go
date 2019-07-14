@@ -1,6 +1,7 @@
 package ios
 
 import (
+	"fmt"
 	"github.com/simplycubed/vulnscan/malware"
 	"io/ioutil"
 	"os"
@@ -9,36 +10,45 @@ import (
 	"strings"
 )
 
-func urlEmailExtract(data string) ([][]byte, [][]byte) {
+func urlEmailExtract(data string) (urls [][]byte, emails [][]byte) {
+	// The original regex seem broken under certain texts, as it matches everything that looks like string:string, which
+	// it's not very acceptable because it gets a lot of false positives:
+	// '((?:https?://|s?ftps?://|file://|javascript:|data:|www\d{0,3}[.])[\w().=/;,#:@?&~*+!$%\'{}-]+)'
+	// The used only works because it looks for http, so it's weak, but I have tested multiple of them and I don't find
+	// a solution.
+	// TODO: find the best regex available
 	urlPat, _ := regexp.
-		Compile(`((?:https?://|s?ftps?://|file://|javascript:|data:|www\d{0,3}[.])[\w().=/;,#:@?&~*+!$%\'{}-]+)`)
+		Compile(`https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+`)
 	emailPat, _ := regexp.Compile(`[\w.-]+@[\w-]+\.[\w.]+`)
 	return urlPat.FindAll([]byte(data), -1), emailPat.FindAll([]byte(data), -1)
 }
 
 
 func CodeAnalysis(src string) (result map[string]interface{}, err error) {
-	var codeFindings map[string]map[string]interface{}
-	var apiFindings map[string]map[string]interface{}
-	var urlFindings map[string][]string
-	var emailFindings map[string][]string
+	var codeFindings = map[string]map[string]interface{}{}
+	var apiFindings = map[string]map[string]interface{}{}
+	var urlFindings = map[string][]string{}
+	var emailFindings = map[string][]string{}
 	var urlList []string
 	if walkErr := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if filepath.Ext(path) == ".m" {
 			var jfilePath string
 			if strings.Contains(filepath.Base(path), "+") {
-				jfilePath := filepath.Join(filepath.Dir(path),
+				jfilePath = filepath.Join(filepath.Dir(path),
 					strings.Replace(filepath.Base(path), "+", "x", -1))
 				err := os.Rename(path, jfilePath)
 				if err != nil {
-					return err
+					return fmt.Errorf("error moving file %s to %s: %s", path, jfilePath, err)
 				}
 			} else {
 				jfilePath = path
 			}
 			var data string
 			if d, err := ioutil.ReadFile(jfilePath); err != nil {
-				return err
+				return fmt.Errorf("error reading file %s: %s", jfilePath, err)
 			} else {
 				data = string(d)
 			}
@@ -89,12 +99,15 @@ func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 	}); walkErr != nil {
 		return result, walkErr
 	}
-	return map[string]interface{}{
-		"code": codeFindings,
-		"api": apiFindings,
-		"url": urlFindings,
-		"email": emailFindings,
-		"bad_domains": malware.MalwareCheck(urlList),
-	}, nil
-
+	if badDomains, e := malware.DomainCheck(urlList); e != nil {
+		return result, e
+	} else {
+		return map[string]interface{}{
+			"code": codeFindings,
+			"api": apiFindings,
+			"url": urlFindings,
+			"email": emailFindings,
+			"bad_domains": badDomains,
+		}, nil
+	}
 }

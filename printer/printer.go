@@ -15,6 +15,7 @@ const (
 	PList
 	ListFiles
 	VirusScan
+	Code
 )
 
 // Printer is the interface used to decouple scans from printing

@@ -87,6 +87,35 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 				}
 			}
 		}
+	case printer.Code:
+		if e != nil {
+			return errorMessage("code", e)
+		}
+		messages := map[string]string {
+			"code": "code issues",
+			"api": "api uses",
+			"url": "url inserted in the code",
+			"email": "emails inserted in the code",
+			"bad_domains": "dangerous domains references in the code",
+		}
+		for k, v := range res {
+			if k == "code" || k == "api" {
+				if l := len(v.(map[string]map[string]interface{})); l != 0 {
+					output[fmt.Sprintf("Found %s", messages[k])] = map[string]interface{}{
+						"analysis": "code", "found": l, "list": v}
+				}
+			} else if k == "url" || k == "email" {
+				if l := len(v.(map[string][]string)); l != 0 {
+					output[fmt.Sprintf("Found %s", messages[k])] = map[string]interface{}{
+						"analysis": "code", "found": l, "list": v}
+				}
+			} else if k == "bad_domains" {
+				if l := len(v.([]string)); l != 0 {
+					output[fmt.Sprintf("Found %s", messages[k])] = map[string]interface{}{
+						"analysis": "code", "found": l, "list": v}
+				}
+			}
+		}
 	}
 	return output
 }

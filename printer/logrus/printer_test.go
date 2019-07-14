@@ -249,6 +249,45 @@ func TestPrintVirus(t *testing.T) {
 }
 
 
+func TestPrintCodeAnalysis(t *testing.T) {
+	zip, _ := utils.FindTest("apps", "vulnerable_app.zip")
+	src, _ := utils.FindTest("apps", "vulnerable_app")
+	if err := utils.WithUnzip(zip, src, func(p string) error {
+		result, e := ios.CodeAnalysis(p)
+		if e != nil {
+			t.Error(e)
+		} else {
+			jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
+			jsonTextPrinter.Log(result, e, printer.Code)
+			var jsonResults [5]map[string]interface{}
+			for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
+				jsonResults[i] = map[string]interface{}{}
+				_ = json.Unmarshal([]byte(s), &jsonResults[i])
+			}
+			printedAnalysis := map[string]bool {
+				"Found api uses": false,
+				"Found url inserted in the code": false,
+				"Found emails inserted in the code": false,
+				"Found code issues": false,
+			}
+			for _, j := range jsonResults {
+				if _, ok := j["msg"]; ok {
+					printedAnalysis[j["msg"].(string)] = true
+				}
+			}
+			for an, p := range printedAnalysis {
+				if !p {
+					t.Errorf("%s not printed", an)
+				}
+			}
+		}
+		return nil
+	}); err != nil {
+		t.Errorf("%v", err)
+	}
+}
+
+
 
 func TestPrinterToString(t *testing.T) {
 	zipFile, e := utils.FindTest("apps", "source.zip")
