@@ -198,17 +198,17 @@ func TestPrintFilesLog(t *testing.T) {
 			logTextPrinter.Log(res, err, printer.ListFiles)
 			results := logTextPrinter.log.Out.(*TextWriter).inner
 			for _, r := range results {
-				if strings.Index(r, "Total files") != -1 {
+				if strings.Contains(r, "Total files") {
 					if countIndex := strings.Index(r, "count") +
 						len("count") + 1; countIndex < 0 || r[countIndex:countIndex+4] != "1922" {
 						t.Errorf("Unexpected number of files, expected 1922, found %s", r[countIndex:countIndex+4])
 					}
-				} else if strings.Index(r, "Databases") != -1 {
-					if strings.Index(r, "count") != -1 {
+				} else if strings.Contains(r, "Databases") {
+					if strings.Contains(r, "count") {
 						t.Errorf("Unexpected tag count in Databases message")
 					}
-				} else if strings.Index(r, "Plist") != -1 {
-					if strings.Index(r, "count") == -1 {
+				} else if strings.Contains(r, "Plist") {
+					if !strings.Contains(r, "count") {
 						t.Errorf("Count tag not found in Plist message")
 					}
 				}

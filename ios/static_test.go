@@ -36,15 +36,15 @@ func TestStaticAnalyzer(t *testing.T) {
 	}); e != nil {
 		t.Errorf("ERROR %s", e)
 	} else {
-		if strings.Index(res, "analysis=virus") == -1 {
+		if !strings.Contains(res, "analysis=virus") {
 			t.Errorf("Virus analysis not found")
-		} else if strings.Index(res, "analysis=plist") == -1 {
+		} else if !strings.Contains(res, "analysis=plist") {
 			t.Errorf("PList analysis not found")
-		} else if strings.Index(res, "analysis=store") == -1 {
+		} else if !strings.Contains(res, "analysis=store") {
 			t.Errorf("Store analysis not found")
-		} else if strings.Index(res, "analysis=files") == -1 {
+		} else if !strings.Contains(res, "analysis=files") {
 			t.Errorf("Files analysis not found")
-		} else if strings.Index(res, "analysis=code") == -1 {
+		} else if !strings.Contains(res, "analysis=code") {
 			t.Errorf("Code analysis not found")
 		}
 	}
