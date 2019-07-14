@@ -58,7 +58,7 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 		result map[string]interface{}
 		format printer.FormatMethod
 	}
-	nStreams := 3
+	nStreams := 4
 	if !isSrc && virus {
 		nStreams += 1
 	}
@@ -102,6 +102,14 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 				resultStream <- AnalysisResult{r, printer.VirusScan}
 			}()
 		}
+		// Code analysis
+		go func() {
+			r, e := CodeAnalysis(p)
+			if e != nil {
+				errorStream <- e
+			}
+			resultStream <- AnalysisResult{r, printer.Code}
+		}()
 		for i := 0; i < nStreams; i++ {
 			select {
 			case e := <-errorStream:

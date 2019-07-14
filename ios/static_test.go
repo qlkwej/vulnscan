@@ -44,6 +44,8 @@ func TestStaticAnalyzer(t *testing.T) {
 			t.Errorf("Store analysis not found")
 		} else if strings.Index(res, "analysis=files") == -1 {
 			t.Errorf("Files analysis not found")
+		} else if strings.Index(res, "analysis=code") == -1 {
+			t.Errorf("Code analysis not found")
 		}
 	}
 }

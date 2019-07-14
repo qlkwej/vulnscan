@@ -150,6 +150,7 @@ func TestPrintPListJson(t *testing.T) {
 		} {
 			if out, expected := jsonResults[test[0].(int)][test[1].(string)], test[2]; out != expected {
 				t.Errorf("error in itunes result json: got %#v, expected %#v", out, expected)
+				t.Errorf("Results: %#v", jsonResults)
 			}
 		}
 		return nil
@@ -230,14 +231,14 @@ func TestPrintVirus(t *testing.T) {
 	r, e := client.GetResult(ipaFile, hash)
 	jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
 	jsonTextPrinter.Log(r, e, printer.VirusScan)
-	var jsonResults [59]map[string]interface{}
+	var jsonResults []map[string]interface{}
 	for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
-		jsonResults[i] = map[string]interface{}{}
+		jsonResults = append(jsonResults, map[string]interface{}{})
 		_ = json.Unmarshal([]byte(s), &jsonResults[i])
 	}
 	for _, j := range jsonResults {
 		if j["msg"] == "Virus scan completed" {
-			if j["performed"] != float64(58) || j["positive"] != float64(0) {
+			if j["performed"].(float64) < float64(40) || j["positive"] != float64(0) {
 				t.Errorf("Wrong general message: %#v", j)
 			}
 		} else {

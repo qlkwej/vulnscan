@@ -67,6 +67,9 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 				output[fmt.Sprintf("%s not found", k)] = map[string]interface{}{"analysis": "files" }
 			}
 		}
+		if len(output) == 0{
+			output["Nothing found"] = map[string]interface{}{"analysis": "files"}
+		}
 	case printer.VirusScan:
 		if e != nil {
 			return errorMessage("virus", e)
@@ -115,6 +118,9 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 						"analysis": "code", "found": l, "list": v}
 				}
 			}
+		}
+		if len(output) == 0{
+			output["Nothing found"] = map[string]interface{}{"analysis": "code"}
 		}
 	}
 	return output
