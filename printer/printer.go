@@ -19,6 +19,6 @@ const (
 
 // Printer is the interface used to decouple scans from printing
 type Printer interface {
-	Log(*AnalysisResult, error, FormatMethod)
+	Log(AnalysisResult, error, FormatMethod)
 	Generate(io.Writer) error
 }

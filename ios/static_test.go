@@ -1,7 +1,9 @@
 package ios
 
 import (
+	"github.com/simplycubed/vulnscan/printer/logrus"
 	"github.com/simplycubed/vulnscan/utils"
+	"strings"
 	"testing"
 )
 
@@ -27,5 +29,21 @@ func TestListFiles(t *testing.T) {
 
 
 func TestStaticAnalyzer(t *testing.T) {
-
+	if res, e := utils.WithPipeStdout(func() error {
+		test, _ := utils.FindTest("apps", "binary.ipa")
+		return StaticAnalyzer(test, false, "us", true,
+			logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat))
+	}); e != nil {
+		t.Errorf("ERROR %s", e)
+	} else {
+		if strings.Index(res, "analysis=virus") == -1 {
+			t.Errorf("Virus analysis not found")
+		} else if strings.Index(res, "analysis=plist") == -1 {
+			t.Errorf("PList analysis not found")
+		} else if strings.Index(res, "analysis=store") == -1 {
+			t.Errorf("Store analysis not found")
+		} else if strings.Index(res, "analysis=files") == -1 {
+			t.Errorf("Files analysis not found")
+		}
+	}
 }

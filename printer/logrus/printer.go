@@ -86,7 +86,7 @@ func (p *Printer) Generate(w io.Writer) error {
 					if ordErr != nil {
 						return false
 					}
-					t[i], ordErr = time.Parse(layout, m["time"[1:len(m["time"])-1]])
+					t[i], ordErr = time.Parse(layout, m["time"])
 					if ordErr != nil {
 						return false
 					}

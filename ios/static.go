@@ -1,6 +1,7 @@
 package ios
 
 import (
+	"fmt"
 	"github.com/simplycubed/vulnscan/malware"
 	"github.com/simplycubed/vulnscan/printer"
 	"github.com/simplycubed/vulnscan/utils"
@@ -57,10 +58,11 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 		result map[string]interface{}
 		format printer.FormatMethod
 	}
-	nStreams := 2
+	nStreams := 3
 	if !isSrc && virus {
 		nStreams += 1
 	}
+	fmt.Printf("N streams %d\n", nStreams)
 	if err := utils.Normalize(src, isSrc, func(p string) error {
 		// Here src is the raw file, p is the normalized, unzipped directory
 		resultStream := make(chan AnalysisResult, nStreams)
@@ -85,7 +87,7 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 		// Virus Analysis
 		if !isSrc && virus {
 			go func() {
-				client, e := malware.NewVirusTotalClient("")
+				client, e := malware.NewVirusTotalClient("9b1157e6f334deda9f6d0c60a91f9c34bd02d7d44b200305c3cd2a36594d0f9c")
 				if e != nil {
 					errorStream <- e
 				}
@@ -105,7 +107,7 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 			case e := <-errorStream:
 				return e
 			case res := <- resultStream:
-				print.Log(&res.result, nil, res.format)
+				print.Log(res.result, nil, res.format)
 			}
 		}
 		return nil
