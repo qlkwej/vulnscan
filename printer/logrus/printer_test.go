@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/simplycubed/vulnscan/malware"
 	"os"
 	"strings"
 	"sync"
@@ -185,6 +186,69 @@ func TestPrintPListLog(t *testing.T) {
 		t.Errorf("Unzip error %s", err)
 	}
 }
+
+func TestPrintFilesLog(t *testing.T) {
+	ipaFile, _ := utils.FindTest("apps", "binary.ipa")
+	if e := utils.Normalize(ipaFile, false, func(p string) error {
+		if res, err := ios.ListFiles(p); err != nil {
+			t.Errorf("List files analysis failed with error %s", err)
+		} else {
+			logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
+			logTextPrinter.Log(res, err, printer.ListFiles)
+			results := logTextPrinter.log.Out.(*TextWriter).inner
+			for _, r := range results {
+				if strings.Index(r, "Total files") != -1 {
+					if countIndex := strings.Index(r, "count") +
+						len("count") + 1; countIndex < 0 || r[countIndex:countIndex+4] != "1922" {
+						t.Errorf("Unexpected number of files, expected 1922, found %s", r[countIndex:countIndex+4])
+					}
+				} else if strings.Index(r, "Databases") != -1 {
+					if strings.Index(r, "count") != -1 {
+						t.Errorf("Unexpected tag count in Databases message")
+					}
+				} else if strings.Index(r, "Plist") != -1 {
+					if strings.Index(r, "count") == -1 {
+						t.Errorf("Count tag not found in Plist message")
+					}
+				}
+			}
+		}
+		return nil
+	}); e != nil {
+		t.Errorf("%v", e)
+	}
+}
+
+
+func TestPrintVirus(t *testing.T) {
+	ipaFile, _ := utils.FindTest("apps", "binary.ipa")
+	client, err := malware.NewVirusTotalClient("9b1157e6f334deda9f6d0c60a91f9c34bd02d7d44b200305c3cd2a36594d0f9c")
+	if err != nil {
+		t.Error(err)
+	}
+	hash, _ := utils.HashMD5(ipaFile)
+	r, e := client.GetResult(ipaFile, hash)
+	jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
+	jsonTextPrinter.Log(r, e, printer.VirusScan)
+	var jsonResults [59]map[string]interface{}
+	for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
+		jsonResults[i] = map[string]interface{}{}
+		_ = json.Unmarshal([]byte(s), &jsonResults[i])
+	}
+	for _, j := range jsonResults {
+		if j["msg"] == "Virus scan completed" {
+			if j["performed"] != float64(58) || j["positive"] != float64(0) {
+				t.Errorf("Wrong general message: %#v", j)
+			}
+		} else {
+			if j["positive"] != "no" {
+				t.Errorf("Wrong message for virus analysis %s: %#v", j["msg"].(string)[5:], j)
+			}
+		}
+	}
+}
+
+
 
 func TestPrinterToString(t *testing.T) {
 	zipFile, e := utils.FindTest("apps", "source.zip")

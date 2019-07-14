@@ -10,7 +10,7 @@ func TestListFiles(t *testing.T) {
 	path, _ := utils.FindTest("apps", "source")
 	if err:= utils.WithUnzip(zipFile, path, func(p string) error {
 		if result, err := ListFiles(p); err != nil {
-			t.Errorf("Plist source analysis failed with error %s", err)
+			t.Errorf("List files analysis failed with error %s", err)
 		} else {
 			if  len(result["certs"].([]string)) > 0 ||
 				len(result["database"].([]string)) > 0 ||
@@ -24,6 +24,7 @@ func TestListFiles(t *testing.T) {
 		t.Errorf("Unzip error %s", err)
 	}
 }
+
 
 func TestStaticAnalyzer(t *testing.T) {
 

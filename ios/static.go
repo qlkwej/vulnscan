@@ -62,11 +62,12 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 		nStreams += 1
 	}
 	if err := utils.Normalize(src, isSrc, func(p string) error {
+		// Here src is the raw file, p is the normalized, unzipped directory
 		resultStream := make(chan AnalysisResult, nStreams)
 		errorStream := make(chan error)
 		// PList and app store search
 		go func() {
-			r, e := PListAnalysis(src, isSrc)
+			r, e := PListAnalysis(p, isSrc)
 			if e != nil {
 				errorStream <- e
 			}
@@ -75,7 +76,7 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 		}()
 		// File search
 		go func() {
-			r, e := ListFiles(src)
+			r, e := ListFiles(p)
 			if e != nil {
 				errorStream <- e
 			}
