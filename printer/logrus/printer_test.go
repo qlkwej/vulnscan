@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"github.com/simplycubed/vulnscan/malware"
 	"os"
 	"strings"
@@ -223,7 +224,16 @@ func TestPrintFilesLog(t *testing.T) {
 
 func TestPrintVirus(t *testing.T) {
 	ipaFile, _ := utils.FindTest("apps", "binary.ipa")
-	client, err := malware.NewVirusTotalClient("9b1157e6f334deda9f6d0c60a91f9c34bd02d7d44b200305c3cd2a36594d0f9c")
+	mainfFolder, _ := utils.FindMainFolder()
+	err := godotenv.Load(mainfFolder + string(os.PathSeparator) + ".env")
+	if err != nil {
+		t.Error("Error loading .env file")
+	}
+	apiKey := os.Getenv("VIRUS_TOTAL_API_KEY")
+	if len(apiKey) == 0 {
+		t.Error("Error loading VIRUS_TOTAL_API_KEY from .env file")
+	}
+	client, err := malware.NewVirusTotalClient(apiKey)
 	if err != nil {
 		t.Error(err)
 	}

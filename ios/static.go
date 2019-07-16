@@ -87,7 +87,7 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 		// Virus Analysis
 		if !isSrc && virus {
 			go func() {
-				client, e := malware.NewVirusTotalClient("9b1157e6f334deda9f6d0c60a91f9c34bd02d7d44b200305c3cd2a36594d0f9c")
+				client, e := malware.NewVirusTotalClient(os.Getenv("VIRUS_TOTAL_API_KEY"))
 				if e != nil {
 					errorStream <- e
 				}
