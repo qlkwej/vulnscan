@@ -25,7 +25,7 @@ Written in Golang with smart defaults to make it it highly portable and easy to 
 $ vulnscan -h
 
 NAME:
-   Vulnerability Scanner - iOS and MacOS vulnerability scanner
+   vulnscan - iOS and MacOS vulnerability scanner
 
 USAGE:
    vulnscan [global options] command [command options] [arguments...]
@@ -37,11 +37,13 @@ AUTHOR:
    Vulnscan Team <vulnscan@simplycubed.com>
 
 COMMANDS:
-     lookup, l  itunes lookup
-     scan, s    source code vulnerability scaning
+     lookup, l  itunes app lookup
+     plist, p   plists scan
+     scan, s    source directory and binary file security scan
      help, h    Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
+   --json, -j
    --help, -h     show help
    --version, -v  print the version
 
@@ -73,7 +75,7 @@ go test ./...
 
 ## Dependencies
 
-Vulnerability Scanner uses Go Modules and [dep](https://golang.github.io/dep/) for dependency management.
+Vulnerability Scanner uses Go Modules for dependency management.
 
 ### Adding a dependency
 
@@ -84,18 +86,6 @@ If you're adding a dependency, you'll need to add it in the same Pull Request as
 Assuming your work is on a branch called my-feature-branch, the steps look like this:
 
 1. Add an import statement to a suitable package in the Vulnerability Scanner code.
-
-1. Run `dep ensure` to download the latest version of the module containing the imported package into the vendor/ directory, and update the Gopkg.toml and Gopkg.lock files.
-
-1. Review the changes in git and commit them.
-
-### Updating a dependency
-
-#### To update a dependency
-
-1. Manually update the Gopkg.toml with the desired version number.
-
-1. Run `dep ensure`
 
 1. Review the changes in git and commit them.
 
