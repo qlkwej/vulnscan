@@ -1,5 +1,15 @@
 package utils
 
+import "runtime"
+
+func EOL() string {
+	if runtime.GOOS == "windows" {
+		return "\r\n"
+	} else {
+		return "\n"
+	}
+}
+
 
 func I(n int) []struct{} {
 return make([]struct{}, n)

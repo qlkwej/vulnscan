@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"github.com/simplycubed/vulnscan/utils"
 	"log"
 	"os"
 	"path/filepath"
@@ -140,6 +142,35 @@ func getApp() *cli.App {
 			},
 		},
 		{
+			Name:    "code",
+			Aliases: []string{"c"},
+			Usage:   "search code vulnerabilities",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "binary, b",
+					Value:       defaultPath(),
+					Usage:       "Full path to binary (ipa) file",
+					Destination: &binaryPath,
+				},
+				cli.StringFlag{
+					Name:        "source, s",
+					Value:       defaultPath(),
+					Usage:       "Full path to source code directory",
+					Destination: &sourcePath,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				p, _ := checkPathIsSrc(binaryPath, sourcePath)
+				res, err := ios.CodeAnalysis(p)
+				if jsonFlag {
+					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.Code)
+				} else {
+					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.Code)
+				}
+				return nil
+			},
+		},
+		{
 			Name:    "scan",
 			Aliases: []string{"s"},
 			Usage:   "source directory and binary file security scan",
@@ -158,11 +189,23 @@ func getApp() *cli.App {
 				},
 			},
 			Action: func(c *cli.Context) error {
-				res, err := ios.PListAnalysis(checkPathIsSrc(binaryPath, sourcePath))
-				if jsonFlag {
-					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
-				} else {
-					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
+				path, isSrc := checkPathIsSrc(binaryPath, sourcePath)
+				if e := utils.Normalize(path, isSrc, func(p string) error {
+					var printer printer.Printer
+					if jsonFlag {
+						printer = logrus.NewPrinter(logrus.Json, logrus.ColoredText, logrus.DefaultFormat)
+					} else {
+						printer = logrus.NewPrinter(logrus.Log, logrus.ColoredText, logrus.DefaultFormat)
+					}
+					if e := ios.StaticAnalyzer(p, isSrc, "us", true, printer); e != nil {
+						return e
+					}
+					if e := printer.Generate(os.Stdout); e != nil {
+						return e
+					}
+					return nil
+				}); e != nil {
+					fmt.Println(e)
 				}
 				return nil
 			},

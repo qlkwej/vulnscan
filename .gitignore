@@ -27,3 +27,6 @@ temp.txt
 
 # Vendor system files	
 vendor
+
+# Env file with possibly confidential stuff
+.env

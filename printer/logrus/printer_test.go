@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
+	"github.com/simplycubed/vulnscan/malware"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -126,11 +127,15 @@ func TestPrintItunesLog(t *testing.T) {
 }
 
 func TestPrintPListJson(t *testing.T) {
-	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err := utils.WithUnzip(zipFile, path, func() {
+	zipFile, e := utils.FindTest("apps", "source.zip")
+	path, e := utils.FindTest("apps", "source")
+	if e != nil { t.Error(e) }
+	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
-		res, err := ios.PListAnalysis(path, true)
+		res, err := ios.PListAnalysis(p, true)
+		if err != nil {
+			return err
+		}
 		jsonTextPrinter.Log(res, err, printer.PList)
 		var jsonResults [3]map[string]interface{}
 		for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
@@ -146,19 +151,22 @@ func TestPrintPListJson(t *testing.T) {
 		} {
 			if out, expected := jsonResults[test[0].(int)][test[1].(string)], test[2]; out != expected {
 				t.Errorf("error in itunes result json: got %#v, expected %#v", out, expected)
+				t.Errorf("Results: %#v", jsonResults)
 			}
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
 }
 
 func TestPrintPListLog(t *testing.T) {
-	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err := utils.WithUnzip(zipFile, path, func() {
+	zipFile, e := utils.FindTest("apps", "source.zip")
+	path, e := utils.FindTest("apps", "source")
+	if e != nil { t.Error(e) }
+	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
-		res, err := ios.PListAnalysis(path, true)
+		res, err := ios.PListAnalysis(p, true)
 		logTextPrinter.Log(res, err, printer.PList)
 		results := logTextPrinter.log.Out.(*TextWriter).inner
 		for _, test := range [][3]interface{}{
@@ -175,15 +183,128 @@ func TestPrintPListLog(t *testing.T) {
 					"Complete output: %s", test[0].(int), test[1].(string), expected, got, results[test[0].(int)])
 			}
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}
 }
 
+func TestPrintFilesLog(t *testing.T) {
+	ipaFile, _ := utils.FindTest("apps", "binary.ipa")
+	if e := utils.Normalize(ipaFile, false, func(p string) error {
+		if res, err := ios.ListFiles(p); err != nil {
+			t.Errorf("List files analysis failed with error %s", err)
+		} else {
+			logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
+			logTextPrinter.Log(res, err, printer.ListFiles)
+			results := logTextPrinter.log.Out.(*TextWriter).inner
+			for _, r := range results {
+				if strings.Contains(r, "Total files") {
+					if countIndex := strings.Index(r, "count") +
+						len("count") + 1; countIndex < 0 || r[countIndex:countIndex+4] != "1922" {
+						t.Errorf("Unexpected number of files, expected 1922, found %s", r[countIndex:countIndex+4])
+					}
+				} else if strings.Contains(r, "Databases") {
+					if strings.Contains(r, "count") {
+						t.Errorf("Unexpected tag count in Databases message")
+					}
+				} else if strings.Contains(r, "Plist") {
+					if !strings.Contains(r, "count") {
+						t.Errorf("Count tag not found in Plist message")
+					}
+				}
+			}
+		}
+		return nil
+	}); e != nil {
+		t.Errorf("%v", e)
+	}
+}
+
+
+func TestPrintVirus(t *testing.T) {
+	ipaFile, _ := utils.FindTest("apps", "binary.ipa")
+	mainfFolder, _ := utils.FindMainFolder()
+	err := godotenv.Load(mainfFolder + string(os.PathSeparator) + ".env")
+	if err != nil {
+		t.Error("Error loading .env file")
+	}
+	apiKey := os.Getenv("VIRUS_TOTAL_API_KEY")
+	if len(apiKey) == 0 {
+		t.Error("Error loading VIRUS_TOTAL_API_KEY from .env file")
+	}
+	client, err := malware.NewVirusTotalClient(apiKey)
+	if err != nil {
+		t.Error(err)
+	}
+	hash, _ := utils.HashMD5(ipaFile)
+	r, e := client.GetResult(ipaFile, hash)
+	jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
+	jsonTextPrinter.Log(r, e, printer.VirusScan)
+	var jsonResults []map[string]interface{}
+	for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
+		jsonResults = append(jsonResults, map[string]interface{}{})
+		_ = json.Unmarshal([]byte(s), &jsonResults[i])
+	}
+	for _, j := range jsonResults {
+		if j["msg"] == "Virus scan completed" {
+			if j["performed"].(float64) < float64(40) || j["positive"] != float64(0) {
+				t.Errorf("Wrong general message: %#v", j)
+			}
+		} else {
+			if j["positive"] != "no" {
+				t.Errorf("Wrong message for virus analysis %s: %#v", j["msg"].(string)[5:], j)
+			}
+		}
+	}
+}
+
+
+func TestPrintCodeAnalysis(t *testing.T) {
+	zip, _ := utils.FindTest("apps", "vulnerable_app.zip")
+	src, _ := utils.FindTest("apps", "vulnerable_app")
+	if err := utils.WithUnzip(zip, src, func(p string) error {
+		result, e := ios.CodeAnalysis(p)
+		if e != nil {
+			t.Error(e)
+		} else {
+			jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
+			jsonTextPrinter.Log(result, e, printer.Code)
+			var jsonResults [5]map[string]interface{}
+			for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
+				jsonResults[i] = map[string]interface{}{}
+				_ = json.Unmarshal([]byte(s), &jsonResults[i])
+			}
+			printedAnalysis := map[string]bool {
+				"Found api uses": false,
+				"Found url inserted in the code": false,
+				"Found emails inserted in the code": false,
+				"Found code issues": false,
+			}
+			for _, j := range jsonResults {
+				if _, ok := j["msg"]; ok {
+					printedAnalysis[j["msg"].(string)] = true
+				}
+			}
+			for an, p := range printedAnalysis {
+				if !p {
+					t.Errorf("%s not printed", an)
+				}
+			}
+		}
+		return nil
+	}); err != nil {
+		t.Errorf("%v", err)
+	}
+}
+
+
+
 func TestPrinterToString(t *testing.T) {
-	zipFile, _ := filepath.Abs("../../test_files/plist/source.zip")
-	path, _ := filepath.Abs("../../test_files/plist/source")
-	if err := utils.WithUnzip(zipFile, path, func() {
+	zipFile, e := utils.FindTest("apps", "source.zip")
+	path, e := utils.FindTest("apps", "source")
+	if e != nil { t.Error(e) }
+	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		var wg sync.WaitGroup
 		wg.Add(2)
@@ -194,7 +315,7 @@ func TestPrinterToString(t *testing.T) {
 		}()
 		go func() {
 			defer wg.Done()
-			res, err := ios.PListAnalysis(path, true)
+			res, err := ios.PListAnalysis(p, true)
 			logTextPrinter.Log(res, err, printer.PList)
 		}()
 		wg.Wait()
@@ -209,6 +330,7 @@ func TestPrinterToString(t *testing.T) {
 				t.Errorf("Error in %d iteration, expected to find analysis %s, found %s", i, test, results[i][pos:pos+len(test)])
 			}
 		}
+		return nil
 	}); err != nil {
 		t.Errorf("Unzip error %s", err)
 	}

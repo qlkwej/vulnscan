@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/simplycubed/vulnscan/utils"
 	"gopkg.in/urfave/cli.v1"
 	"testing"
 )
@@ -44,26 +45,26 @@ func TestCommands(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	expect(t, counts.CommandNotFound, 0)
-	expect(t, counts.SubCommand, 1)
-	expect(t, counts.Total, 1)
+	utils.Expect(t, counts.CommandNotFound, 0)
+	utils.Expect(t, counts.SubCommand, 1)
+	utils.Expect(t, counts.Total, 1)
 	resetCounts()
 
 	err = a.Run([]string{"command", "scan"})
 	if err != nil {
 		t.Error(err)
 	}
-	expect(t, counts.CommandNotFound, 0)
-	expect(t, counts.SubCommand, 1)
-	expect(t, counts.Total, 1)
+	utils.Expect(t, counts.CommandNotFound, 0)
+	utils.Expect(t, counts.SubCommand, 1)
+	utils.Expect(t, counts.Total, 1)
 	resetCounts()
 
 	err = a.Run([]string{"command", "foo"})
 	if err != nil {
 		t.Error(err)
 	}
-	expect(t, counts.CommandNotFound, 1)
-	expect(t, counts.SubCommand, 0)
-	expect(t, counts.Total, 1)
+	utils.Expect(t, counts.CommandNotFound, 1)
+	utils.Expect(t, counts.SubCommand, 0)
+	utils.Expect(t, counts.Total, 1)
 }
 
