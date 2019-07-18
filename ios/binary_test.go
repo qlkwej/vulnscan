@@ -1,8 +1,11 @@
 package ios
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/simplycubed/vulnscan/utils"
+	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -21,8 +24,61 @@ func TestGetOtoolOut(t *testing.T) {
 		if err != nil {
 			return err
 		}
+		if platform := runtime.GOOS; platform == "darwin" {
+			if !strings.Contains(otoolOut,
+				"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility version 300.0.0, current version 1560.10.0)")	{
+				t.Errorf("Wrong otool output for libs command: %s", otoolOut)
+			}
+		} else if platform == "linux" {
+			if !strings.Contains(otoolOut,
+				"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility ver: 300.0.0, current ver: 1560.10.0)")	{
+				t.Errorf("Wrong otool output for libs command: %s", otoolOut)
+			}
+		}
+		otoolOut, err = getOtoolOut(binPath, Header)
+		if err != nil {
+			return err
+		}
 		if !strings.Contains(otoolOut,
-			"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility version 300.0.0, current version 1560.10.0)")	{
+			"PIE")	{
+			t.Errorf("Wrong otool output for header command: %s", otoolOut)
+		}
+		otoolOut, err = getOtoolOut(binPath, Symbols)
+		if err != nil {
+			return err
+		}
+		if !strings.Contains(otoolOut, "address") || !strings.Contains(otoolOut, "index") ||
+			!strings.Contains(otoolOut, "name") {
+			t.Errorf("Wrong otool output for symbols command: %s", otoolOut)
+		}
+		return nil
+	}); e != nil {
+		t.Errorf("%s", e)
+	}
+}
+
+func TestGetOtoolOutForceLinux(t *testing.T) {
+	mainFolder, _ := utils.FindMainFolder()
+	err := godotenv.Load(mainFolder + string(os.PathSeparator) + ".env")
+	if err != nil {
+		t.Error("Error loading .env file")
+	}
+	if os.Getenv("FORCE_LINUX") != "1" {
+		t.Error("Error loading FORCE_LINUX environment variable")
+	}
+	path, _ := utils.FindTest("apps", "binary.ipa")
+	if e := utils.Normalize(path, false, func(p string) error {
+		appPath, err := utils.GetApp(p)
+		if err != nil {
+			return err
+		}
+		binPath := filepath.Join(appPath, "iVim")
+		otoolOut, err := getOtoolOut(binPath, Libs)
+		if err != nil {
+			return err
+		}
+		if !strings.Contains(otoolOut,
+			"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility ver: 300.0.0, current ver: 1560.10.0)")	{
 			t.Errorf("Wrong otool output for libs command: %s", otoolOut)
 		}
 		otoolOut, err = getOtoolOut(binPath, Header)
@@ -94,6 +150,35 @@ func TestDetectBinType(t *testing.T) {
 }
 
 func TestClassDump(t *testing.T) {
+	path, _ := utils.FindTest("apps", "binary.ipa")
+	if e := utils.Normalize(path, false, func(p string) error {
+		appPath, err := utils.GetApp(p)
+		if err != nil {
+			return err
+		}
+		binPath := filepath.Join(appPath, "iVim")
+		dump, err := classDump(binPath, Swift)
+		if err != nil {
+			return err
+		}
+		if issue := dump["issue"].(string); issue != "Binary doesn't use WebView Component." {
+			t.Errorf("Wrong issue message: %s", issue)
+		}
+		return nil
+	}); e != nil {
+		t.Error(e)
+	}
+}
+
+func TestClassDumpForceLinux(t *testing.T) {
+	mainFolder, _ := utils.FindMainFolder()
+	err := godotenv.Load(mainFolder + string(os.PathSeparator) + ".env")
+	if err != nil {
+		t.Error("Error loading .env file")
+	}
+	if os.Getenv("FORCE_LINUX") != "1" {
+		t.Error("Error loading FORCE_LINUX environment variable")
+	}
 	path, _ := utils.FindTest("apps", "binary.ipa")
 	if e := utils.Normalize(path, false, func(p string) error {
 		appPath, err := utils.GetApp(p)

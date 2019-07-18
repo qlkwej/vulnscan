@@ -44,17 +44,8 @@ func getOtoolOut(binPath string, ct CommandType) (string, error) {
 		command string
 		args [][]string
 		)
-	if platform := runtime.GOOS; platform == "darwin" {
-		command = "otool"
-		if ct == Libs {
-			args = append(args, []string{"-L", binPath})
-		} else if ct == Header {
-			args = append(args, []string{"-hv", binPath})
-		} else if ct == Symbols {
-			args = append(args, []string{"-Iv", binPath})
-		}
-	} else if platform == "linux" {
-		command = getToolsFolder() + "jtool.ELF64"
+	if platform := runtime.GOOS; os.Getenv("FORCE_LINUX") == "1" || platform == "linux" {
+		command = getToolsFolder() + "jtool"
 		if ct == Libs {
 			args = append(args, []string{"-arch", "arm", "-L", "-v", binPath})
 		} else if ct == Header {
@@ -62,6 +53,16 @@ func getOtoolOut(binPath string, ct CommandType) (string, error) {
 		} else if ct == Symbols {
 			args = append(args, []string{"-arch", "arm", "-bind", "-v", binPath})
 			args = append(args, []string{"-arch", "arm", "-lazy_bind", "-v", binPath})
+		}
+
+	} else if platform == "darwin" {
+		command = "otool"
+		if ct == Libs {
+			args = append(args, []string{"-L", binPath})
+		} else if ct == Header {
+			args = append(args, []string{"-hv", binPath})
+		} else if ct == Symbols {
+			args = append(args, []string{"-Iv", binPath})
 		}
 	} else {
 		return "", fmt.Errorf("platform %s not supported", platform)
@@ -397,16 +398,16 @@ func classDump(binPath string, binType BinType) (map[string]interface{}, error) 
 		command string
 		args []string
 	)
-	if platform := runtime.GOOS; platform == "darwin" {
+	if platform := runtime.GOOS; os.Getenv("FORCE_LINUX") == "1" || platform == "linux" {
+		command = getToolsFolder() + "jtool"
+		args = []string{"-arch", "arm", "-d", "objc", "-v", binPath}
+	} else if platform == "darwin" {
 		if binType == Swift {
 			command = getToolsFolder() + "class-dump-swift"
 		} else {
 			command = getToolsFolder() + "class-dump-z"
 		}
 		args = []string{binPath}
-	} else if platform == "linux" {
-		command = getToolsFolder() + "jtool.ELF64"
-		args = []string{"-arch", "arm", "-d", "objc", "-v", binPath}
 	} else {
 		return map[string]interface{}{}, fmt.Errorf("platform %s not supported", platform)
 	}
