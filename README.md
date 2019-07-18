@@ -37,6 +37,7 @@ AUTHOR:
    Vulnscan Team <vulnscan@simplycubed.com>
 
 COMMANDS:
+     code, c    search code vulnerabilities
      lookup, l  itunes app lookup
      plist, p   plists scan
      scan, s    source directory and binary file security scan
@@ -51,6 +52,22 @@ COPYRIGHT:
    (c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0
 
 ```
+
+## VirusTotal scan
+
+- VirusToal is an optional vulnerability scan which requires registering a free account on [VirusTotal.com](https://www.virustotal.com/gui/join-us) and agreeing to their Terms of Service and Privacy Policy. Once your account is created you will receive an API key which is required when running the scan.
+- **Important** using this scan will send VirusTotal.com a copy of your binary file for analysis.
+
+One you receive your API key please create a `.env` file within the same directory as Vulnscan is installed.
+
+```bash
+
+# .env file
+
+VIRUS_TOTAL_API_KEY=<API key from VirusTotal Profile>
+
+```
+
 
 ### Country Codes
 
