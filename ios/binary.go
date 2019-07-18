@@ -51,7 +51,7 @@ func getOtoolOut(binPath string, ct CommandType) (string, error) {
 		} else if ct == Header {
 			args = append(args, []string{"-hv", binPath})
 		} else if ct == Symbols {
-			args = append(args, []string{"-iv", binPath})
+			args = append(args, []string{"-Iv", binPath})
 		}
 	} else if platform == "linux" {
 		command = getToolsFolder() + "jtool.ELF64"
@@ -228,7 +228,7 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 					"issue": "Binary make use of the following Crypto API(s)",
 					"status": "info",
 					"description": "The binary may use the following crypto API(s) " + s,
-					"cvss": 0,
+					"cvss": 0.,
 					"cwe": "",
 				}
 			},
@@ -236,7 +236,7 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 				"issue": "No Crypto APIs found",
 				"status": "info",
 				"description": "The binary does not seem to use crypto APIs ",
-				"cvss": 0,
+				"cvss": 0.,
 				"cwe": "",
 			},
 		},
@@ -248,11 +248,19 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 			"CC_SHA1_Final|CC_SHA1|SHA1_Init|SHA1_Update|SHA1_Final",
 			func(s string) map[string]interface{} {
 				return map[string]interface{}{
-
+					"issue": "Binary make use of the following Weak HASH API(s)",
+					"status": "insecure",
+					"description": "The binary may use the following weak hash API(s) " + s,
+					"cvss": 3.,
+					"cwe": "CWE-327",
 				}
 			},
 			map[string]interface{}{
-
+				"issue": "Binary doesn't seem to use Weak HASH APIs",
+				"status": "secure",
+				"description": "The binary may not use Weak HASH APIs",
+				"cvss": 0.,
+				"cwe": "",
 			},
 		},
 		{
@@ -324,7 +332,7 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 					"issue": "Binary make use of malloc Function",
 					"status": "insecure",
 					"description": "The binary may use malloc function instead of calloc.",
-					"cvss": 2,
+					"cvss": 2.,
 					"cwe": "CWE-789",
 				}
 			},
@@ -376,6 +384,8 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 				}
 			}
 			madeAnalysis = append(madeAnalysis, an.bad(strings.Join(foundSet, ", ")))
+		} else {
+			madeAnalysis = append(madeAnalysis, an.good)
 		}
 	}
 	res["anal"] = madeAnalysis
@@ -414,6 +424,14 @@ func classDump(binPath string, binType BinType) (map[string]interface{}, error) 
 				"cvss": 0.,
 				"cwe": "",
 			}, nil
+		} else {
+			return map[string]interface{}{
+				"issue": "Binary doesn't use WebView Component.",
+				"status": "info",
+				"description":  "The binary may not use WebView Component.",
+				"cvss": 0.,
+				"cwe": "",
+			}, nil
 		}
 	}
 	return map[string]interface{}{}, nil
@@ -429,33 +447,33 @@ func detectBinType(libs []string) BinType {
 }
 
 
-func BinaryAnalysis(binPath string, isSrc bool, appName string) (map[string]interface{}, error) {
+func BinaryAnalysis(ipaPath string, isSrc bool, appName string) (map[string]interface{}, error) {
 	var analysis = map[string]interface{}{}
-	if e := utils.Normalize(binPath, isSrc, func(p string) error {
+	if e := utils.Normalize(ipaPath, isSrc, func(p string) error {
 		if isSrc {
 			return fmt.Errorf("binary analysis not supported for not binary source")
 		}
-		app, err := utils.GetApp(p)
+		appPath, err := utils.GetApp(p)
 		if err != nil {
 			return err
 		}
 		if len(appName) == 0 {
-			appName =  strings.Replace(path.Base(app), path.Ext(app), "", 1)
+			appName =  strings.Replace(path.Base(appPath), path.Ext(appPath), "", 1)
 		}
-		appPath := path.Join(p, appName)
-		if _, err := os.Stat(appPath); os.IsNotExist(err) {
-			return fmt.Errorf("unable to find the binary at %s", appPath)
+		binPath := path.Join(appPath, appName)
+		if _, err := os.Stat(binPath); os.IsNotExist(err) {
+			return fmt.Errorf("unable to find the binary at %s", binPath)
 		}
-		binInfo, err := macho.GetMachoInfo(appPath)
+		binInfo, err := macho.GetMachoInfo(binPath)
 		if err != nil {
 			return err
 		}
-		otoolMap, err := otoolAnalysis(appPath)
+		otoolMap, err := otoolAnalysis(binPath)
 		if err != nil {
 			return err
 		}
 		binType := detectBinType(otoolMap["libs"].([]string))
-		clsDump, err := classDump(appPath, binType)
+		clsDump, err := classDump(binPath, binType)
 		if err != nil {
 			return err
 		}
