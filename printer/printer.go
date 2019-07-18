@@ -16,6 +16,8 @@ const (
 	ListFiles
 	VirusScan
 	Code
+	Binary
+	Error
 )
 
 // Printer is the interface used to decouple scans from printing

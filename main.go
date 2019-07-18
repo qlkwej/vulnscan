@@ -171,6 +171,38 @@ func getApp() *cli.App {
 			},
 		},
 		{
+			Name:    "binary",
+			Aliases: []string{"b"},
+			Usage:   "search binary vulnerabilities",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "binary, b",
+					Value:       defaultPath(),
+					Usage:       "Full path to binary (ipa) file",
+					Destination: &binaryPath,
+				},
+				cli.StringFlag{
+					Name:        "source, s",
+					Value:       defaultPath(),
+					Usage:       "Full path to source code directory",
+					Destination: &sourcePath,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				p, s := checkPathIsSrc(binaryPath, sourcePath)
+				if s {
+					log.Fatal("Cannot make binary analysis on source code")
+				}
+				res, err := ios.BinaryAnalysis(p, s, "")
+				if jsonFlag {
+					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.Binary)
+				} else {
+					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.Binary)
+				}
+				return nil
+			},
+		},
+		{
 			Name:    "scan",
 			Aliases: []string{"s"},
 			Usage:   "source directory and binary file security scan",
@@ -193,9 +225,9 @@ func getApp() *cli.App {
 				if e := utils.Normalize(path, isSrc, func(p string) error {
 					var printer printer.Printer
 					if jsonFlag {
-						printer = logrus.NewPrinter(logrus.Json, logrus.ColoredText, logrus.DefaultFormat)
+						printer = logrus.NewPrinter(logrus.Json, logrus.Text, logrus.DefaultFormat)
 					} else {
-						printer = logrus.NewPrinter(logrus.Log, logrus.ColoredText, logrus.DefaultFormat)
+						printer = logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat)
 					}
 					if e := ios.StaticAnalyzer(p, isSrc, "us", true, printer); e != nil {
 						return e
