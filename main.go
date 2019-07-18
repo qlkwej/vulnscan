@@ -57,11 +57,14 @@ func checkPathIsSrc(binaryPath, sourcePath string) (string, bool) {
 }
 
 func getApp() *cli.App {
-	var appID string
-	var binaryPath string
-	var country string
-	var sourcePath string
-	var jsonFlag bool
+	var (
+		appID string
+		binaryPath string
+		country string
+		sourcePath string
+		jsonFlag bool
+		virusFlag bool
+	)
 
 	app := cli.NewApp()
 	app.Version = "0.0.1"
@@ -130,6 +133,7 @@ func getApp() *cli.App {
 					Usage:       "Full path to source code directory",
 					Destination: &sourcePath,
 				},
+
 			},
 			Action: func(c *cli.Context) error {
 				res, err := ios.PListAnalysis(checkPathIsSrc(binaryPath, sourcePath))
@@ -219,6 +223,11 @@ func getApp() *cli.App {
 					Usage:       "Full path to source code directory",
 					Destination: &sourcePath,
 				},
+				cli.BoolFlag{
+					Name:        "virus, v",
+					Usage:       "Activate the virus scan using Virus Total",
+					Destination: &virusFlag,
+				},
 			},
 			Action: func(c *cli.Context) error {
 				path, isSrc := checkPathIsSrc(binaryPath, sourcePath)
@@ -229,7 +238,7 @@ func getApp() *cli.App {
 					} else {
 						printer = logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat)
 					}
-					if e := ios.StaticAnalyzer(p, isSrc, "us", true, printer); e != nil {
+					if e := ios.StaticAnalyzer(p, isSrc, "us", virusFlag, printer); e != nil {
 						return e
 					}
 					if e := printer.Generate(os.Stdout); e != nil {
