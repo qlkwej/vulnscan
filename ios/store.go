@@ -80,11 +80,8 @@ import (
 //				score            	float32  	`json:"averageUserRating"`
 // 			}]
 func Search(appID string, country string) map[string]interface{} {
-	log.Printf("Fetching Details from App Store: %s", appID)
 	lookupURL := "https://itunes.apple.com/lookup"
 	reqURL := fmt.Sprintf("%s?bundleId=%s&country=%s&entity=software", lookupURL, appID, country)
-
-	fmt.Println(reqURL)
 
 	searchResult := map[string]interface{}{}
 	output := map[string]interface{}{}

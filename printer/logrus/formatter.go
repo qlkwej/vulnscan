@@ -16,6 +16,8 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 		return output
 	}
 	switch m {
+	case printer.Message:
+		output[res["Message"].(string)] = map[string]interface{}{}
 	case printer.Store:
 		if e != nil {
 			return errorMessage("store", e)

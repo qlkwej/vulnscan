@@ -1,7 +1,8 @@
 {
-  "scans":  ["binary", "code", "plist", "static"],
-  "json": true,
-  "source": "./test_files/apps/source",
-  "binary": "./test_files/apps/binary.ipa",
-  "virus": "virus_scan_password"
+"scans":  ["binary", "code", "plist"],
+"json": true,
+"source": "/Users/josemanuelgonzalezdelcampo/Proyectos/UpWork/vulnscan/test_files/apps/source.zip",
+"binary": "/Users/josemanuelgonzalezdelcampo/Proyectos/UpWork/vulnscan/test_files/apps/binary.ipa",
+"virus": "virus_scan_password",
+"country": "us"
 }

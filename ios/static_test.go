@@ -1,8 +1,10 @@
 package ios
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/simplycubed/vulnscan/printer/logrus"
 	"github.com/simplycubed/vulnscan/utils"
+	"os"
 	"strings"
 	"testing"
 )
@@ -29,10 +31,15 @@ func TestListFiles(t *testing.T) {
 
 
 func TestStaticAnalyzer(t *testing.T) {
+	mainFolder, _ := utils.FindMainFolder()
+	err := godotenv.Load(mainFolder + string(os.PathSeparator) + ".env")
+	if err != nil {
+		t.Error("Error loading .env file")
+	}
+	utils.Configuration.VirusScanKey = os.Getenv("VIRUS_TOTAL_API_KEY")
 	if res, e := utils.WithPipeStdout(func() error {
 		test, _ := utils.FindTest("apps", "binary.ipa")
-		return StaticAnalyzer(test, false, "us", true,
-			logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat))
+		return StaticAnalyzer(test, false, logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat))
 	}); e != nil {
 		t.Errorf("ERROR %s", e)
 	} else {

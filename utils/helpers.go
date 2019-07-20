@@ -1,6 +1,10 @@
 package utils
 
-import "runtime"
+import (
+	"log"
+	"os"
+	"runtime"
+)
 
 func EOL() string {
 	if runtime.GOOS == "windows" {
@@ -9,34 +13,42 @@ func EOL() string {
 		return "\n"
 	}
 }
-
-
-func I(n int) []struct{} {
-return make([]struct{}, n)
+func DefaultPath() string {
+	dir, _ := os.Getwd()
+	return dir
 }
 
-func R(b, e int) chan int {
-	ch := make(chan int)
-
-	go func () {
-		for i := b; i < e; i++ {
-			ch <- i
-		}
-		close(ch)
-	}()
-
-	return ch
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
 }
 
-func RS(b, e, s int) chan int {
-	ch := make(chan int)
+func CheckPathIsSrc(binaryPath, sourcePath string) (string, bool) {
+	ok, err := PathExists(sourcePath)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	go func () {
-		for i := b; i < e; i+=s {
-			ch <- i
-		}
-		close(ch)
-	}()
+	if ok {
+		log.Printf("Source Path: %s", sourcePath)
+		return sourcePath, true
+	}
 
-	return ch
+	ok, err = PathExists(binaryPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if ok {
+		log.Printf("Binary Path: %s", binaryPath)
+		return binaryPath, false
+	}
+	log.Fatal("Path doesn't PathExists")
+	return "", false
 }

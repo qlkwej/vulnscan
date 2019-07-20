@@ -53,46 +53,56 @@ func ListFiles(src string) (map[string]interface{}, error) {
 	return fileList, nil
 }
 
-func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print printer.Printer) error {
+func StaticAnalyzer(src string, isSrc bool, print printer.Printer) error {
 	type analysisResult struct {
 		result map[string]interface{}
 		format printer.FormatMethod
 	}
 	type analysisError map[string]interface{}
 
-	nStreams := 5
-	if !isSrc && virus {
+	nStreams := len(utils.Configuration.Scans)
+	if !isSrc && utils.Configuration.VirusScanKey != "" {
 		nStreams += 1
 	}
-	fmt.Printf("N streams %d\n", nStreams)
 	if err := utils.Normalize(src, isSrc, func(p string) error {
 		// Here src is the raw file, p is the normalized, unzipped directory
 		resultStream := make(chan analysisResult, nStreams)
 		errorStream := make(chan analysisError)
 		// PList and app store search
-		go func() {
-			r, e := PListAnalysis(p, isSrc)
-			if e != nil {
-				errorStream <- analysisError{"error": e, "analysis": "plist"}
-				errorStream <- analysisError{"error": fmt.Errorf("cannot make store analysis without plist analysis"), "analysis": "store"}
-				return
-			}
-			resultStream <- analysisResult{r, printer.PList}
-			resultStream <- analysisResult{Search(r["id"].(string), country), printer.Store }
-		}()
-		// File search
-		go func() {
-			r, e := ListFiles(p)
-			if e != nil {
-				errorStream <- analysisError{"error": e, "analysis": "files"}
-				return
-			}
-			resultStream <- analysisResult{r, printer.ListFiles}
-		}()
-		// Virus Analysis
-		if !isSrc && virus {
+		if utils.CheckScan("plist") {
 			go func() {
-				client, e := malware.NewVirusTotalClient(os.Getenv("VIRUS_TOTAL_API_KEY"))
+				doLookup := utils.CheckScan("lookup")
+				r, e := PListAnalysis(p, isSrc)
+				if e != nil {
+					errorStream <- analysisError{"error": e, "analysis": "plist"}
+					if doLookup {
+						errorStream <- analysisError{
+							"error": fmt.Errorf("cannot make store analysis without plist analysis"), "analysis": "store"}
+					}
+					return
+				}
+				resultStream <- analysisResult{r, printer.PList}
+				if doLookup {
+					resultStream <- analysisResult{Search(r["id"].(string), utils.Configuration.DefaultCountry), printer.Store}
+				}
+			}()
+		}
+
+		// File search
+		if utils.CheckScan("files") {
+			go func() {
+				r, e := ListFiles(p)
+				if e != nil {
+					errorStream <- analysisError{"error": e, "analysis": "files"}
+					return
+				}
+				resultStream <- analysisResult{r, printer.ListFiles}
+			}()
+		}
+		// Virus Analysis
+		if !isSrc && utils.Configuration.VirusScanKey != "" {
+			go func() {
+				client, e := malware.NewVirusTotalClient(utils.Configuration.VirusScanKey)
 				if e != nil {
 					errorStream <- analysisError{"error": e, "analysis": "virus"}
 					return
@@ -111,27 +121,31 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 			}()
 		}
 		// Code analysis
-		go func() {
-			r, e := CodeAnalysis(p)
-			if e != nil {
-				errorStream <- analysisError{"error": e, "analysis": "code"}
-				return
-			}
-			resultStream <- analysisResult{r, printer.Code}
-		}()
+		if utils.CheckScan("code") {
+			go func() {
+				r, e := CodeAnalysis(p)
+				if e != nil {
+					errorStream <- analysisError{"error": e, "analysis": "code"}
+					return
+				}
+				resultStream <- analysisResult{r, printer.Code}
+			}()
+		}
 		// Binary analysis
-		go func() {
-			if isSrc {
-				errorStream <- analysisError{"error": fmt.Errorf("skipping binary analysis on source data"), "analysis": "binary"}
-				return
-			}
-			r, e := BinaryAnalysis(p, isSrc, "")
-			if e != nil {
-				errorStream <- analysisError{ "error": e, "analysis": "binary" }
-				return
-			}
-			resultStream <- analysisResult{r, printer.Binary }
-		}()
+		if utils.CheckScan("binary") {
+			go func() {
+				if isSrc {
+					errorStream <- analysisError{"error": fmt.Errorf("skipping binary analysis on source data"), "analysis": "binary"}
+					return
+				}
+				r, e := BinaryAnalysis(p, isSrc, "")
+				if e != nil {
+					errorStream <- analysisError{ "error": e, "analysis": "binary" }
+					return
+				}
+				resultStream <- analysisResult{r, printer.Binary }
+			}()
+		}
 		for i := 0; i < nStreams; i++ {
 			select {
 			case e := <-errorStream:

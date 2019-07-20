@@ -115,8 +115,8 @@ func TestOtoolAnalysis(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		if libsLen:=len(analysis["libs"].([]string)); libsLen != 26 {
-			t.Errorf("wrong number of libraries found, expected %d, found %d", 26, libsLen)
+		if libsLen:=len(analysis["libs"].([]string)); libsLen != 25 {
+			t.Errorf("wrong number of libraries found, expected %d, found %d", 25, libsLen)
 		}
 		if analLen:=len(analysis["anal"].([]map[string]interface{})); analLen != 12 {
 			t.Errorf("wrong number of analysis found, expected %d, found %d", 12, analLen)
@@ -208,8 +208,8 @@ func TestBinaryAnalysis(t *testing.T) {
 		if binResLen := len(analysis["bin_res"].([]map[string]interface{})); binResLen != 13 {
 			t.Errorf("Wrong bin_res number of results: %d, expected %d", binResLen, 13)
 		}
-		if libsLen := len(analysis["libs"].([]string)); libsLen != 26 {
-			t.Errorf("Wrong detected number of libs: %d, expected %d", libsLen, 26)
+		if libsLen := len(analysis["libs"].([]string)); libsLen != 25 {
+			t.Errorf("Wrong detected number of libs: %d, expected %d", libsLen, 25)
 
 		}
 		if analysis["bin_type"].(string) != "Swift" {

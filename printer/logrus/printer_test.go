@@ -110,6 +110,12 @@ func TestPrintItunesLog(t *testing.T) {
 	res := ios.Search("com.easilydo.mail", "us")
 	logTextPrinter.Log(res, nil, printer.Store)
 	results := logTextPrinter.log.Out.(*TextWriter).inner
+	// Fix test failing sometimes
+	if !strings.Contains(results[0], "Total") {
+		mainString := results[1]
+		results[1] = results[0]
+		results[0] = mainString
+	}
 	for _, test := range [][3]interface{}{
 		{0, "count", "=1"},
 		{0, "msg", "=\"Total results\""},
@@ -169,6 +175,18 @@ func TestPrintPListLog(t *testing.T) {
 		res, err := ios.PListAnalysis(p, true)
 		logTextPrinter.Log(res, err, printer.PList)
 		results := logTextPrinter.log.Out.(*TextWriter).inner
+		// Fix tests failing sometimes
+		r0, r1, r2 := "", "", ""
+		for _, r := range results {
+			if strings.Contains(r, "Insecure connections") {
+				r0 = r
+			} else if strings.Contains(r, "General information") {
+				r1 = r
+			} else if strings.Contains(r, "Bundle information") {
+				r2 = r
+			}
+		}
+		results[0], results[1], results[2] = r0, r1, r2
 		for _, test := range [][3]interface{}{
 			{0, "allow_arbitrary_loads", "=false"},
 			{0, "msg", "=\"Insecure connections"},
@@ -201,8 +219,8 @@ func TestPrintFilesLog(t *testing.T) {
 			for _, r := range results {
 				if strings.Contains(r, "Total files") {
 					if countIndex := strings.Index(r, "count") +
-						len("count") + 1; countIndex < 0 || r[countIndex:countIndex+4] != "1922" {
-						t.Errorf("Unexpected number of files, expected 1922, found %s", r[countIndex:countIndex+4])
+						len("count") + 1; countIndex < 0 || r[countIndex:countIndex+4] != "1896" {
+						t.Errorf("Unexpected number of files, expected 1896, found %s", r[countIndex:countIndex+4])
 					}
 				} else if strings.Contains(r, "Databases") {
 					if strings.Contains(r, "count") {

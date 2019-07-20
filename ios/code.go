@@ -23,7 +23,6 @@ func urlEmailExtract(data string) (urls [][]byte, emails [][]byte) {
 	return urlPat.FindAll([]byte(data), -1), emailPat.FindAll([]byte(data), -1)
 }
 
-
 func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 	var codeFindings = map[string]map[string]interface{}{}
 	var apiFindings = map[string]map[string]interface{}{}
