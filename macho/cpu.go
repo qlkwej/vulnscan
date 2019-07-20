@@ -5,27 +5,27 @@ import "debug/macho"
 const arch64 macho.Cpu = 0x1000000
 
 type (
-	cpuTypesMap map[macho.Cpu]string
+	cpuTypesMap    map[macho.Cpu]string
 	cpuSubTypesMap map[uint32]string
 )
 
 var (
-	cpuTypes = cpuTypesMap {
-		1:                    "VAX",
-		6:                    "MC680x0",
-		7:                    "i386",
-		arch64 | 7:           "x86_64",
-		8:                    "MIPS",
-		10:                   "MC98000",
-		11:                   "HPPA",
-		12:                   "ARM",
-		arch64 | 12: 		  "ARM64",
-		13:                   "MC88000",
-		14:                   "SPARC",
-		15:                   "i860",
-		16:                   "Alpha",
-		18:                   "PowerPC",
-		arch64 | 18: 		  "PowerPC64",
+	cpuTypes = cpuTypesMap{
+		1:           "VAX",
+		6:           "MC680x0",
+		7:           "i386",
+		arch64 | 7:  "x86_64",
+		8:           "MIPS",
+		10:          "MC98000",
+		11:          "HPPA",
+		12:          "ARM",
+		arch64 | 12: "ARM64",
+		13:          "MC88000",
+		14:          "SPARC",
+		15:          "i860",
+		16:          "Alpha",
+		18:          "PowerPC",
+		arch64 | 18: "PowerPC64",
 	}
 
 	intelSubtype = cpuSubTypesMap{

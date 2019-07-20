@@ -11,14 +11,13 @@ import (
 	"strings"
 )
 
-
 //
 func ListFiles(src string) (map[string]interface{}, error) {
 	var fileList = map[string]interface{}{
-		"files": []string{},
-		"certs": []string{},
+		"files":    []string{},
+		"certs":    []string{},
 		"database": []string{},
-		"plist": []string{},
+		"plist":    []string{},
 	}
 	walkErr := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
 		filePath := path
@@ -78,7 +77,7 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 				return
 			}
 			resultStream <- analysisResult{r, printer.PList}
-			resultStream <- analysisResult{Search(r["id"].(string), country), printer.Store }
+			resultStream <- analysisResult{Search(r["id"].(string), country), printer.Store}
 		}()
 		// File search
 		go func() {
@@ -127,16 +126,16 @@ func StaticAnalyzer(src string, isSrc bool, country string, virus bool, print pr
 			}
 			r, e := BinaryAnalysis(p, isSrc, "")
 			if e != nil {
-				errorStream <- analysisError{ "error": e, "analysis": "binary" }
+				errorStream <- analysisError{"error": e, "analysis": "binary"}
 				return
 			}
-			resultStream <- analysisResult{r, printer.Binary }
+			resultStream <- analysisResult{r, printer.Binary}
 		}()
 		for i := 0; i < nStreams; i++ {
 			select {
 			case e := <-errorStream:
 				print.Log(e, nil, printer.Error)
-			case res := <- resultStream:
+			case res := <-resultStream:
 				print.Log(res.result, nil, res.format)
 			}
 		}

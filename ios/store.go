@@ -7,7 +7,6 @@ import (
 	"net/http"
 )
 
-
 // Search gets iOS app details from App Store. The returned json from the service follows the schema:
 // 		{
 // 			"resultCount":1,
@@ -120,13 +119,13 @@ func Search(appID string, country string) map[string]interface{} {
 			"artistViewUrl":     "developer_url",
 			"sellerUrl":         "developer_website",
 			"supportedDevices":  "supported_devices",
-			"trackName": 		 "title",
-			"bundleId":			 "app_id",
+			"trackName":         "title",
+			"bundleId":          "app_id",
 			"genres":            "categories",
 			"price":             "price",
 			"trackViewUrl":      "url",
 			"averageUserRating": "score",
-		}{
+		} {
 			result[v] = r.(map[string]interface{})[k]
 		}
 		output["results"] = append(output["results"].([]map[string]interface{}), result)

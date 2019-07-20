@@ -129,7 +129,9 @@ func TestPrintItunesLog(t *testing.T) {
 func TestPrintPListJson(t *testing.T) {
 	zipFile, e := utils.FindTest("apps", "source.zip")
 	path, e := utils.FindTest("apps", "source")
-	if e != nil { t.Error(e) }
+	if e != nil {
+		t.Error(e)
+	}
 	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
 		res, err := ios.PListAnalysis(p, true)
@@ -163,7 +165,9 @@ func TestPrintPListJson(t *testing.T) {
 func TestPrintPListLog(t *testing.T) {
 	zipFile, e := utils.FindTest("apps", "source.zip")
 	path, e := utils.FindTest("apps", "source")
-	if e != nil { t.Error(e) }
+	if e != nil {
+		t.Error(e)
+	}
 	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		res, err := ios.PListAnalysis(p, true)
@@ -221,7 +225,6 @@ func TestPrintFilesLog(t *testing.T) {
 	}
 }
 
-
 func TestPrintVirus(t *testing.T) {
 	ipaFile, _ := utils.FindTest("apps", "binary.ipa")
 	mainfFolder, _ := utils.FindMainFolder()
@@ -259,7 +262,6 @@ func TestPrintVirus(t *testing.T) {
 	}
 }
 
-
 func TestPrintCodeAnalysis(t *testing.T) {
 	zip, _ := utils.FindTest("apps", "vulnerable_app.zip")
 	src, _ := utils.FindTest("apps", "vulnerable_app")
@@ -275,11 +277,11 @@ func TestPrintCodeAnalysis(t *testing.T) {
 				jsonResults[i] = map[string]interface{}{}
 				_ = json.Unmarshal([]byte(s), &jsonResults[i])
 			}
-			printedAnalysis := map[string]bool {
-				"Found api uses": false,
-				"Found url inserted in the code": false,
+			printedAnalysis := map[string]bool{
+				"Found api uses":                    false,
+				"Found url inserted in the code":    false,
 				"Found emails inserted in the code": false,
-				"Found code issues": false,
+				"Found code issues":                 false,
 			}
 			for _, j := range jsonResults {
 				if _, ok := j["msg"]; ok {
@@ -297,7 +299,6 @@ func TestPrintCodeAnalysis(t *testing.T) {
 		t.Errorf("%v", err)
 	}
 }
-
 
 func TestPrintBinaryAnalysis(t *testing.T) {
 	ipaPath, _ := utils.FindTest("apps", "binary.ipa")
@@ -317,14 +318,14 @@ func TestPrintBinaryAnalysis(t *testing.T) {
 
 	}
 
-
 }
-
 
 func TestPrinterToString(t *testing.T) {
 	zipFile, e := utils.FindTest("apps", "source.zip")
 	path, e := utils.FindTest("apps", "source")
-	if e != nil { t.Error(e) }
+	if e != nil {
+		t.Error(e)
+	}
 	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		logTextPrinter := NewPrinter(Log, Text, DefaultFormat)
 		var wg sync.WaitGroup

@@ -67,4 +67,3 @@ func TestCommands(t *testing.T) {
 	utils.Expect(t, counts.SubCommand, 0)
 	utils.Expect(t, counts.Total, 1)
 }
-
