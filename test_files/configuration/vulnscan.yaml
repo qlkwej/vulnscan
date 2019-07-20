@@ -1,0 +1,5 @@
+scans: [binary, code, plist, static]
+json: true
+source: ./test_files/apps/source
+binary: ./test_files/apps/binary.ipa
+virus: virus_scan_password
