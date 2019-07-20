@@ -6,11 +6,11 @@ import (
 )
 
 type CodeAPI struct {
-	Desc string
+	Desc  string
 	Match Match
 }
 
-var CodeAPIs = []CodeAPI {
+var CodeAPIs = []CodeAPI{
 	{
 		"Network Calls",
 		func(s string) bool {
@@ -22,7 +22,7 @@ var CodeAPIs = []CodeAPI {
 		"Local File I/O Operations.",
 		func(s string) bool {
 			r, _ := regexp.MatchString(
-				`Keychain|kSecAttrAccessibleWhenUnlocked|kSecAttrAccessibleAfterFirstUnlock|SecItemAdd|` + `
+				`Keychain|kSecAttrAccessibleWhenUnlocked|kSecAttrAccessibleAfterFirstUnlock|SecItemAdd|`+`
 				SecItemUpdate|NSDataWritingFileProtectionComplete`, s)
 			return r
 		},

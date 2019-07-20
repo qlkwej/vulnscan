@@ -10,15 +10,14 @@ func EOL() string {
 	}
 }
 
-
 func I(n int) []struct{} {
-return make([]struct{}, n)
+	return make([]struct{}, n)
 }
 
 func R(b, e int) chan int {
 	ch := make(chan int)
 
-	go func () {
+	go func() {
 		for i := b; i < e; i++ {
 			ch <- i
 		}
@@ -31,8 +30,8 @@ func R(b, e int) chan int {
 func RS(b, e, s int) chan int {
 	ch := make(chan int)
 
-	go func () {
-		for i := b; i < e; i+=s {
+	go func() {
+		for i := b; i < e; i += s {
 			ch <- i
 		}
 		close(ch)

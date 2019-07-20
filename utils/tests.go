@@ -34,7 +34,7 @@ func FindMainFolder() (string, error) {
 	absPath, _ := filepath.Abs(dir)
 	pathList := strings.Split(absPath, string(os.PathSeparator))
 	// We search for the last "vulnscan" in the current path, that should be the project main folder.
-	if pos := func (s []string) int {
+	if pos := func(s []string) int {
 		last := -1
 		for p, v := range s {
 			if v == "vulnscan" {
@@ -42,13 +42,13 @@ func FindMainFolder() (string, error) {
 			}
 		}
 		return last
-	}(pathList); pos != len(pathList) - 1 {
+	}(pathList); pos != len(pathList)-1 {
 		if pos == -1 {
 			// If we don't find the
 			return "", fmt.Errorf("vulnscan main directory not found")
 		}
 		// If we are not in the vulnscan folder, we remove all the children from the pathList
-		pathList = pathList[:pos + 1]
+		pathList = pathList[:pos+1]
 	}
 	return strings.Join(pathList, string(os.PathSeparator)), nil
 }
@@ -86,7 +86,6 @@ func FindTest(testFilePath ...string) (string, error) {
 	}
 	return sb.String(), nil
 }
-
 
 func WithPipeStdout(printerFunc func() error) (string, error) {
 	// Let's hack the stdout to get the help message captured

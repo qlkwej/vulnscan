@@ -58,12 +58,12 @@ func checkPathIsSrc(binaryPath, sourcePath string) (string, bool) {
 
 func getApp() *cli.App {
 	var (
-		appID string
+		appID      string
 		binaryPath string
-		country string
+		country    string
 		sourcePath string
-		jsonFlag bool
-		virusFlag bool
+		jsonFlag   bool
+		virusFlag  bool
 	)
 
 	app := cli.NewApp()
@@ -133,7 +133,6 @@ func getApp() *cli.App {
 					Usage:       "Full path to source code directory",
 					Destination: &sourcePath,
 				},
-
 			},
 			Action: func(c *cli.Context) error {
 				res, err := ios.PListAnalysis(checkPathIsSrc(binaryPath, sourcePath))

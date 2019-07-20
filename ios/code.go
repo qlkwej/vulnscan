@@ -23,7 +23,6 @@ func urlEmailExtract(data string) (urls [][]byte, emails [][]byte) {
 	return urlPat.FindAll([]byte(data), -1), emailPat.FindAll([]byte(data), -1)
 }
 
-
 func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 	var codeFindings = map[string]map[string]interface{}{}
 	var apiFindings = map[string]map[string]interface{}{}
@@ -59,10 +58,10 @@ func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 						codeFindings[rule.Desc]["path"] = append(r["path"].([]string), relativeSrcPath)
 					} else {
 						codeFindings[rule.Desc] = map[string]interface{}{
-							"path": []string{relativeSrcPath},
+							"path":  []string{relativeSrcPath},
 							"level": rule.Level,
-							"cvss": rule.Cvss,
-							"cws": rule.Cwe,
+							"cvss":  rule.Cvss,
+							"cws":   rule.Cwe,
 						}
 					}
 				}
@@ -103,10 +102,10 @@ func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 		return result, e
 	} else {
 		return map[string]interface{}{
-			"code": codeFindings,
-			"api": apiFindings,
-			"url": urlFindings,
-			"email": emailFindings,
+			"code":        codeFindings,
+			"api":         apiFindings,
+			"url":         urlFindings,
+			"email":       emailFindings,
 			"bad_domains": badDomains,
 		}, nil
 	}
