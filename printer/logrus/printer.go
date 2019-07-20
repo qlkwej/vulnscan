@@ -71,7 +71,7 @@ func (p *Printer) Log(res printer.AnalysisResult, e error, m printer.FormatMetho
 }
 
 func (p *Printer) Generate(w io.Writer) error {
-	if false {
+	if p.output == StdOut {
 		return fmt.Errorf("printer does not log to text")
 	}
 	var ordErr error
