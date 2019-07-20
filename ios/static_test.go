@@ -46,6 +46,8 @@ func TestStaticAnalyzer(t *testing.T) {
 			t.Errorf("Files analysis not found")
 		} else if !strings.Contains(res, "analysis=code") {
 			t.Errorf("Code analysis not found")
+		} else if !strings.Contains(res, "analysis=binary") {
+			t.Errorf("Code analysis not found")
 		}
 	}
 }

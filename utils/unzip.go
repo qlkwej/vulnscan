@@ -139,3 +139,17 @@ func Normalize(path string, isSrc bool, fn func(p string)error) error {
 	}
 	return fmt.Errorf("unable to normalize path %s", path)
 }
+
+func GetApp(path string) (app string, err error) {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return app, err
+	}
+
+	for _, f := range files {
+		if filepath.Ext(f.Name()) == ".app" {
+			return path + string(os.PathSeparator) + f.Name(), nil
+		}
+	}
+	return app, fmt.Errorf(".app file not found in parent folder")
+}

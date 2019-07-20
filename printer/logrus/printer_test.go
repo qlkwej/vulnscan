@@ -299,6 +299,27 @@ func TestPrintCodeAnalysis(t *testing.T) {
 }
 
 
+func TestPrintBinaryAnalysis(t *testing.T) {
+	ipaPath, _ := utils.FindTest("apps", "binary.ipa")
+	if analysis, err := ios.BinaryAnalysis(ipaPath, false, "iVim"); err != nil {
+		t.Errorf("Error generating binary analysis: %s", err)
+	} else {
+		jsonTextPrinter := NewPrinter(Json, Text, DefaultFormat)
+		jsonTextPrinter.Log(analysis, err, printer.Binary)
+		var jsonResults []map[string]interface{}
+		for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
+			jsonResults = append(jsonResults, map[string]interface{}{})
+			_ = json.Unmarshal([]byte(s), &jsonResults[i])
+		}
+		if len(jsonResults) != 16 {
+			t.Errorf("Wrong number of logs, expected 16, found %d: %v", len(jsonResults), jsonResults)
+		}
+
+	}
+
+
+}
+
 
 func TestPrinterToString(t *testing.T) {
 	zipFile, e := utils.FindTest("apps", "source.zip")

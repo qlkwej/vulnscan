@@ -1,0 +1,7 @@
+version: '2'
+
+tasks:
+  build:
+    cmds:
+      - go build -v -o ./build/vulnscan
+      - cp -r ./tools ./build/tools

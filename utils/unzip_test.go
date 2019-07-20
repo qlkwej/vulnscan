@@ -65,3 +65,14 @@ func TestNormalize(t *testing.T) {
 		}
 	}
 }
+
+func TestGetApp(t *testing.T) {
+	path, _ := FindTest("unzip")
+	app, err := GetApp(path)
+	if err != nil {
+		t.Errorf("%s", err)
+	} else if app != path + string(os.PathSeparator) + "iVim.app" {
+		t.Errorf("unable to find .app file, expected: %s, found: %s", path + string(os.PathSeparator) +
+			"iVim.app", app)
+	}
+}

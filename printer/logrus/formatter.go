@@ -122,6 +122,29 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 		if len(output) == 0{
 			output["Nothing found"] = map[string]interface{}{"analysis": "code"}
 		}
+	case printer.Binary:
+		if e != nil {
+			return errorMessage("binary", e)
+		}
+		output["App detected programming language"] = map[string]interface{}{
+			"analysis": "binary", "language": res["bin_type"]}
+		output["App detected libraries"] = map[string]interface{}{
+			"analysis": "binary", "libraries": strings.Join(res["libs"].([]string), ", ")}
+		macho :=  res["macho"].(map[string]string)
+		architecture := macho["cpu_type"]
+		if subArch := macho["sub_cpu_type"]; subArch != "" {
+			architecture += fmt.Sprintf(" | %s", subArch)
+		}
+		output["App architecture information"] = map[string]interface{}{
+			"analysis": "binary", "bits": macho["bits"], "endianness": macho["endianness"], "cpu": architecture }
+		for _, r := range res["bin_res"].([]map[string]interface{}) {
+			output[r["issue"].(string)] = map[string]interface{}{
+				"analysis": "binary", "status": r["info"], "description": r["description"]}
+		}
+	case printer.Error:
+		output[fmt.Sprintf("Error: %s", res["error"])] = map[string]interface{}{"analysis": res["analysis"]}
 	}
+
+
 	return output
 }
