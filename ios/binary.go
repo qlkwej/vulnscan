@@ -70,7 +70,7 @@ func getOtoolOut(binPath string, ct CommandType) (string, error) {
 	var sb strings.Builder
 	for _, arg := range args {
 		if out, e := exec.Command(command, arg...).CombinedOutput(); e != nil {
-			return "", e
+			return string(out), e
 		} else {
 			sb.WriteString(string(out))
 			sb.WriteString("\n")

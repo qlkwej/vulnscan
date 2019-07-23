@@ -92,6 +92,12 @@ func TestPrintItunesJson(t *testing.T) {
 	for i, s := range jsonTextPrinter.log.Out.(*TextWriter).inner {
 		_ = json.Unmarshal([]byte(s), &jsonResults[i])
 	}
+	// Fix test failing sometimes
+	if jsonResults[0]["msg"] != "Total results" {
+		mainResult := jsonResults[1]
+		jsonResults[1] = jsonResults[0]
+		jsonResults[0] = mainResult
+	}
 	for i, test := range [][3]interface{}{
 		{0, "count", float64(1)},
 		{0, "msg", "Total results"},
@@ -219,8 +225,8 @@ func TestPrintFilesLog(t *testing.T) {
 			for _, r := range results {
 				if strings.Contains(r, "Total files") {
 					if countIndex := strings.Index(r, "count") +
-						len("count") + 1; countIndex < 0 || r[countIndex:countIndex+4] != "1896" {
-						t.Errorf("Unexpected number of files, expected 1896, found %s", r[countIndex:countIndex+4])
+						len("count") + 1; countIndex < 0 || r[countIndex:countIndex+4] != "1922" {
+						t.Errorf("Unexpected number of files, expected 1922, found %s", r[countIndex:countIndex+4])
 					}
 				} else if strings.Contains(r, "Databases") {
 					if strings.Contains(r, "count") {

@@ -17,12 +17,15 @@ func TestGetOtoolOut(t *testing.T) {
 	if e := utils.Normalize(path, false, func(p string) error {
 		appPath, err := utils.GetApp(p)
 		if err != nil {
-			return err
+			t.Error("Error obtaining app path: ", err)
 		}
 		binPath := filepath.Join(appPath, "iVim")
+		if _, err := os.Stat(binPath); os.IsNotExist(err) {
+			t.Errorf("File %s does not exists", binPath)
+		}
 		otoolOut, err := getOtoolOut(binPath, Libs)
 		if err != nil {
-			return err
+			t.Error("Error getting otool tool out for libs command: ", err)
 		}
 		if platform := runtime.GOOS; platform == "darwin" {
 			if !strings.Contains(otoolOut,
@@ -37,7 +40,7 @@ func TestGetOtoolOut(t *testing.T) {
 		}
 		otoolOut, err = getOtoolOut(binPath, Header)
 		if err != nil {
-			return err
+			t.Error("Error getting otool tool out for header command: ", err)
 		}
 		if !strings.Contains(otoolOut,
 			"PIE")	{
@@ -45,7 +48,7 @@ func TestGetOtoolOut(t *testing.T) {
 		}
 		otoolOut, err = getOtoolOut(binPath, Symbols)
 		if err != nil {
-			return err
+			t.Error("Error getting otool tool out for symbols command: ", err)
 		}
 		if !strings.Contains(otoolOut, "address") || !strings.Contains(otoolOut, "index") ||
 			!strings.Contains(otoolOut, "name") {

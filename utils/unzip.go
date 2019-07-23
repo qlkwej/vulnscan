@@ -62,13 +62,13 @@ func WithUnzip(zipFile, path string, fn func(p string) error) error {
 	defer os.RemoveAll(path)
 	err := unzip(zipFile, path)
 	if err != nil {
-		return err
+		return fmt.Errorf("unzip error: %s", err)
 	}
 	// Here we have two situations: either we have a subfolder  with the app file or we have the app file inside a
 	// subfolder
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("error reading directory %s: %s", path, err)
 	}
 	if len(files) == 0 {
 		return fmt.Errorf("extraction failed: the folder is empty")
