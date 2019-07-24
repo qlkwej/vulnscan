@@ -10,8 +10,6 @@ import (
 	"testing"
 )
 
-
-
 func TestGetOtoolOut(t *testing.T) {
 	path, _ := utils.FindTest("apps", "binary.ipa")
 	if e := utils.Normalize(path, false, func(p string) error {
@@ -29,12 +27,12 @@ func TestGetOtoolOut(t *testing.T) {
 		}
 		if platform := runtime.GOOS; platform == "darwin" {
 			if !strings.Contains(otoolOut,
-				"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility version 300.0.0, current version 1560.10.0)")	{
+				"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility version 300.0.0, current version 1560.10.0)") {
 				t.Errorf("Wrong otool output for libs command: %s", otoolOut)
 			}
 		} else if platform == "linux" {
 			if !strings.Contains(otoolOut,
-				"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility ver: 300.0.0, current ver: 1560.10.0)")	{
+				"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility ver: 300.0.0, current ver: 1560.10.0)") {
 				t.Errorf("Wrong otool output for libs command: %s", otoolOut)
 			}
 		}
@@ -43,7 +41,7 @@ func TestGetOtoolOut(t *testing.T) {
 			t.Error("Error getting otool tool out for header command: ", err)
 		}
 		if !strings.Contains(otoolOut,
-			"PIE")	{
+			"PIE") {
 			t.Errorf("Wrong otool output for header command: %s", otoolOut)
 		}
 		otoolOut, err = getOtoolOut(binPath, Symbols)
@@ -81,7 +79,7 @@ func TestGetOtoolOutForceLinux(t *testing.T) {
 			return err
 		}
 		if !strings.Contains(otoolOut,
-			"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility ver: 300.0.0, current ver: 1560.10.0)")	{
+			"/System/Library/Frameworks/Foundation.framework/Foundation (compatibility ver: 300.0.0, current ver: 1560.10.0)") {
 			t.Errorf("Wrong otool output for libs command: %s", otoolOut)
 		}
 		otoolOut, err = getOtoolOut(binPath, Header)
@@ -89,7 +87,7 @@ func TestGetOtoolOutForceLinux(t *testing.T) {
 			return err
 		}
 		if !strings.Contains(otoolOut,
-			"PIE")	{
+			"PIE") {
 			t.Errorf("Wrong otool output for header command: %s", otoolOut)
 		}
 		otoolOut, err = getOtoolOut(binPath, Symbols)
@@ -121,7 +119,7 @@ func TestOtoolAnalysis(t *testing.T) {
 		if libsLen:=len(analysis["libs"].([]string)); libsLen != 25 {
 			t.Errorf("wrong number of libraries found, expected %d, found %d", 25, libsLen)
 		}
-		if analLen:=len(analysis["anal"].([]map[string]interface{})); analLen != 12 {
+		if analLen := len(analysis["anal"].([]map[string]interface{})); analLen != 12 {
 			t.Errorf("wrong number of analysis found, expected %d, found %d", 12, analLen)
 		}
 		return nil

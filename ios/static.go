@@ -16,10 +16,10 @@ import (
 // source.
 func ListFiles(src string) (map[string]interface{}, error) {
 	var fileList = map[string]interface{}{
-		"files": []string{},
-		"certs": []string{},
+		"files":    []string{},
+		"certs":    []string{},
 		"database": []string{},
-		"plist": []string{},
+		"plist":    []string{},
 	}
 	walkErr := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
 		filePath := path
@@ -154,7 +154,7 @@ func StaticAnalyzer(src string, isSrc bool, print printer.Printer) error {
 			select {
 			case e := <-errorStream:
 				print.Log(e, nil, printer.Error)
-			case res := <- resultStream:
+			case res := <-resultStream:
 				print.Log(res.result, nil, res.format)
 			}
 		}

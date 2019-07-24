@@ -26,18 +26,17 @@ func TestSearch(t *testing.T) {
 	searchResultValue := searchResult["results"].([]map[string]interface{})[0]
 	testResultValue := testStoreLookup["results"].([]interface{})[0].(map[string]interface{})
 	for k, v := range map[string]string{
-		"developer_id":  		"artistId",
-		"developer_name": 		"artistName",
-		"developer_url": 		"artistViewUrl",
-		"developer_website": 	"sellerUrl",
-		"title": 				"trackName",
-		"app_id": 				"bundleId",
-		"categories": 			"genres",
-		"price": 				"price",
-		"url": 					"trackViewUrl",
+		"developer_id":      "artistId",
+		"developer_name":    "artistName",
+		"developer_url":     "artistViewUrl",
+		"developer_website": "sellerUrl",
+		"title":             "trackName",
+		"app_id":            "bundleId",
+		"categories":        "genres",
+		"price":             "price",
+		"url":               "trackViewUrl",
 	} {
-		if sF, tF := searchResultValue[v], testResultValue[k];
-			!reflect.DeepEqual(sF, tF) {
+		if sF, tF := searchResultValue[v], testResultValue[k]; !reflect.DeepEqual(sF, tF) {
 			errorCount += 1
 			sb.WriteString(fmt.Sprintf("%s: expected value -> %s, found value -> %s\n", v, tF, sF))
 		}

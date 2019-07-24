@@ -8,4 +8,4 @@ tasks:
       - cp -r ./tools ./build/tools
   test:
     cmds:
-      - go test ./... -p 1
+      - go test ./... -v -p 1

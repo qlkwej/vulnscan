@@ -11,7 +11,7 @@ func TestUrlExtract(t *testing.T) {
 		t.Errorf("Regexp too loose")
 	}
 	urls, _ = urlEmailExtract("http://code.google.com/p/smhasher")
-	if len(urls) == 0  {
+	if len(urls) == 0 {
 		t.Errorf("Regexp invalid")
 	}
 }
@@ -20,7 +20,7 @@ func TestCodeAnalysis(t *testing.T) {
 	utils.Configuration.PerformDomainCheck = true
 	zipFile, _ := utils.FindTest("apps", "vulnerable_app.zip")
 	path, _ := utils.FindTest("apps", "vulnerable_app")
-	if err:= utils.WithUnzip(zipFile, path, func(p string) error {
+	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		result, e := CodeAnalysis(p)
 		if e != nil {
 			t.Error(e)

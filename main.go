@@ -115,6 +115,7 @@ func getApp() *cli.App {
 
 		useJson           bool
 		makeDomainCheck	  bool
+
 	)
 
 	app := cli.NewApp()

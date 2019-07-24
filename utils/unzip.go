@@ -80,7 +80,6 @@ func WithUnzip(zipFile, path string, fn func(p string) error) error {
 	return fn(filepath.Join(path, files[0].Name()))
 }
 
-
 // Tries to adapt the input folder to different cases, so all the analysis can start from a common
 // folder structure, independently of how the user has passed the address to scan.
 // It follows these rules:
@@ -95,9 +94,9 @@ func WithUnzip(zipFile, path string, fn func(p string) error) error {
 //		and we wan't to treat the route as in the case where an ipa or zip is passed to the app.
 //
 //		If the file is a directory, we look for an app, ipa or zip file and call Normalize again with it.
-func Normalize(path string, isSrc bool, fn func(p string)error) error {
+func Normalize(path string, isSrc bool, fn func(p string) error) error {
 	if isSrc {
-		return fn(path)  // And don't look back
+		return fn(path) // And don't look back
 	} else if filepath.Ext(path) == ".zip" || filepath.Ext(path) == ".ipa" {
 		// This unzips the content into the temp folder and remove it afterwards.
 		tempDir := filepath.Join(filepath.Dir(path), "temp")

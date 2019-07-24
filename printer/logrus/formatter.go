@@ -12,7 +12,7 @@ type Formatter func(printer.AnalysisResult, error, printer.FormatMethod) map[str
 func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) map[string]map[string]interface{} {
 	var output = map[string]map[string]interface{}{}
 	var errorMessage = func(a string, e error) map[string]map[string]interface{} {
-		output["Error"] =  map[string]interface{}{ "analysis": a, "message": e.Error()  }
+		output["Error"] = map[string]interface{}{"analysis": a, "message": e.Error()}
 		return output
 	}
 	switch m {
@@ -22,9 +22,9 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 		if e != nil {
 			return errorMessage("store", e)
 		}
-		output["Total results"] = map[string]interface{}{ "analysis": "store",  "count": res["count"] }
+		output["Total results"] = map[string]interface{}{"analysis": "store", "count": res["count"]}
 		for i, r := range res["results"].([]map[string]interface{}) {
-			output[fmt.Sprintf("Result %d", i + 1)] = map[string]interface{}{
+			output[fmt.Sprintf("Result %d", i+1)] = map[string]interface{}{
 				"analysis": "store", "title": r["title"], "url": r["url"],
 			}
 		}
@@ -32,21 +32,21 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 		if e != nil {
 			return errorMessage("plist", e)
 		}
-		generalMap, bundleMap := map[string]interface{}{  "analysis": "plist"  }, map[string]interface{}{ "analysis": "plist" }
+		generalMap, bundleMap := map[string]interface{}{"analysis": "plist"}, map[string]interface{}{"analysis": "plist"}
 		for k, v := range res {
-			if k == "permissions"{
+			if k == "permissions" {
 				for i, m := range v.([]map[string]interface{}) {
-					output[fmt.Sprintf("Permission %d", i + 1)] = map[string]interface{}{ "analysis": "plist" }
+					output[fmt.Sprintf("Permission %d", i+1)] = map[string]interface{}{"analysis": "plist"}
 					for k, v := range m {
-						output[fmt.Sprintf("Permission %d", i + 1)][k] =  v
+						output[fmt.Sprintf("Permission %d", i+1)][k] = v
 					}
 				}
 			} else if k == "insecure_connections" {
 				connMap := v.(map[string]interface{})
 				output["Insecure connections"] = map[string]interface{}{
-					"analysis": "plist",
+					"analysis":              "plist",
 					"allow_arbitrary_loads": connMap["allow_arbitrary_loads"],
-					"domains": strings.Join(connMap["domains"].([]string), ", "),
+					"domains":               strings.Join(connMap["domains"].([]string), ", "),
 				}
 			} else if strings.HasPrefix(k, "bundle") {
 				bundleMap[k] = v
@@ -54,22 +54,22 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 				generalMap[k] = v
 			}
 		}
-		output["General information"] =  generalMap
+		output["General information"] = generalMap
 		output["Bundle information"] = bundleMap
 	case printer.ListFiles:
 		if e != nil {
 			return errorMessage("files", e)
 		}
-		output["Total files"] = map[string]interface{}{ "analysis": "files",  "count": len(res["files"].([]string)) }
+		output["Total files"] = map[string]interface{}{"analysis": "files", "count": len(res["files"].([]string))}
 		for k, v := range map[string]string{"Plist files": "plist", "Databases": "database", "Certificates": "certs"} {
 			if count := len(res[v].([]string)); count > 0 {
 				output[fmt.Sprintf("%s found", k)] = map[string]interface{}{
-					"analysis": "files",  "count": count, "files": fmt.Sprintf("%v", res[v]) }
+					"analysis": "files", "count": count, "files": fmt.Sprintf("%v", res[v])}
 			} else {
-				output[fmt.Sprintf("%s not found", k)] = map[string]interface{}{"analysis": "files" }
+				output[fmt.Sprintf("%s not found", k)] = map[string]interface{}{"analysis": "files"}
 			}
 		}
-		if len(output) == 0{
+		if len(output) == 0 {
 			output["Nothing found"] = map[string]interface{}{"analysis": "files"}
 		}
 	case printer.VirusScan:
@@ -80,14 +80,14 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 			output["Virus scan queued, retrieve the result repeating the analysis or visiting the file link"] =
 				map[string]interface{}{"analysis": "virus", "link": res["permalink"]}
 		} else if msg == "Scan finished, information embedded" {
-			output["Virus scan completed"] = map[string]interface{}{ "analysis": "virus",
-				"performed": res["total"], "positive": res["positives"] }
+			output["Virus scan completed"] = map[string]interface{}{"analysis": "virus",
+				"performed": res["total"], "positive": res["positives"]}
 			for aN, a := range res["scans"].(map[string]interface{}) {
 				if aM := a.(map[string]interface{}); aM["detected"].(bool) {
-					output[fmt.Sprintf("Scan %s", aN)] = map[string]interface{}{ "analysis": "virus",
+					output[fmt.Sprintf("Scan %s", aN)] = map[string]interface{}{"analysis": "virus",
 						"positive": "yes", "result": aM["result"]}
 				} else {
-					output[fmt.Sprintf("Scan %s", aN)] = map[string]interface{}{ "analysis": "virus",
+					output[fmt.Sprintf("Scan %s", aN)] = map[string]interface{}{"analysis": "virus",
 						"positive": "no"}
 				}
 			}
@@ -96,11 +96,11 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 		if e != nil {
 			return errorMessage("code", e)
 		}
-		messages := map[string]string {
-			"code": "code issues",
-			"api": "api uses",
-			"url": "url inserted in the code",
-			"email": "emails inserted in the code",
+		messages := map[string]string{
+			"code":        "code issues",
+			"api":         "api uses",
+			"url":         "url inserted in the code",
+			"email":       "emails inserted in the code",
 			"bad_domains": "dangerous domains references in the code",
 		}
 		for k, v := range res {
@@ -121,7 +121,7 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 				}
 			}
 		}
-		if len(output) == 0{
+		if len(output) == 0 {
 			output["Nothing found"] = map[string]interface{}{"analysis": "code"}
 		}
 	case printer.Binary:
@@ -132,13 +132,13 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 			"analysis": "binary", "language": res["bin_type"]}
 		output["App detected libraries"] = map[string]interface{}{
 			"analysis": "binary", "libraries": strings.Join(res["libs"].([]string), ", ")}
-		macho :=  res["macho"].(map[string]string)
+		macho := res["macho"].(map[string]string)
 		architecture := macho["cpu_type"]
 		if subArch := macho["sub_cpu_type"]; subArch != "" {
 			architecture += fmt.Sprintf(" | %s", subArch)
 		}
 		output["App architecture information"] = map[string]interface{}{
-			"analysis": "binary", "bits": macho["bits"], "endianness": macho["endianness"], "cpu": architecture }
+			"analysis": "binary", "bits": macho["bits"], "endianness": macho["endianness"], "cpu": architecture}
 		for _, r := range res["bin_res"].([]map[string]interface{}) {
 			output[r["issue"].(string)] = map[string]interface{}{
 				"analysis": "binary", "status": r["info"], "description": r["description"]}
@@ -146,7 +146,6 @@ func DefaultFormat(res printer.AnalysisResult, e error, m printer.FormatMethod) 
 	case printer.Error:
 		output[fmt.Sprintf("Error: %s", res["error"])] = map[string]interface{}{"analysis": res["analysis"]}
 	}
-
 
 	return output
 }

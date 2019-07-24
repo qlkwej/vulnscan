@@ -70,10 +70,10 @@ func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 						codeFindings[rule.Desc]["path"] = append(r["path"].([]string), relativeSrcPath)
 					} else {
 						codeFindings[rule.Desc] = map[string]interface{}{
-							"path": []string{relativeSrcPath},
+							"path":  []string{relativeSrcPath},
 							"level": rule.Level,
-							"cvss": rule.Cvss,
-							"cws": rule.Cwe,
+							"cvss":  rule.Cvss,
+							"cws":   rule.Cwe,
 						}
 					}
 				}
@@ -114,10 +114,10 @@ func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 		return result, e
 	} else {
 		return map[string]interface{}{
-			"code": codeFindings,
-			"api": apiFindings,
-			"url": urlFindings,
-			"email": emailFindings,
+			"code":        codeFindings,
+			"api":         apiFindings,
+			"url":         urlFindings,
+			"email":       emailFindings,
 			"bad_domains": badDomains,
 		}, nil
 	}

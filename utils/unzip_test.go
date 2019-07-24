@@ -53,11 +53,11 @@ func TestNormalize(t *testing.T) {
 		}
 		return nil
 	}
-	for i, p := range [][]string {
-		{"apps", "binary.ipa"},    		// .ipa file
-		{"unzip", "iVim.app"},     		// .app file
-		{"apps", "binary_zip.zip"},     // .zip file
-		{"unzip"},                 		// find the .zip file
+	for i, p := range [][]string{
+		{"apps", "binary.ipa"},     // .ipa file
+		{"unzip", "iVim.app"},      // .app file
+		{"apps", "binary_zip.zip"}, // .zip file
+		{"unzip"},                  // find the .zip file
 	} {
 		path, _ := FindTest(p...)
 		if e := Normalize(path, false, getPath); e != nil {
@@ -71,8 +71,8 @@ func TestGetApp(t *testing.T) {
 	app, err := GetApp(path)
 	if err != nil {
 		t.Errorf("%s", err)
-	} else if app != path + string(os.PathSeparator) + "iVim.app" {
-		t.Errorf("unable to find .app file, expected: %s, found: %s", path + string(os.PathSeparator) +
+	} else if app != path+string(os.PathSeparator)+"iVim.app" {
+		t.Errorf("unable to find .app file, expected: %s, found: %s", path+string(os.PathSeparator)+
 			"iVim.app", app)
 	}
 }
