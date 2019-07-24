@@ -15,21 +15,29 @@ import (
 	"github.com/kardianos/osext"
 )
 
+// Command type determines the otool command flags.
 type CommandType int
-type BinType int
-
 const (
 	Libs CommandType = iota
 	Header
 	Symbols
 )
 
+// BinType is the programming language of the binary
+type BinType int
 const (
 	Swift BinType = iota
 	ObjC
 )
 
+// Returns the folder where the program external binary tools (jtool, class-dump) is present. By default, depending on
+// the environment where the program is executing (testing/not testing) the tools will be in vulnscan/tools/tools
+// (testing) or in a sibling folder of the vulnscan binary. The function also looks for a folder configured using the
+// configuration file.
 func getToolsFolder() string {
+	if tf := utils.Configuration.ToolsFolder; tf != ""{
+		return tf
+	}
 	var parentFolder string
 	if flag.Lookup("test.v") == nil {
 		parentFolder, _ = osext.ExecutableFolder()
@@ -39,11 +47,18 @@ func getToolsFolder() string {
 	return parentFolder + string(os.PathSeparator) + "tools" + string(os.PathSeparator)
 }
 
+
+// Calls the otool/jtool with different arguments depending on the passed CommandType to analyze the binary
+// at binPath.
 func getOtoolOut(binPath string, ct CommandType) (string, error) {
 	var (
+		// The main command (otool/jtool)
 		command string
+		// The args to pass to otool/jtool. We use an array of arrays to accumulate different calls in case we have to
+		// do them (jtool symbols case).
 		args [][]string
 		)
+	// FORCE_LINUX flag is mostly for testing, although it could be used to use jtool on a mac environment
 	if platform := runtime.GOOS; os.Getenv("FORCE_LINUX") == "1" || platform == "linux" {
 		command = getToolsFolder() + "jtool"
 		if ct == Libs {
@@ -79,14 +94,19 @@ func getOtoolOut(binPath string, ct CommandType) (string, error) {
 	return sb.String(), nil
 }
 
+// Calls the otool/jtool with different arguments and translates the responses into analysis flags.
 func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 	res = map[string]interface{}{}
+
+	// Libs analysis
 	libs, err := getOtoolOut(binPath, Libs)
 	res["libs"] = strings.Split(libs, "\n")
 	if err != nil {
 		return res, err
 	}
 	var madeAnalysis []map[string]interface{}
+
+	// Headers analysis
 	pieDat, err := getOtoolOut(binPath, Header)
 	if err != nil {
 		return res, err
@@ -111,11 +131,11 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 		})
 	}
 
+	// Symbols analysis
 	dat, err := getOtoolOut(binPath, Symbols)
 	if err != nil {
 		return res, err
 	}
-
 	if strings.Contains(dat, "stack_chk_guard") {
 		madeAnalysis = append(madeAnalysis, map[string]interface{}{
 			"issue":  "fstack-protector-all flag is Found",
@@ -156,6 +176,7 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 			"cwe": "CWE-119",
 		})
 	}
+	// Here we build a loop in order to execute multiple similar regex tests over the otool/jtool output.
 	type analysis struct {
 		reg string
 		bad func(string)map[string]interface{}
@@ -393,6 +414,9 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 	return res, nil
 }
 
+
+// Calls the class_dump binaries or jtool. Currently this just detects if the binary is using web view
+// TODO: extend the analysis to look for more things?
 func classDump(binPath string, binType BinType) (map[string]interface{}, error) {
 	var (
 		command string
@@ -435,9 +459,10 @@ func classDump(binPath string, binType BinType) (map[string]interface{}, error) 
 			}, nil
 		}
 	}
-	return map[string]interface{}{}, nil
 }
 
+
+// Detects if the binary is written in swift or in objective-c analyzing if its libs contains libswiftCore
 func detectBinType(libs []string) BinType {
 	for _, lib := range libs {
 		if strings.Contains(lib, "libswiftCore.dylib") {
@@ -447,10 +472,20 @@ func detectBinType(libs []string) BinType {
 	return ObjC
 }
 
-
+// Performs the binary analysis. Binary analysis is composed by the analysis of the output of the macho headers, the
+// otool/jtool outputs and the class dumps performed by external tools. It returns the following data:
+// map[string]interface{}{
+// 		"libs": 	[]string, list of libraries used by the binary,
+//		"bin_res": 	[]map[string]interface, list of analysis objects from the otool/jtool/class_dump commands. Each
+//				   	object is a map with a description, issue, status, cvss and cwe fields.
+//		"bin_type": "Swift"|"Objective-C"
+//		"macho": 	map[string]interface{} from macho analysis, with bits (32/64 bits), endianness, cpu_type and
+//					sub_cpu_type fields
+// }
 func BinaryAnalysis(ipaPath string, isSrc bool, appName string) (map[string]interface{}, error) {
 	var analysis = map[string]interface{}{}
 	if e := utils.Normalize(ipaPath, isSrc, func(p string) error {
+		// We can't analyze a source folder
 		if isSrc {
 			return fmt.Errorf("binary analysis not supported for not binary source")
 		}

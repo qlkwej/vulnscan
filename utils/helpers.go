@@ -21,7 +21,13 @@ func PathExists(path string) (bool, error) {
 	return true, err
 }
 
+// Check the paths passed by the user and determines if it's a binary or source path
 func CheckPathIsSrc(binaryPath, sourcePath string) (string, bool) {
+	// If user has not used flags, we check the configuration file
+	if binaryPath == "" && sourcePath == "" {
+		binaryPath = Configuration.BinaryPath
+		sourcePath = Configuration.SourcePath
+	}
 	ok, err := PathExists(sourcePath)
 	if err != nil {
 		panic(err)

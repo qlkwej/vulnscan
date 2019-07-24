@@ -31,6 +31,13 @@ var (
 			Destination: s,
 		}
 	}
+	domainCheckFlag = func(b *bool) cli.BoolFlag {
+		return cli.BoolFlag{
+			Name:        "domains, d",
+			Usage:       "Activate the domains check at www.malwaredomainlist.com",
+			Destination: b,
+		}
+	}
 	binaryFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag {
 			Name:        "binary, b",
@@ -74,15 +81,40 @@ var (
 	}
 )
 
+// Loads the configuration and use that information to select a printer, print the message and return the printer
+// to the caller. This is a quick and dirty function to avoid repetition, so we keep it in main.
+func loadConfigurationAndSelectPrinter(path string, useJson bool, out logrus.Output) printer.Printer {
+	confMessage := utils.LoadConfiguration(path)
+	var pr printer.Printer
+	// We adapt the printer to the configuration file in case output is colored.
+	if out == logrus.Text || out == logrus.ColoredText {
+		if utils.Configuration.ColoredLog {
+			out = logrus.ColoredText
+		} else {
+			out = logrus.Text
+		}
+	}
+	if useJson || utils.Configuration.JsonFormat {
+		pr = logrus.NewPrinter(logrus.Json, out, logrus.DefaultFormat)
+	} else {
+		pr = logrus.NewPrinter(logrus.Log, out, logrus.DefaultFormat)
+	}
+	pr.Log(map[string]interface{}{"Message": confMessage}, nil, printer.Message)
+	return pr
+}
+
 func getApp() *cli.App {
 	var (
+		configurationPath string
+
 		appID             string
 		country           string
 		binaryPath        string
 		sourcePath        string
-		configurationPath string
 		virusKey          string
+
 		useJson           bool
+		makeDomainCheck	  bool
 	)
 
 	app := cli.NewApp()
@@ -91,7 +123,7 @@ func getApp() *cli.App {
 	app.Usage = "iOS and MacOS vulnerability scanner"
 	app.Authors = []cli.Author{{ Name:  "Vulnscan Team", Email: "vulnscan@simplycubed.com" }}
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
-	app.Flags = []cli.Flag{ jsonFlag(&useJson) }
+	app.Flags = []cli.Flag{ jsonFlag(&useJson), configurationFlag(&configurationPath) }
 	app.Commands = []cli.Command{
 
 		{
@@ -100,13 +132,12 @@ func getApp() *cli.App {
 			Usage:   "store app lookup",
 			Flags: []cli.Flag{ appIdFlag(&appID), countryFlag(&country) },
 			Action: func(c *cli.Context) error {
+				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.StdOut)
 				if appID != "" {
-					res := ios.Search(appID, country)
-					if useJson {
-						logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, nil, printer.Store)
-					} else {
-						logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, nil, printer.Store)
+					if country == "" {
+						country = utils.Configuration.DefaultCountry
 					}
+					pr.Log(ios.Search(appID, country), nil, printer.Store)
 				} else {
 					return errors.New("appID is required: `--app appID`")
 				}
@@ -120,12 +151,9 @@ func getApp() *cli.App {
 			Usage:   "plists scan",
 			Flags: []cli.Flag{ binaryFlag(&binaryPath), sourceFlag(&sourcePath) },
 			Action: func(c *cli.Context) error {
+				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.StdOut)
 				res, err := ios.PListAnalysis(utils.CheckPathIsSrc(binaryPath, sourcePath))
-				if useJson {
-					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
-				} else {
-					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.PList)
-				}
+				pr.Log(res, err, printer.PList)
 				return nil
 			},
 		},
@@ -136,13 +164,10 @@ func getApp() *cli.App {
 			Usage:   "search code vulnerabilities",
 			Flags: []cli.Flag{ binaryFlag(&binaryPath), sourceFlag(&sourcePath) },
 			Action: func(c *cli.Context) error {
+				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.StdOut)
 				p, _ := utils.CheckPathIsSrc(binaryPath, sourcePath)
 				res, err := ios.CodeAnalysis(p)
-				if useJson {
-					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.Code)
-				} else {
-					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.Code)
-				}
+				pr.Log(res, err, printer.Code)
 				return nil
 			},
 		},
@@ -153,16 +178,11 @@ func getApp() *cli.App {
 			Usage:   "search binary vulnerabilities",
 			Flags: []cli.Flag{ binaryFlag(&binaryPath), sourceFlag(&sourcePath) },
 			Action: func(c *cli.Context) error {
+				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.StdOut)
 				p, s := utils.CheckPathIsSrc(binaryPath, sourcePath)
-				if s {
-					log.Fatal("Cannot make binary analysis on source code")
-				}
+				if s { log.Fatal("Cannot make binary analysis on source code") }
 				res, err := ios.BinaryAnalysis(p, s, "")
-				if useJson {
-					logrus.NewPrinter(logrus.Json, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.Binary)
-				} else {
-					logrus.NewPrinter(logrus.Log, logrus.StdOut, logrus.DefaultFormat).Log(res, err, printer.Binary)
-				}
+				pr.Log(res, err, printer.Binary)
 				return nil
 			},
 		},
@@ -172,29 +192,20 @@ func getApp() *cli.App {
 			Aliases: []string{"s"},
 			Usage:   "source directory and binary file security scan",
 			Flags: []cli.Flag{ binaryFlag(&binaryPath), sourceFlag(&sourcePath), virusFlag(&virusKey),
-							   configurationFlag(&configurationPath),
+							   domainCheckFlag(&makeDomainCheck),
 			},
 			Action: func(c *cli.Context) error {
+				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.Text)
 
-				// Create the printer
-				var pr printer.Printer
-				if useJson {
-					pr = logrus.NewPrinter(logrus.Json, logrus.Text, logrus.DefaultFormat)
-				} else {
-					pr = logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat)
-				}
-
-				// Load the Configuration file and print the generated message
-				pr.Log(map[string]interface{}{"Message": utils.LoadConfiguration(configurationPath)}, nil, printer.Message)
-
-				// If the user has passed manually a virus scan key, we overwrite the one in the Configuration, if any
+				// Overwrite the flags passed by the user
 				if virusKey != "" {
 					utils.Configuration.VirusScanKey = virusKey
 				}
-
+				if makeDomainCheck {
+					utils.Configuration.PerformDomainCheck = true
+				}
 				// Check the kind of path passed by the user
 				path, isSrc := utils.CheckPathIsSrc(binaryPath, sourcePath)
-
 				// Normalize the path and call static analyzer
 				if e := utils.Normalize(path, isSrc, func(p string) error {
 					if e := ios.StaticAnalyzer(p, isSrc, pr); e != nil {

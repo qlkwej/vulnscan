@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+// Extracts a list of emails and a list of urls from a string. It returns two slices with the direct output of the
+// findAll command ([][]byte)
 func urlEmailExtract(data string) (urls [][]byte, emails [][]byte) {
 	// The original regex seem broken under certain texts, as it matches everything that looks like string:string, which
 	// it's not very acceptable because it gets a lot of false positives:
@@ -23,6 +25,14 @@ func urlEmailExtract(data string) (urls [][]byte, emails [][]byte) {
 	return urlPat.FindAll([]byte(data), -1), emailPat.FindAll([]byte(data), -1)
 }
 
+
+// Code analysis search the code using regex to match some code occurrences and extract conclusions from them.
+// Specifically:
+// - It looks for urls and emails and map them to a map with the file where the email/url is found and a
+//   slice of strings representing the emails/urls found in that file.
+// - It uses the ios_apis rules to find apis used by the code.
+// - It uses the ios_rules to find possible issues.
+// - It matches the urls found in step one with the malwaredomainlist.com to find possible dangerous urls.
 func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 	var codeFindings = map[string]map[string]interface{}{}
 	var apiFindings = map[string]map[string]interface{}{}
@@ -33,8 +43,9 @@ func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 		if err != nil {
 			return err
 		}
-		if filepath.Ext(path) == ".m" {
+		if filepath.Ext(path) == ".m" || filepath.Ext(path) == ".swift" {
 			var jfilePath string
+			// TODO: why are we doing this?
 			if strings.Contains(filepath.Base(path), "+") {
 				jfilePath = filepath.Join(filepath.Dir(path),
 					strings.Replace(filepath.Base(path), "+", "x", -1))
@@ -45,6 +56,7 @@ func CodeAnalysis(src string) (result map[string]interface{}, err error) {
 			} else {
 				jfilePath = path
 			}
+
 			var data string
 			if d, err := ioutil.ReadFile(jfilePath); err != nil {
 				return fmt.Errorf("error reading file %s: %s", jfilePath, err)

@@ -3,7 +3,6 @@ package utils
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -13,20 +12,38 @@ import (
 	"github.com/stevenroose/gonfig"
 )
 
+// Configuration object
 var Configuration = struct {
-	Scans        []string `id:"scans" short:"s" desc:"Test to do when calling scan command"`
-	JsonFormat   bool     `id:"json" short:"o" desc:"Activate the json output"`
-	SourcePath   string   `id:"source" short:"sp" desc:"Path to the source code to analyze"`
-	BinaryPath   string   `id:"binary" short:"bp" desc:"Path to the binary .ipa file to analyze"`
-	VirusScanKey string   `id:"virus" short:"v" desc:"Virus Scan API key to use the service"`
-	DefaultCountry string `id:"country" short:"c" desc:"Country to use in the apple store lookup"`
+	// String slice with the scans to make when calling scan command
+	Scans        		[]string 	`id:"scans" short:"s" desc:"Test to do when calling scan command"`
+	// Whether or not we output in json. Defaults to false
+	JsonFormat   		bool     	`id:"json" short:"j" desc:"Activate the json output"`
+	// Whether or not we output colored logs. Defaults to true.
+	ColoredLog			bool		`id:"colored" short:"cl" desc:"Do colored output"`
+	// Path where the source to analyze is present in the filesystem.
+	SourcePath   		string   	`id:"source" short:"sp" desc:"Path to the source code to analyze"`
+	// Path where the binary to analyze is present in the filesystem.
+	BinaryPath   		string   	`id:"binary" short:"bp" desc:"Path to the binary .ipa file to analyze"`
+	// Virus scan key. If included, the app will call virus scan api to scan the code
+	// TODO: change to a boolean flag when we have the collective key
+	VirusScanKey 		string   	`id:"virus" short:"v" desc:"Virus Scan API key to use the service"`
+	// Default country to pass to the lookup in the app store command.
+	DefaultCountry 		string 		`id:"country" short:"c" desc:"Country to use in the apple store lookup"`
+	// Folder where the external binary tools (jtool, etc.) are in the system. If nothing is passed, the application
+	// expects them to be in a sibling folder relative to the app binary.
+	ToolsFolder			string 		`id:"tools" short:"t" desc:"Folder where the program external binaries are located"`
+	// Whether or not we look for malware domains in malwaredomainlist.com. Defaults to false.
+	PerformDomainCheck  bool		`id:"domains" short:"d" desc:"Activate domain check from www.malwaredomainlist.com"`
 }{
-	Scans:        []string{"binary", "code", "plist", "lookup", "files"},
-	JsonFormat:   false,
-	SourcePath:   "",
-	BinaryPath:   "",
-	VirusScanKey: "",
-	DefaultCountry: "us",
+	Scans:        		[]string{"binary", "code", "plist", "lookup", "files"},
+	JsonFormat:   		false,
+	SourcePath:   		"",
+	BinaryPath:   		"",
+	VirusScanKey: 		"",
+	DefaultCountry: 	"us",
+	ToolsFolder: 		"",
+	PerformDomainCheck: false,
+	ColoredLog:         true,
 }
 
 // Loads the configuration file and checks that:
@@ -36,7 +53,7 @@ func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
 	if err := gonfig.Load(&Configuration, gonfig.Conf{
 		FileDefaultFilename: path,
 		FileDecoder: decoder,
-		FlagDisable: true,
+		FlagDisable: true, // does not work, so we have to do it manually
 		EnvPrefix: "VULNSCAN_",
 	}); err != nil {
 		return err
@@ -97,10 +114,13 @@ func resetConfiguration() {
 		"binary": "",
 		"virus": "",
 		"country": "us",
+		"tools": "",
+		"domains": false,
 	}, gonfig.Conf{}); e != nil {
-		log.Fatal("FATAL ERROR resetting configuration file")
+		panic("FATAL ERROR resetting configuration file")
 	}
 }
+
 
 // Loads the Configuration file in three locations:
 // - The path provided by the user, if any.
@@ -109,7 +129,7 @@ func resetConfiguration() {
 // If the file is not found in the first path, or if it's found but there is some error loading it, the function
 // tries the next location in the list. If everything fails, the default Configuration would be used.
 // As we really don't care about where we get the Configuration, it doesn't make a lot of sense to return an error, so
-// the function just returns a string to tell the user what happened.
+// the function just returns a string to tell the user what happened
 func LoadConfiguration(path string) string {
 	// We use returnString to build the returned message. As we
 	var sb strings.Builder
@@ -226,3 +246,5 @@ func CheckScan(scan string) bool {
 	}
 	return false
 }
+
+

@@ -17,6 +17,7 @@ func TestUrlExtract(t *testing.T) {
 }
 
 func TestCodeAnalysis(t *testing.T) {
+	utils.Configuration.PerformDomainCheck = true
 	zipFile, _ := utils.FindTest("apps", "vulnerable_app.zip")
 	path, _ := utils.FindTest("apps", "vulnerable_app")
 	if err:= utils.WithUnzip(zipFile, path, func(p string) error {

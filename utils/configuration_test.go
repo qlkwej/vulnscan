@@ -110,3 +110,4 @@ func TestLoadConfigurationFileFromCwd(t *testing.T) {
 		t.Errorf("wrong Configuration found: %v", Configuration)
 	}
 }
+

@@ -12,7 +12,8 @@ import (
 )
 
 
-//
+// Generates a map[string]interface{} with a list of general files, certifications, databases and plist found in the
+// source.
 func ListFiles(src string) (map[string]interface{}, error) {
 	var fileList = map[string]interface{}{
 		"files": []string{},
@@ -53,6 +54,9 @@ func ListFiles(src string) (map[string]interface{}, error) {
 	return fileList, nil
 }
 
+
+// Static analyzer is the main entry point of the application. It orchestrates all the other analysis and is in
+// charge of printing their results.
 func StaticAnalyzer(src string, isSrc bool, print printer.Printer) error {
 	type analysisResult struct {
 		result map[string]interface{}

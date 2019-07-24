@@ -54,7 +54,32 @@ func TestStaticAnalyzer(t *testing.T) {
 		} else if !strings.Contains(res, "analysis=code") {
 			t.Errorf("Code analysis not found")
 		} else if !strings.Contains(res, "analysis=binary") {
+			t.Errorf("Binary analysis not found")
+		}
+	}
+}
+
+func TestStaticAnalyzerWithLimitedTests(t *testing.T) {
+	test, _ := utils.FindTest("apps", "binary.ipa")
+	utils.Configuration.VirusScanKey = ""
+	utils.Configuration.Scans = []string{ "plist", "code" }
+	if res, e := utils.WithPipeStdout(func() error {
+		return StaticAnalyzer(test, false, logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat))
+	}); e != nil {
+		t.Errorf("ERROR %s", e)
+	} else {
+		if strings.Contains(res, "analysis=virus") {
+			t.Errorf("Virus analysis found")
+		} else if !strings.Contains(res, "analysis=plist") {
+			t.Errorf("PList analysis not found")
+		} else if strings.Contains(res, "analysis=store") {
+			t.Errorf("Store analysis found")
+		} else if strings.Contains(res, "analysis=files") {
+			t.Errorf("Files analysis found")
+		} else if !strings.Contains(res, "analysis=code") {
 			t.Errorf("Code analysis not found")
+		} else if strings.Contains(res, "analysis=binary") {
+			t.Errorf("Binary analysis found")
 		}
 	}
 }
