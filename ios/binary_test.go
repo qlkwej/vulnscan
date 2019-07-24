@@ -205,7 +205,6 @@ func TestClassDumpForceLinux(t *testing.T) {
 func TestBinaryAnalysis(t *testing.T) {
 	ipaPath, _ := utils.FindTest("apps", "binary.ipa")
 	analysis, err := BinaryAnalysis(ipaPath, false, "iVim")
-	t.Errorf("%#v", analysis)
 	if err != nil {
 		t.Errorf("Error generating binary analysis: %s", err)
 	} else {

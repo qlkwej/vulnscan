@@ -41,10 +41,8 @@ func TestPListBinarySearch(t *testing.T) {
 func TestMultiplePListAnalysis(t *testing.T) {
 	for i := 1; i <= 5; i++ {
 		path, _ := utils.FindTest("plist", fmt.Sprintf("plist%d.plist", i))
-		if a, err := makePListAnalysis(path, fmt.Sprintf("App%d", i), true); err != nil {
+		if _, err := makePListAnalysis(path, fmt.Sprintf("App%d", i), true); err != nil {
 			t.Errorf("Failed to extract plist data from %s with error %s", path, err)
-		} else {
-			t.Errorf("%#v", a)
 		}
 	}
 }

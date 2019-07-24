@@ -49,7 +49,7 @@ var (
 	sourceFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
 			Name:        "source, s",
-			Value:       utils.DefaultPath(),
+			Value:       "",
 			Usage:       "Full path to source code directory",
 			Destination: p,
 		}

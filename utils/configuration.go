@@ -15,25 +15,25 @@ import (
 // Configuration object
 var Configuration = struct {
 	// String slice with the scans to make when calling scan command
-	Scans        		[]string 	`id:"scans" short:"s" desc:"Test to do when calling scan command"`
+	Scans        		[]string 	`id:"scans" desc:"Test to do when calling scan command"`
 	// Whether or not we output in json. Defaults to false
-	JsonFormat   		bool     	`id:"json" short:"j" desc:"Activate the json output"`
+	JsonFormat   		bool     	`id:"json" desc:"Activate the json output"`
 	// Whether or not we output colored logs. Defaults to true.
-	ColoredLog			bool		`id:"colored" short:"cl" desc:"Do colored output"`
+	ColoredLog			bool		`id:"colored" desc:"Do colored output"`
 	// Path where the source to analyze is present in the filesystem.
-	SourcePath   		string   	`id:"source" short:"sp" desc:"Path to the source code to analyze"`
+	SourcePath   		string   	`id:"source" desc:"Path to the source code to analyze"`
 	// Path where the binary to analyze is present in the filesystem.
-	BinaryPath   		string   	`id:"binary" short:"bp" desc:"Path to the binary .ipa file to analyze"`
+	BinaryPath   		string   	`id:"binary" desc:"Path to the binary .ipa file to analyze"`
 	// Virus scan key. If included, the app will call virus scan api to scan the code
 	// TODO: change to a boolean flag when we have the collective key
-	VirusScanKey 		string   	`id:"virus" short:"v" desc:"Virus Scan API key to use the service"`
+	VirusScanKey 		string   	`id:"virus" desc:"Virus Scan API key to use the service"`
 	// Default country to pass to the lookup in the app store command.
-	DefaultCountry 		string 		`id:"country" short:"c" desc:"Country to use in the apple store lookup"`
+	DefaultCountry 		string 		`id:"country" desc:"Country to use in the apple store lookup"`
 	// Folder where the external binary tools (jtool, etc.) are in the system. If nothing is passed, the application
 	// expects them to be in a sibling folder relative to the app binary.
-	ToolsFolder			string 		`id:"tools" short:"t" desc:"Folder where the program external binaries are located"`
+	ToolsFolder			string 		`id:"tools" desc:"Folder where the program external binaries are located"`
 	// Whether or not we look for malware domains in malwaredomainlist.com. Defaults to false.
-	PerformDomainCheck  bool		`id:"domains" short:"d" desc:"Activate domain check from www.malwaredomainlist.com"`
+	PerformDomainCheck  bool		`id:"domains" desc:"Activate domain check from www.malwaredomainlist.com"`
 }{
 	Scans:        		[]string{"binary", "code", "plist", "lookup", "files"},
 	JsonFormat:   		false,
@@ -171,6 +171,7 @@ func LoadConfiguration(path string) string {
 	if err := func() error {
 		var currentDir string
 		if flag.Lookup("test.v") == nil {
+			// Not testing
 			currentDir, _ = os.Getwd()
 		} else {
 			currentDir, _ = FindMainFolder()
