@@ -44,5 +44,4 @@ func CheckPathIsSrc(binaryPath, sourcePath string) (string, bool) {
 		return binaryPath, false
 	}
 	panic("Path doesn't PathExists")
-	return "", false
 }
