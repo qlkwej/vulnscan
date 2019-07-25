@@ -16,6 +16,8 @@ const (
 	Cigam64 uint32 = 0xCFFAEDFE
 )
 
+// Analyzes the macho headers to extract the cpu information. We use the standard macho library with some
+// maps to extract the data.
 func GetMachoInfo(path string) (map[string]string, error) {
 	info := map[string]string{}
 	file, err := macho.Open(path)

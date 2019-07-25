@@ -18,6 +18,7 @@ const (
 	Code
 	Binary
 	Error
+	Message
 )
 
 // Printer is the interface used to decouple scans from printing

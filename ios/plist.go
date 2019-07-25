@@ -99,6 +99,7 @@ type PListObject struct {
 	CFBundleLocalizations                    []string
 }
 
+// Looks for the plist file in the folder. Depending on the isSrc flag, parses the folder differently.
 func findPListFile(src string, isSrc bool) (string, string, error) {
 	var appname string
 	var pListFile string
@@ -145,6 +146,8 @@ func findPListFile(src string, isSrc bool) (string, string, error) {
 	return pListFile, appname, nil
 }
 
+// Performs the plist analysis. Extracts information from the plist file found in the binary/source. This function
+// is extracted from the main PListAnalysis function in order to ease testing.
 func makePListAnalysis(pListFile, appName string, isSrc bool) (map[string]interface{}, error) {
 	var plistObject PListObject
 	plist := map[string]interface{}{}
@@ -209,6 +212,22 @@ func makePListAnalysis(pListFile, appName string, isSrc bool) (map[string]interf
 	return plist, nil
 }
 
+
+// Search for the plist file calling findPListFile function and performs the PList analysis. Returns a
+// map[string]interface{} with the following information:
+// 		- bin, string, executable name
+// 		- id, string, id of the app ["com.dev_name.product_name"]
+//		- build, string, build version ["1.0"]
+//		- sdk, string, sdk used to make the build ["iphoneos3.0"]
+//		- platform, []string, platforms supported by the app [[]{"iPhoneOS", }]
+//		- min, string, minimum supported OS version ["3.0"]
+//		- bundle_name, string, product name
+//		- bundle_version_name, string, "1"
+//		- bundle_supported_platforms, []string, platforms supported by the bundle  [[]{"iPhoneOS", }]
+//		- bundle_localizations, []string, localizations supported by the bundle
+//		- bundle_url_types, []string, supported url schemes
+//		- permissions, []map[string]map[string]interface{}, array of permissions
+//		- insecure_connections, map[string]interface{} describing insecure connections (see checkInsecureConnections).
 func PListAnalysis(src string, isSrc bool) (map[string]interface{}, error) {
 	pListFile, appName, err := findPListFile(src, isSrc)
 	if err != nil {
@@ -217,6 +236,8 @@ func PListAnalysis(src string, isSrc bool) (map[string]interface{}, error) {
 	return makePListAnalysis(pListFile, appName, isSrc)
 }
 
+// Returns an array of permissions from a plist object. Each permission is a map where the key is the permission
+// description and the value a map[string]interface{} with a name, a description and a reason.
 func checkPermissions(plistObj *PListObject) []map[string]interface{} {
 	var list []map[string]interface{}
 	for k, v := range map[interface{}]map[string]interface{}{
@@ -308,6 +329,8 @@ func checkPermissions(plistObj *PListObject) []map[string]interface{} {
 	return list
 }
 
+// Checks the insecure connections from a plist object. Returns a map with two keys: allow_arbitrary_loads, a boolean flag
+// and other with the array of domains documented in the plist
 func checkInsecureConnections(plistObj *PListObject) map[string]interface{} {
 	var insecureConnections = map[string]interface{}{}
 	insecureConnections["allow_arbitrary_loads"] = plistObj.NSAppTransportSecurity.NSAllowsArbitraryLoads

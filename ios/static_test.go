@@ -1,8 +1,10 @@
 package ios
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/simplycubed/vulnscan/printer/logrus"
 	"github.com/simplycubed/vulnscan/utils"
+	"os"
 	"strings"
 	"testing"
 )
@@ -28,10 +30,15 @@ func TestListFiles(t *testing.T) {
 }
 
 func TestStaticAnalyzer(t *testing.T) {
+	mainFolder, _ := utils.FindMainFolder()
+	err := godotenv.Load(mainFolder + string(os.PathSeparator) + ".env")
+	if err != nil {
+		t.Error("Error loading .env file")
+	}
+	utils.Configuration.VirusScanKey = os.Getenv("VIRUS_TOTAL_API_KEY")
 	if res, e := utils.WithPipeStdout(func() error {
 		test, _ := utils.FindTest("apps", "binary.ipa")
-		return StaticAnalyzer(test, false, "us", true,
-			logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat))
+		return StaticAnalyzer(test, false, logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat))
 	}); e != nil {
 		t.Errorf("ERROR %s", e)
 	} else {
@@ -46,7 +53,32 @@ func TestStaticAnalyzer(t *testing.T) {
 		} else if !strings.Contains(res, "analysis=code") {
 			t.Errorf("Code analysis not found")
 		} else if !strings.Contains(res, "analysis=binary") {
+			t.Errorf("Binary analysis not found")
+		}
+	}
+}
+
+func TestStaticAnalyzerWithLimitedTests(t *testing.T) {
+	test, _ := utils.FindTest("apps", "binary.ipa")
+	utils.Configuration.VirusScanKey = ""
+	utils.Configuration.Scans = []string{ "plist", "code" }
+	if res, e := utils.WithPipeStdout(func() error {
+		return StaticAnalyzer(test, false, logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat))
+	}); e != nil {
+		t.Errorf("ERROR %s", e)
+	} else {
+		if strings.Contains(res, "analysis=virus") {
+			t.Errorf("Virus analysis found")
+		} else if !strings.Contains(res, "analysis=plist") {
+			t.Errorf("PList analysis not found")
+		} else if strings.Contains(res, "analysis=store") {
+			t.Errorf("Store analysis found")
+		} else if strings.Contains(res, "analysis=files") {
+			t.Errorf("Files analysis found")
+		} else if !strings.Contains(res, "analysis=code") {
 			t.Errorf("Code analysis not found")
+		} else if strings.Contains(res, "analysis=binary") {
+			t.Errorf("Binary analysis found")
 		}
 	}
 }

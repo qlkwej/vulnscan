@@ -1,41 +1,47 @@
 package utils
 
-import "runtime"
+import "os"
 
-func EOL() string {
-	if runtime.GOOS == "windows" {
-		return "\r\n"
-	} else {
-		return "\n"
+
+func DefaultPath() string {
+	dir, _ := os.Getwd()
+	return dir
+}
+
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
 	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
 }
 
-func I(n int) []struct{} {
-	return make([]struct{}, n)
-}
+// Check the paths passed by the user and determines if it's a binary or source path
+func CheckPathIsSrc(binaryPath, sourcePath string) (string, bool) {
+	// If user has not used flags, we check the configuration file
+	if binaryPath == "" && sourcePath == "" {
+		binaryPath = Configuration.BinaryPath
+		sourcePath = Configuration.SourcePath
+	}
+	ok, err := PathExists(sourcePath)
+	if err != nil {
+		panic(err)
+	}
 
-func R(b, e int) chan int {
-	ch := make(chan int)
+	if ok {
+		return sourcePath, true
+	}
 
-	go func() {
-		for i := b; i < e; i++ {
-			ch <- i
-		}
-		close(ch)
-	}()
+	ok, err = PathExists(binaryPath)
+	if err != nil {
+		panic(err)
+	}
 
-	return ch
-}
-
-func RS(b, e, s int) chan int {
-	ch := make(chan int)
-
-	go func() {
-		for i := b; i < e; i += s {
-			ch <- i
-		}
-		close(ch)
-	}()
-
-	return ch
+	if ok {
+		return binaryPath, false
+	}
+	panic("Path doesn't PathExists")
 }

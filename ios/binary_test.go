@@ -15,12 +15,15 @@ func TestGetOtoolOut(t *testing.T) {
 	if e := utils.Normalize(path, false, func(p string) error {
 		appPath, err := utils.GetApp(p)
 		if err != nil {
-			return err
+			t.Error("Error obtaining app path: ", err)
 		}
 		binPath := filepath.Join(appPath, "iVim")
+		if _, err := os.Stat(binPath); os.IsNotExist(err) {
+			t.Errorf("File %s does not exists", binPath)
+		}
 		otoolOut, err := getOtoolOut(binPath, Libs)
 		if err != nil {
-			return err
+			t.Error("Error getting otool tool out for libs command: ", err)
 		}
 		if platform := runtime.GOOS; platform == "darwin" {
 			if !strings.Contains(otoolOut,
@@ -35,7 +38,7 @@ func TestGetOtoolOut(t *testing.T) {
 		}
 		otoolOut, err = getOtoolOut(binPath, Header)
 		if err != nil {
-			return err
+			t.Error("Error getting otool tool out for header command: ", err)
 		}
 		if !strings.Contains(otoolOut,
 			"PIE") {
@@ -43,7 +46,7 @@ func TestGetOtoolOut(t *testing.T) {
 		}
 		otoolOut, err = getOtoolOut(binPath, Symbols)
 		if err != nil {
-			return err
+			t.Error("Error getting otool tool out for symbols command: ", err)
 		}
 		if !strings.Contains(otoolOut, "address") || !strings.Contains(otoolOut, "index") ||
 			!strings.Contains(otoolOut, "name") {
@@ -113,8 +116,8 @@ func TestOtoolAnalysis(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		if libsLen := len(analysis["libs"].([]string)); libsLen != 26 {
-			t.Errorf("wrong number of libraries found, expected %d, found %d", 26, libsLen)
+		if libsLen:=len(analysis["libs"].([]string)); libsLen != 25 {
+			t.Errorf("wrong number of libraries found, expected %d, found %d", 25, libsLen)
 		}
 		if analLen := len(analysis["anal"].([]map[string]interface{})); analLen != 12 {
 			t.Errorf("wrong number of analysis found, expected %d, found %d", 12, analLen)
@@ -206,8 +209,8 @@ func TestBinaryAnalysis(t *testing.T) {
 		if binResLen := len(analysis["bin_res"].([]map[string]interface{})); binResLen != 13 {
 			t.Errorf("Wrong bin_res number of results: %d, expected %d", binResLen, 13)
 		}
-		if libsLen := len(analysis["libs"].([]string)); libsLen != 26 {
-			t.Errorf("Wrong detected number of libs: %d, expected %d", libsLen, 26)
+		if libsLen := len(analysis["libs"].([]string)); libsLen != 25 {
+			t.Errorf("Wrong detected number of libs: %d, expected %d", libsLen, 25)
 
 		}
 		if analysis["bin_type"].(string) != "Swift" {
