@@ -61,7 +61,7 @@ func TestStaticAnalyzer(t *testing.T) {
 func TestStaticAnalyzerWithLimitedTests(t *testing.T) {
 	test, _ := utils.FindTest("apps", "binary.ipa")
 	utils.Configuration.VirusScanKey = ""
-	utils.Configuration.Scans = []string{ "plist", "code" }
+	utils.Configuration.Scans = []string{"plist", "code"}
 	if res, e := utils.WithPipeStdout(func() error {
 		return StaticAnalyzer(test, false, logrus.NewPrinter(logrus.Log, logrus.Text, logrus.DefaultFormat))
 	}); e != nil {

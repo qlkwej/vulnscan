@@ -2,7 +2,6 @@ package utils
 
 import "os"
 
-
 func DefaultPath() string {
 	dir, _ := os.Getwd()
 	return dir

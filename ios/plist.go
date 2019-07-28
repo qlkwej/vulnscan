@@ -212,7 +212,6 @@ func makePListAnalysis(pListFile, appName string, isSrc bool) (map[string]interf
 	return plist, nil
 }
 
-
 // Search for the plist file calling findPListFile function and performs the PList analysis. Returns a
 // map[string]interface{} with the following information:
 // 		- bin, string, executable name

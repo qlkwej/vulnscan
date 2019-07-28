@@ -39,7 +39,7 @@ var (
 		}
 	}
 	binaryFlag = func(p *string) cli.StringFlag {
-		return cli.StringFlag {
+		return cli.StringFlag{
 			Name:        "binary, b",
 			Value:       utils.DefaultPath(),
 			Usage:       "Full path to binary (ipa) file",
@@ -107,31 +107,30 @@ func getApp() *cli.App {
 	var (
 		configurationPath string
 
-		appID             string
-		country           string
-		binaryPath        string
-		sourcePath        string
-		virusKey          string
+		appID      string
+		country    string
+		binaryPath string
+		sourcePath string
+		virusKey   string
 
-		useJson           bool
-		makeDomainCheck	  bool
-
+		useJson         bool
+		makeDomainCheck bool
 	)
 
 	app := cli.NewApp()
 	app.Version = "0.0.1"
 	app.Name = "vulnscan"
 	app.Usage = "iOS and MacOS vulnerability scanner"
-	app.Authors = []cli.Author{{ Name:  "Vulnscan Team", Email: "vulnscan@simplycubed.com" }}
+	app.Authors = []cli.Author{{Name: "Vulnscan Team", Email: "vulnscan@simplycubed.com"}}
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
-	app.Flags = []cli.Flag{ jsonFlag(&useJson), configurationFlag(&configurationPath) }
+	app.Flags = []cli.Flag{jsonFlag(&useJson), configurationFlag(&configurationPath)}
 	app.Commands = []cli.Command{
 
 		{
 			Name:    "lookup",
 			Aliases: []string{"l"},
 			Usage:   "store app lookup",
-			Flags: []cli.Flag{ appIdFlag(&appID), countryFlag(&country) },
+			Flags:   []cli.Flag{appIdFlag(&appID), countryFlag(&country)},
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.StdOut)
 				if appID != "" {
@@ -150,7 +149,7 @@ func getApp() *cli.App {
 			Name:    "plist",
 			Aliases: []string{"p"},
 			Usage:   "plists scan",
-			Flags: []cli.Flag{ binaryFlag(&binaryPath), sourceFlag(&sourcePath) },
+			Flags:   []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)},
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.StdOut)
 				res, err := ios.PListAnalysis(utils.CheckPathIsSrc(binaryPath, sourcePath))
@@ -163,7 +162,7 @@ func getApp() *cli.App {
 			Name:    "code",
 			Aliases: []string{"c"},
 			Usage:   "search code vulnerabilities",
-			Flags: []cli.Flag{ binaryFlag(&binaryPath), sourceFlag(&sourcePath) },
+			Flags:   []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)},
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.StdOut)
 				p, _ := utils.CheckPathIsSrc(binaryPath, sourcePath)
@@ -177,11 +176,13 @@ func getApp() *cli.App {
 			Name:    "binary",
 			Aliases: []string{"b"},
 			Usage:   "search binary vulnerabilities",
-			Flags: []cli.Flag{ binaryFlag(&binaryPath), sourceFlag(&sourcePath) },
+			Flags:   []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)},
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.StdOut)
 				p, s := utils.CheckPathIsSrc(binaryPath, sourcePath)
-				if s { log.Fatal("Cannot make binary analysis on source code") }
+				if s {
+					log.Fatal("Cannot make binary analysis on source code")
+				}
 				res, err := ios.BinaryAnalysis(p, s, "")
 				pr.Log(res, err, printer.Binary)
 				return nil
@@ -192,8 +193,8 @@ func getApp() *cli.App {
 			Name:    "scan",
 			Aliases: []string{"s"},
 			Usage:   "source directory and binary file security scan",
-			Flags: []cli.Flag{ binaryFlag(&binaryPath), sourceFlag(&sourcePath), virusFlag(&virusKey),
-							   domainCheckFlag(&makeDomainCheck),
+			Flags: []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath), virusFlag(&virusKey),
+				domainCheckFlag(&makeDomainCheck),
 			},
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJson, logrus.Text)
