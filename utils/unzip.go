@@ -57,6 +57,7 @@ func unzip(src, dest string) error {
 	return nil
 }
 
+// WithUnzip extracts file
 func WithUnzip(zipFile, path string, fn func(p string) error) error {
 	_ = os.MkdirAll(path, os.ModePerm)
 	defer os.RemoveAll(path)
@@ -80,7 +81,7 @@ func WithUnzip(zipFile, path string, fn func(p string) error) error {
 	return fn(filepath.Join(path, files[0].Name()))
 }
 
-// Tries to adapt the input folder to different cases, so all the analysis can start from a common
+// Normalize tries to adapt the input folder to different cases, so all the analysis can start from a common
 // folder structure, independently of how the user has passed the address to scan.
 // It follows these rules:
 //
@@ -139,6 +140,7 @@ func Normalize(path string, isSrc bool, fn func(p string) error) error {
 	return fmt.Errorf("unable to normalize path %s", path)
 }
 
+// GetApp returns the .app file
 func GetApp(path string) (app string, err error) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {

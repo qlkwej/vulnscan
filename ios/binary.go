@@ -17,6 +17,7 @@ import (
 
 // Command type determines the otool command flags.
 type CommandType int
+
 const (
 	Libs CommandType = iota
 	Header
@@ -25,6 +26,7 @@ const (
 
 // BinType is the programming language of the binary
 type BinType int
+
 const (
 	Swift BinType = iota
 	ObjC
@@ -35,7 +37,7 @@ const (
 // (testing) or in a sibling folder of the vulnscan binary. The function also looks for a folder configured using the
 // configuration file.
 func getToolsFolder() string {
-	if tf := utils.Configuration.ToolsFolder; tf != ""{
+	if tf := utils.Configuration.ToolsFolder; tf != "" {
 		return tf
 	}
 	var parentFolder string
@@ -47,7 +49,6 @@ func getToolsFolder() string {
 	return parentFolder + string(os.PathSeparator) + "tools" + string(os.PathSeparator)
 }
 
-
 // Calls the otool/jtool with different arguments depending on the passed CommandType to analyze the binary
 // at binPath.
 func getOtoolOut(binPath string, ct CommandType) (string, error) {
@@ -57,7 +58,7 @@ func getOtoolOut(binPath string, ct CommandType) (string, error) {
 		// The args to pass to otool/jtool. We use an array of arrays to accumulate different calls in case we have to
 		// do them (jtool symbols case).
 		args [][]string
-		)
+	)
 	// FORCE_LINUX flag is mostly for testing, although it could be used to use jtool on a mac environment
 	if platform := runtime.GOOS; os.Getenv("FORCE_LINUX") == "1" || platform == "linux" {
 		command = getToolsFolder() + "jtool"
@@ -414,7 +415,6 @@ func otoolAnalysis(binPath string) (res map[string]interface{}, err error) {
 	return res, nil
 }
 
-
 // Calls the class_dump binaries or jtool. Currently this just detects if the binary is using web view
 // TODO: extend the analysis to look for more things?
 func classDump(binPath string, binType BinType) (map[string]interface{}, error) {
@@ -460,7 +460,6 @@ func classDump(binPath string, binType BinType) (map[string]interface{}, error) 
 		}
 	}
 }
-
 
 // Detects if the binary is written in swift or in objective-c analyzing if its libs contains libswiftCore
 func detectBinType(libs []string) BinType {

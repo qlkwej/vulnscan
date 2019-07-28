@@ -25,7 +25,6 @@ func urlEmailExtract(data string) (urls [][]byte, emails [][]byte) {
 	return urlPat.FindAll([]byte(data), -1), emailPat.FindAll([]byte(data), -1)
 }
 
-
 // Code analysis search the code using regex to match some code occurrences and extract conclusions from them.
 // Specifically:
 // - It looks for urls and emails and map them to a map with the file where the email/url is found and a

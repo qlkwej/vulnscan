@@ -29,7 +29,6 @@ func TestCheckConfigurationScans(t *testing.T) {
 }
 
 var (
-
 	json = func() string {
 		f, _ := FindMainFolder()
 		return fmt.Sprintf(`{
@@ -66,8 +65,8 @@ country: us`, f, f)
 )
 
 func TestLoadConfigurationFromPath(t *testing.T) {
-	for ext, content := range map[string]string {"toml": toml, "json": json, "yaml": yaml} {
-		p, e := FindTest("configuration", "vulnscan." + ext)
+	for ext, content := range map[string]string{"toml": toml, "json": json, "yaml": yaml} {
+		p, e := FindTest("configuration", "vulnscan."+ext)
 		if e != nil {
 			t.Error(e)
 		}
@@ -80,7 +79,7 @@ func TestLoadConfigurationFromPath(t *testing.T) {
 			t.Errorf("wrong message: %s", message)
 		}
 		if Configuration.VirusScanKey != "virus_scan_password" ||
-			Configuration.JsonFormat != true ||
+			Configuration.JSONFormat != true ||
 			!reflect.DeepEqual(Configuration.Scans, []string{"binary", "code", "plist"}) {
 			t.Errorf("wrong Configuration found: %v", Configuration)
 		}
@@ -100,14 +99,13 @@ func TestLoadConfigurationFileFromCwd(t *testing.T) {
 		t.Errorf("wrong message: %s", message)
 	}
 	message = LoadConfiguration("/some/stupid/path")
-	if !strings.HasPrefix(message, "Configuration file not found in /some/stupid/path, but " +
+	if !strings.HasPrefix(message, "Configuration file not found in /some/stupid/path, but "+
 		"it was loaded from current execution path") {
 		t.Errorf("wrong message: %s", message)
 	}
 	if Configuration.VirusScanKey != "virus_scan_password" ||
-		Configuration.JsonFormat != true ||
+		Configuration.JSONFormat != true ||
 		!reflect.DeepEqual(Configuration.Scans, []string{"binary", "code", "plist"}) {
 		t.Errorf("wrong Configuration found: %v", Configuration)
 	}
 }
-

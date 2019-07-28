@@ -7,7 +7,7 @@ import (
 
 type CodeAPI struct {
 	// Description of the API
-	Desc  string
+	Desc string
 	// func (string) bool to call against a string to do the match
 	Match Match
 }

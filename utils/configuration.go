@@ -15,33 +15,33 @@ import (
 // Configuration object
 var Configuration = struct {
 	// String slice with the scans to make when calling scan command
-	Scans        		[]string 	`id:"scans" desc:"Test to do when calling scan command"`
+	Scans []string `id:"scans" desc:"Test to do when calling scan command"`
 	// Whether or not we output in json. Defaults to false
-	JsonFormat   		bool     	`id:"json" desc:"Activate the json output"`
+	JSONFormat bool `id:"json" desc:"Activate the json output"`
 	// Whether or not we output colored logs. Defaults to true.
-	ColoredLog			bool		`id:"colored" desc:"Do colored output"`
+	ColoredLog bool `id:"colored" desc:"Do colored output"`
 	// Path where the source to analyze is present in the filesystem.
-	SourcePath   		string   	`id:"source" desc:"Path to the source code to analyze"`
+	SourcePath string `id:"source" desc:"Path to the source code to analyze"`
 	// Path where the binary to analyze is present in the filesystem.
-	BinaryPath   		string   	`id:"binary" desc:"Path to the binary .ipa file to analyze"`
+	BinaryPath string `id:"binary" desc:"Path to the binary .ipa file to analyze"`
 	// Virus scan key. If included, the app will call virus scan api to scan the code
 	// TODO: change to a boolean flag when we have the collective key
-	VirusScanKey 		string   	`id:"virus" desc:"Virus Scan API key to use the service"`
+	VirusScanKey string `id:"virus" desc:"Virus Scan API key to use the service"`
 	// Default country to pass to the lookup in the app store command.
-	DefaultCountry 		string 		`id:"country" desc:"Country to use in the apple store lookup"`
+	DefaultCountry string `id:"country" desc:"Country to use in the apple store lookup"`
 	// Folder where the external binary tools (jtool, etc.) are in the system. If nothing is passed, the application
 	// expects them to be in a sibling folder relative to the app binary.
-	ToolsFolder			string 		`id:"tools" desc:"Folder where the program external binaries are located"`
+	ToolsFolder string `id:"tools" desc:"Folder where the program external binaries are located"`
 	// Whether or not we look for malware domains in malwaredomainlist.com. Defaults to false.
-	PerformDomainCheck  bool		`id:"domains" desc:"Activate domain check from www.malwaredomainlist.com"`
+	PerformDomainCheck bool `id:"domains" desc:"Activate domain check from www.malwaredomainlist.com"`
 }{
-	Scans:        		[]string{"binary", "code", "plist", "lookup", "files"},
-	JsonFormat:   		false,
-	SourcePath:   		"",
-	BinaryPath:   		"",
-	VirusScanKey: 		"",
-	DefaultCountry: 	"us",
-	ToolsFolder: 		"",
+	Scans:              []string{"binary", "code", "plist", "lookup", "files"},
+	JSONFormat:         false,
+	SourcePath:         "",
+	BinaryPath:         "",
+	VirusScanKey:       "",
+	DefaultCountry:     "us",
+	ToolsFolder:        "",
 	PerformDomainCheck: false,
 	ColoredLog:         true,
 }
@@ -52,9 +52,9 @@ var Configuration = struct {
 func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
 	if err := gonfig.Load(&Configuration, gonfig.Conf{
 		FileDefaultFilename: path,
-		FileDecoder: decoder,
-		FlagDisable: true, // does not work, so we have to do it manually
-		EnvPrefix: "VULNSCAN_",
+		FileDecoder:         decoder,
+		FlagDisable:         true, // does not work, so we have to do it manually
+		EnvPrefix:           "VULNSCAN_",
 	}); err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
 		resetConfiguration()
 		return err
 	}
-	for _, p := range []*string{ &Configuration.BinaryPath, &Configuration.SourcePath } {
+	for _, p := range []*string{&Configuration.BinaryPath, &Configuration.SourcePath} {
 		*p, _ = filepath.Abs(*p)
 		if _, err := os.Stat(*p); os.IsNotExist(err) {
 			resetConfiguration()
@@ -89,8 +89,8 @@ func checkConfigurationScans(scans []string) error {
 			store = true
 		}
 		// Remove the matched pattern so we don't match repeated keys.
-		pattern = strings.Replace(pattern, scan + "|", "", 1)
-		pattern = strings.Replace(pattern, "|" + scan, "", 1)
+		pattern = strings.Replace(pattern, scan+"|", "", 1)
+		pattern = strings.Replace(pattern, "|"+scan, "", 1)
 		pattern = strings.Replace(pattern, scan, "", 1)
 		// If we complete the list, replace the pattern with something that can't match
 		if len(pattern) == 0 {
@@ -104,25 +104,23 @@ func checkConfigurationScans(scans []string) error {
 	return nil
 }
 
-
 // Resets the configuration to the original one
 func resetConfiguration() {
 	if e := gonfig.LoadMap(&Configuration, map[string]interface{}{
-		"scans": []string{"binary", "code", "plist", "lookup"},
-		"json": false,
-		"source": "",
-		"binary": "",
-		"virus": "",
+		"scans":   []string{"binary", "code", "plist", "lookup"},
+		"json":    false,
+		"source":  "",
+		"binary":  "",
+		"virus":   "",
 		"country": "us",
-		"tools": "",
+		"tools":   "",
 		"domains": false,
 	}, gonfig.Conf{}); e != nil {
 		panic("FATAL ERROR resetting configuration file")
 	}
 }
 
-
-// Loads the Configuration file in three locations:
+// LoadConfiguration loads the Configuration file in three locations:
 // - The path provided by the user, if any.
 // - The current working directory
 // - The binary path (the path where the executable is right now)
@@ -188,26 +186,22 @@ func LoadConfiguration(path string) string {
 					if sb.Len() > 0 {
 						sb.WriteString(fmt.Sprintf(", but it was loaded from current execution path %s", currentDir))
 						return nil
-					} else {
-						sb.WriteString(fmt.Sprintf("Configuration file loaded from current execution path %s", currentDir))
-						return nil
 					}
-				} else {
-					// If we find a file in the path, but we get an error, we exit the search directly
-					if sb.Len() > 0 {
-						return fmt.Errorf(", error loading file from current execution path %s: %s", currentDir, err)
-					} else {
-						return fmt.Errorf("error loading file loaded from current execution path %s: %s", currentDir, err)
-					}
+					sb.WriteString(fmt.Sprintf("Configuration file loaded from current execution path %s", currentDir))
+					return nil
 				}
+				// If we find a file in the path, but we get an error, we exit the search directly
+				if sb.Len() > 0 {
+					return fmt.Errorf(", error loading file from current execution path %s: %s", currentDir, err)
+				}
+				return fmt.Errorf("error loading file loaded from current execution path %s: %s", currentDir, err)
 			}
 		}
 		// We have not found a Configuration file in the current execution directory
 		if sb.Len() > 0 {
 			return fmt.Errorf(", file not found execution path %s", currentDir)
-		} else {
-			return fmt.Errorf("configuration file not found in execution path %s", currentDir)
 		}
+		return fmt.Errorf("configuration file not found in execution path %s", currentDir)
 	}(); err != nil {
 		sb.WriteString(err.Error())
 	} else {
@@ -215,7 +209,7 @@ func LoadConfiguration(path string) string {
 	}
 	// Finally, we check the folder where the vulnscan binary is located
 	if binaryPath, err := osext.ExecutableFolder(); err == nil {
-		for p, d := range map[string]gonfig.FileDecoderFn {
+		for p, d := range map[string]gonfig.FileDecoderFn{
 			filepath.Join(binaryPath, "vulnscan.toml"): gonfig.DecoderTOML,
 			filepath.Join(binaryPath, "vulnscan.yaml"): gonfig.DecoderYAML,
 			filepath.Join(binaryPath, "vulnscan.json"): gonfig.DecoderJSON,
@@ -224,10 +218,9 @@ func LoadConfiguration(path string) string {
 				if err := loadConfigurationFile(p, d); err == nil {
 					sb.WriteString(fmt.Sprintf(", but it was loaded from the binary path %s", p))
 					return sb.String()
-				} else {
-					sb.WriteString(fmt.Sprintf(" and error loading the file from binary path %s: %s", p, err))
-					return sb.String()
 				}
+				sb.WriteString(fmt.Sprintf(" and error loading the file from binary path %s: %s", p, err))
+				return sb.String()
 			}
 		}
 		sb.WriteString(fmt.Sprintf(" and not found in the binary path %s", binaryPath))
@@ -237,8 +230,7 @@ func LoadConfiguration(path string) string {
 	return fmt.Sprintf("unable to find a valid Configuration file")
 }
 
-
-// Checks if the scan is in the configuration
+// CheckScan checks if the scan is in the configuration
 func CheckScan(scan string) bool {
 	for _, s := range Configuration.Scans {
 		if scan == strings.ToLower(s) {
@@ -247,5 +239,3 @@ func CheckScan(scan string) bool {
 	}
 	return false
 }
-
-
