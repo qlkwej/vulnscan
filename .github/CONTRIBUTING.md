@@ -25,37 +25,37 @@ issues of each type.
 
 #### Bug Reports
 
- - [ ] __Test against latest release__: Make sure you test against the latest
+- [ ] __Test against latest release__: Make sure you test against the latest
    released version. It is possible we already fixed the bug you're experiencing.
 
- - [ ] __Search for possible duplicate reports__: It's helpful to keep bug
+- [ ] __Search for possible duplicate reports__: It's helpful to keep bug
    reports consolidated to one thread, so do a quick search on existing bug
    reports to check if anybody else has reported the same thing. You can scope
    searches by the label "bug" to help narrow things down.
 
- - [ ] __Include steps to reproduce__: Provide steps to reproduce the issue,
+- [ ] __Include steps to reproduce__: Provide steps to reproduce the issue,
    along with any logs, with secrets removed, so we can try to
    reproduce it. Without this, it makes it much harder to fix the issue.
 
- - [ ] __For panics, include `vulnscan.log`__: If you experienced a panic, please
+- [ ] __For panics, include `vulnscan.log`__: If you experienced a panic, please
    create a [gist](https://gist.github.com) of the *entire* generated crash log
    for us to look at. Double check no sensitive items were in the log.
 
 #### Feature Requests
 
- - [ ] __Search for possible duplicate requests__: It's helpful to keep requests
+- [ ] __Search for possible duplicate requests__: It's helpful to keep requests
    consolidated to one thread, so do a quick search on existing requests to
    check if anybody else has reported the same thing. You can scope searches by
    the label "enhancement" to help narrow things down.
 
- - [ ] __Include a use case description__: In addition to describing the
+- [ ] __Include a use case description__: In addition to describing the
    behavior of the feature you'd like to see added, it's helpful to also lay
    out the reason why the feature would be important and how it would benefit
    Vulnerability Scanner users.
 
 #### Questions
 
- - [ ] __Search for answers in Vulnerability Scanner documentation__: We're happy to answer
+- [ ] __Search for answers in Vulnerability Scanner documentation__: We're happy to answer
    questions in GitHub Issues, but it helps reduce issue churn and maintainer
    workload if you work to find answers to common questions in the
    documentation. Often times Question issues result in documentation updates
@@ -88,9 +88,10 @@ issues of each type.
 Thank you for contributing! Here you'll find information on what to include in
 your Pull Request to ensure it is accepted quickly.
 
- * For pull requests that follow the guidelines, we expect to be able to review
+- For pull requests that follow the guidelines, we expect to be able to review
    and merge very quickly.
- * Pull requests that don't follow the guidelines will be annotated with what
+
+- Pull requests that don't follow the guidelines will be annotated with what
    they're missing. A community or core team member may be able to swing around
    and help finish up the work, but these PRs will generally hang out much
    longer until they can be completed and merged.
@@ -131,9 +132,10 @@ each type of contribution.
 Because Vulnerability Scanner's documentation is in the same repo as the code, it's
 easy for anybody to help us improve our docs.
 
- - [ ] __Reasoning for docs update__: Including a quick explanation for why the
+- [ ] __Reasoning for docs update__: Including a quick explanation for why the
    update needed is helpful for reviewers.
- - [ ] __Relevant Vulnerability Scanner version__: Is this update worth deploying to the
+
+- [ ] __Relevant Vulnerability Scanner version__: Is this update worth deploying to the
    site immediately, or is it referencing an upcoming version of Vulnerability Scanner and
    should get pushed out with the next release?
 
@@ -143,7 +145,7 @@ Working on existing resources is a great way to get started as a Vulnerability S
 contributor because you can work within existing code and tests to get a feel
 for what to do.
 
- - [ ] __Acceptance test coverage of new behavior__: Existing resources each
+- [ ] __Acceptance test coverage of new behavior__: Existing resources each
    have a set of acceptance tests covering their functionality.
    These tests should exercise all the behavior of the resource. Whether you are
    adding something or fixing a bug, the idea is to have an acceptance test that
@@ -152,12 +154,14 @@ for what to do.
    that is used, but often a new test is better to add. You can copy/paste an
    existing test and follow the conventions you see there, modifying the test
    to exercise the behavior of your code.
- - [ ] __Documentation updates__: If your code makes any changes that need to
+
+- [ ] __Documentation updates__: If your code makes any changes that need to
    be documented, you should include those doc updates in the same PR. The
    Vulnerability Scanner documentation source is in this repo and includes
    instructions for getting a local copy of the site up and running if you'd
    like to preview your changes.
- - [ ] __Well-formed Code__: Do your best to follow existing conventions you
+
+- [ ] __Well-formed Code__: Do your best to follow existing conventions you
    see in the codebase, and ensure your code is formatted with `go fmt`. (The
    Travis CI build will fail if `go fmt` has not been run on incoming code.)
    The PR reviewers can help out on this front, and may provide comments with
@@ -169,32 +173,34 @@ Implementing a new resource is a good way to learn more about how Vulnerability 
 interacts with upstream APIs. There are plenty of examples to draw from in the
 existing resources, but you still get to implement something completely new.
 
- - [ ] __Minimal LOC__: It can be inefficient for both the reviewer
+- [ ] __Minimal LOC__: It can be inefficient for both the reviewer
    and author to go through long feedback cycles on a big PR with many
    resources. We therefore encourage you to only submit **1 resource at a time**.
- - [ ] __Acceptance tests__: New resources should include acceptance tests
+
+- [ ] __Acceptance tests__: New resources should include acceptance tests
    covering their behavior. See [Writing Acceptance
    Tests](#writing-acceptance-tests) below for a detailed guide on how to
    approach these.
- - [ ] __Documentation__: Each resource gets a page in the Vulnerability Scanner
+
+- [ ] __Documentation__: Each resource gets a page in the Vulnerability Scanner
    documentation. The Vulnerability Scanner documentation source is in this
    repo and includes instructions for getting a local copy of the site up and
    running if you'd like to preview your changes. For a resource, you'll want
    to add a new file in the appropriate place and add a link to the sidebar for
    that page.
- - [ ] __Well-formed Code__: Do your best to follow existing conventions you
+
+- [ ] __Well-formed Code__: Do your best to follow existing conventions you
    see in the codebase, and ensure your code is formatted with `go fmt`. (The
    Travis CI build will fail if `go fmt` has not been run on incoming code.)
    The PR reviewers can help out on this front, and may provide comments with
    suggestions on how to improve the code.
-
 
 #### Core Bugfix/Enhancement
 
 We are always happy when any developer is interested in diving into Vulnerability Scanner's
 core to help out! Here's what we look for in smaller Core PRs.
 
- - [ ] __Unit tests__: Vulnerability Scanner's core is covered by hundreds of unit tests at
+- [ ] __Unit tests__: Vulnerability Scanner's core is covered by hundreds of unit tests at
    several different layers of abstraction. Generally the best place to start
    is with a "Context Test". These are higher level test that interact
    end-to-end with most of Vulnerability Scanner's core. They are divided into test files
@@ -203,12 +209,14 @@ core to help out! Here's what we look for in smaller Core PRs.
    place, you can work on implementation and lower level unit tests. Lower
    level tests are largely context dependent, but the Context Tests are almost
    always part of core work.
- - [ ] __Documentation updates__: If the core change involves anything that
+
+- [ ] __Documentation updates__: If the core change involves anything that
    needs to be reflected in our documentation, you can make those changes in
    the same PR. The Vulnerability Scanner documentation source is in this repo and
    includes instructions for getting a local copy of the site up and running if
    you'd like to preview your changes.
- - [ ] __Well-formed Code__: Do your best to follow existing conventions you
+
+- [ ] __Well-formed Code__: Do your best to follow existing conventions you
    see in the codebase, and ensure your code is formatted with `go fmt`. (The
    Travis CI build will fail if `go fmt` has not been run on incoming code.)
    The PR reviewers can help out on this front, and may provide comments with
@@ -219,12 +227,13 @@ core to help out! Here's what we look for in smaller Core PRs.
 If you're interested in taking on a larger core feature, it's a good idea to
 get feedback early and often on the effort.
 
- - [ ] __Early validation of idea and implementation plan__: Vulnerability Scanner's core
+- [ ] __Early validation of idea and implementation plan__: Vulnerability Scanner's core
    is complicated enough that there are often several ways to implement
    something, each of which has different implications and tradeoffs. Working
    through a plan of attack with the team before you dive into implementation
    will help ensure that you're working in the right direction.
- - [ ] __Unit tests__: Vulnerability Scanner's core is covered by hundreds of unit tests at
+
+- [ ] __Unit tests__: Vulnerability Scanner's core is covered by hundreds of unit tests at
    several different layers of abstraction. Generally the best place to start
    is with a "Context Test". These are higher level test that interact
    end-to-end with most of Vulnerability Scanner's core. They are divided into test files
@@ -233,12 +242,14 @@ get feedback early and often on the effort.
    place, you can work on implementation and lower level unit tests. Lower
    level tests are largely context dependent, but the Context Tests are almost
    always part of core work.
- - [ ] __Documentation updates__: If the core change involves anything that
+
+- [ ] __Documentation updates__: If the core change involves anything that
    needs to be reflected in our documentation, you can make those changes in
    the same PR. The Vulnerability Scanner documentation source is in this repo and
    includes instructions for getting a local copy of the site up and running if
    you'd like to preview your changes.
- - [ ] __Well-formed Code__: Do your best to follow existing conventions you
+
+- [ ] __Well-formed Code__: Do your best to follow existing conventions you
    see in the codebase, and ensure your code is formatted with `go fmt`. (The
    Travis CI build will fail if `go fmt` has not been run on incoming code.)
    The PR reviewers can help out on this front, and may provide comments with
