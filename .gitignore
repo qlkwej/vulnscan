@@ -30,3 +30,6 @@ vendor
 
 # Env file with possibly confidential stuff
 .env
+
+# Folder where task creates the builds
+build
