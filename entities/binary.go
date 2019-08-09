@@ -11,7 +11,6 @@ type (
 	CpuType    string
 	SubCpuType string
 	Status     string
-	CWE		   string
 
 
 	MachoInfo struct {
@@ -26,7 +25,7 @@ type (
 		Description   string 	`json:"description" validate:"min=1"`
 		Status        Status 	`json:"status" validate:"valid_status"`
 		Cvss		  float32 	`json:"cvss" validate:"required"`
-		CWE           CWE 		`json:"cwe" validate:"startswith=CWE-"`
+		CWE           string 	`json:"cwe" validate:"startswith=CWE-"`
 	}
 
 	BinaryAnalysis struct {
@@ -463,7 +462,7 @@ func (e *BinaryAnalysisResult) FromMap(m map[string]interface{}) (ent Entity, er
 	if v, ok := m["cwe"]; ok {
 		switch v.(type) {
 		case string:
-			e.CWE = CWE(v.(string))
+			e.CWE = v.(string)
 		default:
 			return ent, fmt.Errorf("erroneus cwe type, expected string, found: %T", v)
 		}
@@ -473,11 +472,11 @@ func (e *BinaryAnalysisResult) FromMap(m map[string]interface{}) (ent Entity, er
 
 func (e *BinaryAnalysisResult) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"issue": e.Issue,
+		"issue":       e.Issue,
 		"description": e.Description,
-		"status": string(e.Status),
-		"cvss": e.Cvss,
-		"cwe": string(e.CWE),
+		"status":      string(e.Status),
+		"cvss":        e.Cvss,
+		"cwe":         e.CWE,
 	}
 }
 
