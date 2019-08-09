@@ -1,6 +1,9 @@
 package entities
 
-import "gopkg.in/go-playground/validator.v9"
+import (
+	"fmt"
+	"gopkg.in/go-playground/validator.v9"
+)
 
 type (
 	Bits       uint
@@ -12,18 +15,18 @@ type (
 
 
 	MachoInfo struct {
-		Bits       Bits 		`json:"bits" validate:"required oneof=32 64"`
-		Endianness Endianness 	`json:"endianness" validate:"required oneof=BigEndian LittleEndian"`
-		Cpu        CpuType 		`json:"cpu" validate:"required oneof=VAX "`
-		SubCpu     SubCpuType 	`json:"sub_cpu"`
+		Bits       Bits 		`json:"bits" validate:"required,valid_bits"`
+		Endianness Endianness 	`json:"endianness" validate:"required,valid_endianness"`
+		Cpu        CpuType 		`json:"cpu" validate:"required,valid_cpu"`
+		SubCpu     SubCpuType 	`json:"sub_cpu" validate:"omitempty,valid_sub_cpu"`
 	}
 
 	BinaryAnalysisResult struct {
-		Issue         string 	`json:"issue"`
-		Description   string 	`json:"description"`
-		Status        Status 	`json:"status"`
-		Cvss		  float32 	`json:"cvss"`
-		CWE           CWE 		`json:"cwe"`
+		Issue         string 	`json:"issue" validate:"min=1"`
+		Description   string 	`json:"description" validate:"min=1"`
+		Status        Status 	`json:"status" validate:"valid_status"`
+		Cvss		  float32 	`json:"cvss" validate:"required"`
+		CWE           CWE 		`json:"cwe" validate:"startswith=CWE-"`
 	}
 
 	BinaryAnalysis struct {
@@ -354,30 +357,55 @@ func cpuValidator(fl validator.FieldLevel) bool {
 }
 
 func subCpuValidator(fl validator.FieldLevel) bool {
+	if r, ok := fl.Parent().Interface().(*MachoInfo); ok {
+		return validSubCpuValues[r.Cpu][SubCpuType(fl.Field().String())]
+	}
 	return validSubCpuValues[fl.Parent().Interface().(MachoInfo).Cpu][SubCpuType(fl.Field().String())]
 }
 
 
-func (e *MachoInfo) FromMap(m map[string]interface{}) Entity {
+func (e *MachoInfo) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	if v, ok := m["bits"]; ok {
-		e.Bits = Bits(v.(uint))
+		switch v.(type) {
+		case uint:
+			e.Bits = Bits(v.(uint))
+		case int:
+			e.Bits = Bits(v.(int))
+		default:
+			return ent, fmt.Errorf("erroneus bits type, expected uint/int, found: %T", v)
+		}
 	}
 	if v, ok := m["endianness"]; ok {
-		e.Endianness = Endianness(v.(string))
+		switch v.(type) {
+		case string:
+			e.Endianness = Endianness(v.(string))
+		default:
+			return ent, fmt.Errorf("erroneus endianness type, expected string, found: %T", v)
+		}
 	}
 	if v, ok := m["cpu"]; ok {
-		e.Cpu = CpuType(v.(string))
+		switch v.(type) {
+		case string:
+			e.Cpu = CpuType(v.(string))
+		default:
+			return ent, fmt.Errorf("erroneus cpu type, expected string, found: %T", v)
+		}
 	}
 	if v, ok := m["sub_cpu"]; ok {
-		e.SubCpu = SubCpuType(v.(string))
+		switch v.(type) {
+		case string:
+			e.SubCpu = SubCpuType(v.(string))
+		default:
+			return ent, fmt.Errorf("erroneus sub cpu type, expected string, found: %T", v)
+		}
 	}
-	return e
+	return e, nil
 }
 
 func (e *MachoInfo) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"bits": uint(e.Bits),
-		"endianess": string(e.Endianness),
+		"endianness": string(e.Endianness),
 		"cpu": string(e.Cpu),
 		"sub_cpu": string(e.SubCpu),
 	}
@@ -387,23 +415,60 @@ func (e *MachoInfo) Validate() []validator.FieldError {
 	return Validate(e)
 }
 
-func (e *BinaryAnalysisResult) FromMap(m map[string]interface{}) Entity {
+func (e *BinaryAnalysisResult) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	if v, ok := m["issue"]; ok {
-		e.Issue = v.(string)
+		switch v.(type) {
+		case string:
+			e.Issue = v.(string)
+		default:
+			return ent, fmt.Errorf("erroneus issue type, expected string, found: %T", v)
+		}
 	}
 	if v, ok := m["description"]; ok {
-		e.Description = v.(string)
+		switch v.(type) {
+		case string:
+			e.Description = v.(string)
+		default:
+			return ent, fmt.Errorf("erroneus description type, expected string, found: %T", v)
+		}
 	}
 	if v, ok := m["status"]; ok {
-		e.Status = Status(v.(string))
+		switch v.(type) {
+		case string:
+			e.Status = Status(v.(string))
+		default:
+			return ent, fmt.Errorf("erroneus status type, expected string, found: %T", v)
+		}
 	}
 	if v, ok := m["cvss"]; ok {
-		e.Cvss = v.(float32)
+		switch v.(type) {
+		case float32:
+			e.Cvss = v.(float32)
+		case float64:
+			e.Cvss = float32(v.(float64))
+		case int:
+			e.Cvss = float32(v.(int))
+		case int8:
+			e.Cvss = float32(v.(int8))
+		case int16:
+			e.Cvss = float32(v.(int16))
+		case int32:
+			e.Cvss = float32(v.(int32))
+		case int64:
+			e.Cvss = float32(v.(int64))
+		default:
+			return ent, fmt.Errorf("erroneus cvss type, expected float, found: %T", v)
+		}
 	}
 	if v, ok := m["cwe"]; ok {
-		e.CWE = CWE(v.(string))
+		switch v.(type) {
+		case string:
+			e.CWE = CWE(v.(string))
+		default:
+			return ent, fmt.Errorf("erroneus cwe type, expected string, found: %T", v)
+		}
 	}
-	return e
+	return e, nil
 }
 
 func (e *BinaryAnalysisResult) ToMap() map[string]interface{} {
@@ -420,22 +485,35 @@ func (e *BinaryAnalysisResult) Validate() []validator.FieldError {
 	return Validate(e)
 }
 
-func (e *BinaryAnalysis) FromMap(m map[string]interface{}) Entity {
+func (e *BinaryAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	if v, ok := m["libraries"]; ok {
-		e.Libraries = v.([]string)
+		switch v.(type) {
+		case []string:
+			e.Libraries = v.([]string)
+		default:
+			return ent, fmt.Errorf("erroneus libraries type, expected []string, found: %T", v)
+		}
 	}
 	if v, ok := m["macho"]; ok {
 		macho := &MachoInfo{}
-		e.Macho = *(macho.FromMap(v.(map[string]interface{})).(*MachoInfo))
+		machoInt, err := macho.FromMap(v.(map[string]interface{}))
+		if err != nil {
+			return ent, err
+		}
+		e.Macho = *(machoInt).(*MachoInfo)
 	}
 	if v, ok := m["results"]; ok {
 		e.Results = []BinaryAnalysisResult{}
 		for _, r := range v.([]map[string]interface{}) {
 			result := &BinaryAnalysisResult{}
-			e.Results = append(e.Results, *(result.FromMap(r).(*BinaryAnalysisResult)))
+			resultInt, err := result.FromMap(r)
+			if err != nil {
+				return ent, err
+			}
+			e.Results = append(e.Results, *(resultInt.(*BinaryAnalysisResult)))
 		}
 	}
-	return e
+	return e, nil
 }
 
 func (e *BinaryAnalysis) ToMap() map[string]interface{} {

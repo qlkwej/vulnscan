@@ -10,7 +10,7 @@ type Entity interface {
 	ToMap() map[string]interface{}
 	// ToMap and FromMap are complementary functions, in order to test them, we have to be sure that a FromMap().ToMap()
 	// roundtrip outputs the same map object as the used input.
-	FromMap(m map[string]interface{}) Entity
+	FromMap(m map[string]interface{}) (Entity, error)
 	// Validate allows to obtain an array of field errors from the Entity fields. It allows to check if the entity
 	// creation has been completelly succesful or not.
 	Validate() []validator.FieldError
@@ -32,7 +32,7 @@ func getValidator() *validator.Validate {
 
 
 func Validate(e Entity) []validator.FieldError {
-	err := validate.Struct(e)
+	err := getValidator().Struct(e)
 	if err != nil {
 		return err.(validator.ValidationErrors)
 	}
