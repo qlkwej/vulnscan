@@ -43,10 +43,10 @@ const (
 	BigEndian 	 Endianness = "BigEndian"
 	LittleEndian Endianness = "LittleEndian"
 
-	Secure Status = "Secure"
-	Insecure Status = "Insecure"
-	Info Status = "Info"
-	Warning Status = "Warning"
+	SecureStatus   Status = "Secure"
+	InsecureStatus Status = "Insecure"
+	InfoStatus     Status = "Info"
+	WarningStatus  Status = "Warning"
 
 	VAX 		CpuType = "VAX"
 	MC680X0 	CpuType = "MC680x0"
@@ -162,182 +162,184 @@ const (
 
 )
 
-var validBitsValues = map[Bits]bool {
-	Bits32: true,
-	Bits64: true,
-}
+var (
+	validBitsValues = map[Bits]bool {
+		Bits32: true,
+		Bits64: true,
+	}
 
-var validEndiannessValues = map[Endianness]bool {
-	BigEndian: true,
-	LittleEndian: true,
-}
+	validEndiannessValues = map[Endianness]bool {
+		BigEndian: true,
+		LittleEndian: true,
+	}
 
-var validStatusValues = map[Status]bool {
-	Secure: true,
-	Insecure: true,
-	Info: true,
-	Warning: true,
-}
+	validStatusValues = map[Status]bool {
+		SecureStatus:   true,
+		InsecureStatus: true,
+		InfoStatus:     true,
+		WarningStatus:  true,
+	}
 
-var validCpuValues = map[CpuType]bool{
-	VAX: true,
-	MC680X0: true,
- 	I386: true,
-	X8664: true,
- 	MIPS: true,
- 	MC98000: true,
- 	HPPA: true,
- 	ARM: true,
- 	ARM64: true,
- 	MC88000: true,
- 	SPARC: true,
- 	I860: true,
- 	Alpha: true,
- 	PowerPC: true,
-	PowerPC64: true,
-}
+	validCpuValues = map[CpuType]bool{
+		VAX: true,
+		MC680X0: true,
+		I386: true,
+		X8664: true,
+		MIPS: true,
+		MC98000: true,
+		HPPA: true,
+		ARM: true,
+		ARM64: true,
+		MC88000: true,
+		SPARC: true,
+		I860: true,
+		Alpha: true,
+		PowerPC: true,
+		PowerPC64: true,
+	}
 
-var validSubCpuValues = map[CpuType]map[SubCpuType]bool{
-	VAX: {
-		VaxAll: true,
-		Vax780: true,
-		Vax785: true,
-		Vax750: true,
-		Vax730: true,
-		UvAxI: true,
-		UvAxII: true,
-		Vax8200: true,
-		Vax8500: true,
-		Vax8600: true,
-		Vax8650: true,
-		Vax8800: true,
-		UvaxIII: true,
-	},
-	MC680X0: {
-		Mc880000All: true,
-		MC88100: true,
-		MC88110: true,
-	},
-	I386: {
-		IntelModelAll: true,
-		IntelHTT: true,
-		I386All: true,
-		I486: true,
-		I586: true,
-		Pentium3: true,
-		PentiumM: true,
-		Pentium4: true,
-		Itanium: true,
-		Xeon: true,
-		XeonMP: true,
-		Pentium4M: true,
-		Itanium2: true,
-		PentiumPro: true,
-		Pentium3M: true,
-		Pentium3Xeon: true,
-		PentiiM3: true,
-		I486Sx: true,
-		PentiiM5: true,
-		Celeron: true,
-		CeleronMobile: true,
-	},
-	X8664: {
-		X8664All: true,
-		X86Arch1: true,
-	},
-	MIPS: {
-		MipsAll: true,
-		MipsR2300: true,
-		MipsR2600: true,
-		MipsR2800: true,
-		MipsR2000a: true,
-		MipsR2000: true,
-		MipsR3000a: true,
-		MipsR3000: true,
-	},
-	MC98000: {
-		MC98000All: true,
-		MC98601: true,
-	},
-	HPPA: {
-		Hppa7100: true,
-		Hppa7100LC: true,
+	validSubCpuValues = map[CpuType]map[SubCpuType]bool{
+		VAX: {
+			VaxAll:  true,
+			Vax780:  true,
+			Vax785:  true,
+			Vax750:  true,
+			Vax730:  true,
+			UvAxI:   true,
+			UvAxII:  true,
+			Vax8200: true,
+			Vax8500: true,
+			Vax8600: true,
+			Vax8650: true,
+			Vax8800: true,
+			UvaxIII: true,
+		},
+		MC680X0: {
+			Mc880000All: true,
+			MC88100:     true,
+			MC88110:     true,
+		},
+		I386: {
+			IntelModelAll: true,
+			IntelHTT:      true,
+			I386All:       true,
+			I486:          true,
+			I586:          true,
+			Pentium3:      true,
+			PentiumM:      true,
+			Pentium4:      true,
+			Itanium:       true,
+			Xeon:          true,
+			XeonMP:        true,
+			Pentium4M:     true,
+			Itanium2:      true,
+			PentiumPro:    true,
+			Pentium3M:     true,
+			Pentium3Xeon:  true,
+			PentiiM3:      true,
+			I486Sx:        true,
+			PentiiM5:      true,
+			Celeron:       true,
+			CeleronMobile: true,
+		},
+		X8664: {
+			X8664All: true,
+			X86Arch1: true,
+		},
+		MIPS: {
+			MipsAll:    true,
+			MipsR2300:  true,
+			MipsR2600:  true,
+			MipsR2800:  true,
+			MipsR2000a: true,
+			MipsR2000:  true,
+			MipsR3000a: true,
+			MipsR3000:  true,
+		},
+		MC98000: {
+			MC98000All: true,
+			MC98601:    true,
+		},
+		HPPA: {
+			Hppa7100:   true,
+			Hppa7100LC: true,
+		},
+		ARM: {
+			ArmAll12:  true,
+			ArmV4T:    true,
+			ArmV6:     true,
+			ArmV5TEJ:  true,
+			ArmXScale: true,
+			ArmV7:     true,
+			ArmV7F:    true,
+			ArmV7S:    true,
+			ArmV7K:    true,
+			ArmV6M:    true,
+			ArmV7M:    true,
+			ArmV7EM:   true,
+		},
+		ARM64: {
+			ArmAll12:  true,
+			ArmV4T:    true,
+			ArmV6:     true,
+			ArmV5TEJ:  true,
+			ArmXScale: true,
+			ArmV7:     true,
+			ArmV7F:    true,
+			ArmV7S:    true,
+			ArmV7K:    true,
+			ArmV6M:    true,
+			ArmV7M:    true,
+			ArmV7EM:   true,
+		},
+		MC88000: {
+			MC680X0All:  true,
+			MC68040:     true,
+			MC68030Only: true,
+		},
+		SPARC: {
+			SparcAll: true,
+		},
+		I860: {
+			I860All: true,
+			I860860: true,
+		},
+		Alpha: {
+			AlphaAll: true,
+		},
+		PowerPC: {
+			PowerPCAll:   true,
+			PowerPC601:   true,
+			PowerPC602:   true,
+			PowerPC603:   true,
+			PowerPC603e:  true,
+			PowerPC603ev: true,
+			PowerPC604:   true,
+			PowerPC604e:  true,
+			PowerPC620:   true,
+			PowerPC750:   true,
+			PowerPC7400:  true,
+			PowerPC7450:  true,
+			PowerPC970:   true,
+		},
+		PowerPC64: {
+			PowerPCAll:   true,
+			PowerPC601:   true,
+			PowerPC602:   true,
+			PowerPC603:   true,
+			PowerPC603e:  true,
+			PowerPC603ev: true,
+			PowerPC604:   true,
+			PowerPC604e:  true,
+			PowerPC620:   true,
+			PowerPC750:   true,
+			PowerPC7400:  true,
+			PowerPC7450:  true,
+			PowerPC970:   true,
+		},
+	}
+)
 
-	},
-	ARM: {
-		ArmAll12: true,
-		ArmV4T: true,
-		ArmV6: true,
-		ArmV5TEJ: true,
-		ArmXScale: true,
-		ArmV7: true,
-		ArmV7F: true,
-		ArmV7S: true,
-		ArmV7K: true,
-		ArmV6M: true,
-		ArmV7M: true,
-		ArmV7EM : true,
-	},
-	ARM64: {
-		ArmAll12: true,
-		ArmV4T: true,
-		ArmV6: true,
-		ArmV5TEJ: true,
-		ArmXScale: true,
-		ArmV7: true,
-		ArmV7F: true,
-		ArmV7S: true,
-		ArmV7K: true,
-		ArmV6M: true,
-		ArmV7M: true,
-		ArmV7EM : true,
-	},
-	MC88000: {
-		MC680X0All: true,
-		MC68040: true,
-		MC68030Only: true,
-	},
-	SPARC: {
-		SparcAll: true,
-	},
-	I860: {
-		I860All: true,
-		I860860: true,
-	},
-	Alpha: {
-		AlphaAll: true,
-	},
-	PowerPC: {
-		PowerPCAll: true,
-		PowerPC601: true,
-		PowerPC602: true,
-		PowerPC603: true,
-		PowerPC603e: true,
-		PowerPC603ev: true,
-		PowerPC604: true,
-		PowerPC604e: true,
-		PowerPC620: true,
-		PowerPC750: true,
-		PowerPC7400: true,
-		PowerPC7450: true,
-		PowerPC970: true,
-	},
-	PowerPC64: {
-		PowerPCAll: true,
-		PowerPC601: true,
-		PowerPC602: true,
-		PowerPC603: true,
-		PowerPC603e: true,
-		PowerPC603ev: true,
-		PowerPC604: true,
-		PowerPC604e: true,
-		PowerPC620: true,
-		PowerPC750: true,
-		PowerPC7400: true,
-		PowerPC7450: true,
-		PowerPC970: true,
-	},
-}
 
 func bitsValidator(fl validator.FieldLevel) bool {
 	return validBitsValues[Bits(fl.Field().Uint())]
