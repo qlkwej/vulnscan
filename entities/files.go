@@ -5,14 +5,14 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-type ListFiles struct {
+type FileAnalysis struct {
 	Files 			[]string `json:"files"`
 	Certifications 	[]string `json:"certifications"`
 	Databases 		[]string `json:"databases"`
 	PLists 			[]string `json:"plists"`
 }
 
-func (e *ListFiles) ToMap() map[string]interface{} {
+func (e *FileAnalysis) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"files": e.Files,
 		"certifications": e.Certifications,
@@ -21,7 +21,7 @@ func (e *ListFiles) ToMap() map[string]interface{} {
 	}
 }
 
-func (e *ListFiles) FromMap(m map[string]interface{}) (ent Entity, err error) {
+func (e *FileAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	if v, ok := m["files"]; ok {
 		switch v.(type) {
 		case []string:
@@ -57,7 +57,7 @@ func (e *ListFiles) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	return e, err
 }
 
-func (e *ListFiles) Validate() []validator.FieldError {
+func (e *FileAnalysis) Validate() []validator.FieldError {
 	return Validate(e)
 }
 

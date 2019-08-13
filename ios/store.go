@@ -118,6 +118,7 @@ func Search(appID string, country string) map[string]interface{} {
 			"supportedDevices":  "supported_devices",
 			"trackName":         "title",
 			"bundleId":          "app_id",
+			//"description":		 "description", TODO: TEST THIS
 			"genres":            "categories",
 			"price":             "price",
 			"trackViewUrl":      "url",
