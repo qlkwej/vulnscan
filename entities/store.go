@@ -358,7 +358,7 @@ func (e *StoreAnalysis) ToMap() map[string]interface{} {
 	}
 	return map[string]interface{}{
 		"count": e.Count,
-		"results": results
+		"results": results,
 	}
 }
 
