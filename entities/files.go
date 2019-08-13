@@ -54,6 +54,7 @@ func (e *ListFiles) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			return ent, fmt.Errorf("erroneus plists type, expected string, found: %T", v)
 		}
 	}
+	return e, err
 }
 
 func (e *ListFiles) Validate() []validator.FieldError {
