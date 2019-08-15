@@ -16,6 +16,7 @@ func TestSearch(t *testing.T) {
 	testStoreLookup := map[string]interface{}{}
 	sampleLookupFile, _ := ioutil.ReadFile("sample-store-lookup.json")
 	_ = json.Unmarshal([]byte(sampleLookupFile), &testStoreLookup)
+	t.Logf("%#v", testStoreLookup)
 	// Assert the number of results is right
 	if count := searchResult["count"]; count != 1 {
 		t.Errorf("Search result = %d; wanted 1", count)

@@ -6,10 +6,10 @@ import (
 )
 
 type FileAnalysis struct {
-	Files 			[]string `json:"files"`
-	Certifications 	[]string `json:"certifications"`
-	Databases 		[]string `json:"databases"`
-	PLists 			[]string `json:"plists"`
+	Files 			[]string `json:"files" validate:"min=1"`
+	Certifications 	[]string `json:"certifications" validate:"required"`
+	Databases 		[]string `json:"databases" validate:"required"`
+	PLists 			[]string `json:"plists" validate:"required"`
 }
 
 func (e *FileAnalysis) ToMap() map[string]interface{} {

@@ -23,8 +23,8 @@ var (
 	binaryAnalysisResultMap = map[string]interface{}{
 		"issue": "There is an issue",
 		"description": "A very bad issue",
-		"status": "InsecureStatus",
-		"cvss": float32(10.8),
+		"status": "Insecure",
+		"cvss": 10.8,
 		"cwe": "CWE-144",
 	}
 
@@ -51,8 +51,6 @@ var (
 			wrongBinaryAnalysisResultMap,
 		},
 	}
-
-
 )
 
 func TestMachoInfoMapTransformation(t *testing.T) {
@@ -63,16 +61,13 @@ func TestMachoInfoMapTransformation(t *testing.T) {
 }
 
 func TestMachoInfoValidation(t *testing.T) {
-	macho := &MachoInfo{}
-	p, err := macho.FromMap(machoInfoTestMap)
+	p, err := (&MachoInfo{}).FromMap(machoInfoTestMap)
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 0)
-	p, err = macho.FromMap(wrongMachoInfoTestMap)
+	p, err = (&MachoInfo{}).FromMap(wrongMachoInfoTestMap)
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 2)
 }
-
-
 
 func TestBinaryAnalysisResultMapTranformation(t *testing.T) {
 	result := BinaryAnalysisResult{}
@@ -82,11 +77,10 @@ func TestBinaryAnalysisResultMapTranformation(t *testing.T) {
 }
 
 func TestBinaryAnalysisResultMapValidation(t *testing.T) {
-	result := BinaryAnalysisResult{}
-	r, err := result.FromMap(binaryAnalysisResultMap)
+	r, err := (&BinaryAnalysisResult{}).FromMap(binaryAnalysisResultMap)
 	assert.NoError(t, err)
 	assert.Len(t, r.Validate(), 0)
-	r, err = result.FromMap(wrongBinaryAnalysisResultMap)
+	r, err = (&BinaryAnalysisResult{}).FromMap(wrongBinaryAnalysisResultMap)
 	assert.NoError(t, err)
 	assert.Len(t, r.Validate(), 2)
 }
@@ -99,11 +93,10 @@ func TestBinaryAnalysisMapTransformation(t *testing.T) {
 }
 
 func TestBinaryAnalysisValidatiom(t *testing.T) {
-	analysis := BinaryAnalysis{}
-	a, err := analysis.FromMap(binaryAnalysisMap)
+	a, err := (&BinaryAnalysis{}).FromMap(binaryAnalysisMap)
 	assert.NoError(t, err)
 	assert.Len(t, a.Validate(), 0)
-	a, err = analysis.FromMap(wrongBinaryAnalysisMap)
+	a, err = (&BinaryAnalysis{}).FromMap(wrongBinaryAnalysisMap)
 	assert.NoError(t, err)
 	assert.Len(t, a.Validate(), 2)
 }

@@ -7,27 +7,27 @@ import (
 
 type (
 	StoreResult struct {
-		Features         	[]string 	`json:"features"`
-		IconUrl512       	string   	`json:"artworkUrl512"`
-		IconUrl100       	string   	`json:"artworkUrl100"`
-		IconUrl60        	string   	`json:"artworkUrl60"`
-		DeveloperId      	int      	`json:"artistId"`
-		DeveloperName    	string   	`json:"artistName"`
-		DeveloperUrl     	string   	`json:"artistViewUrl"`
-		DeveloperWebsite 	string   	`json:"sellerUrl"`
-		SupportedDevices 	[]string 	`json:"supportedDevices"`
-		Title            	string   	`json:"trackName"`
-		AppId            	string   	`json:"bundleId"`
-		Categories       	[]string 	`json:"genres"`
-		Description      	string   	`json:"description"`
-		Price            	float32  	`json:"price"`
-		Url        			string   	`json:"trackViewUrl"`
-		Score            	float32  	`json:"averageUserRating"`
+		Features         	[]string 	`json:"features" validate:"required"`
+		IconUrl512       	string   	`json:"artworkUrl512" validate:"required"`
+		IconUrl100       	string   	`json:"artworkUrl100" validate:"required"`
+		IconUrl60        	string   	`json:"artworkUrl60" validate:"required"`
+		DeveloperId      	int      	`json:"artistId" validate:"required"`
+		DeveloperName    	string   	`json:"artistName" validate:"required"`
+		DeveloperUrl     	string   	`json:"artistViewUrl" validate:"required"`
+		DeveloperWebsite 	string   	`json:"sellerUrl" validate:"required"`
+		SupportedDevices 	[]string 	`json:"supportedDevices" validate:"required"`
+		Title            	string   	`json:"trackName" validate:"required"`
+		AppId            	string   	`json:"bundleId" validate:"required"`
+		Categories       	[]string 	`json:"genres" validate:"required"`
+		Description      	string   	`json:"description" validate:"required"`
+		Price            	float64  	`json:"price"`
+		Url        			string   	`json:"trackViewUrl" validate:"required"`
+		Score            	float64  	`json:"averageUserRating" validate:"required"`
 	}
 
 	StoreAnalysis struct {
-		Count 	int 			`json:"count"`
-		Results []StoreResult 	`json:"results"`
+		Count 	int 			`json:"count" validate:"len=1"`
+		Results []StoreResult 	`json:"results" validate:"min=1"`
 	}
 )
 
@@ -272,20 +272,20 @@ func (e *StoreResult) FromMap(m map[string]interface{}) (ent Entity, err error) 
 	}
 	if v, ok := m["price"]; ok {
 		switch v.(type) {
-		case float32:
-			e.Price = v.(float32)
 		case float64:
-			e.Price = float32(v.(float64))
+			e.Price = v.(float64)
+		case float32:
+			e.Price = float64(v.(float32))
 		case int:
-			e.Price = float32(v.(int))
+			e.Price = float64(v.(int))
 		case int8:
-			e.Price = float32(v.(int8))
+			e.Price = float64(v.(int8))
 		case int16:
-			e.Price = float32(v.(int16))
+			e.Price = float64(v.(int16))
 		case int32:
-			e.Price = float32(v.(int32))
+			e.Price = float64(v.(int32))
 		case int64:
-			e.Price = float32(v.(int64))
+			e.Price = float64(v.(int64))
 		default:
 			return ent, fmt.Errorf("erroneus price type, expected float/int, found: %T", v)
 		}
@@ -307,39 +307,39 @@ func (e *StoreResult) FromMap(m map[string]interface{}) (ent Entity, err error) 
 	}
 	if v, ok := m["averageUserRating"]; ok {
 		switch v.(type) {
-		case float32:
-			e.Score = v.(float32)
 		case float64:
-			e.Score = float32(v.(float64))
+			e.Score = v.(float64)
+		case float32:
+			e.Score = float64(v.(float32))
 		case int:
-			e.Score = float32(v.(int))
+			e.Score = float64(v.(int))
 		case int8:
-			e.Score = float32(v.(int8))
+			e.Score = float64(v.(int8))
 		case int16:
-			e.Score = float32(v.(int16))
+			e.Score = float64(v.(int16))
 		case int32:
-			e.Score = float32(v.(int32))
+			e.Score = float64(v.(int32))
 		case int64:
-			e.Score = float32(v.(int64))
+			e.Score = float64(v.(int64))
 		default:
 			return ent, fmt.Errorf("erroneus score type, expected float/int, found: %T", v)
 		}
 	} else if v, ok := m["score"]; ok {
 		switch v.(type) {
-		case float32:
-			e.Score = v.(float32)
 		case float64:
-			e.Score = float32(v.(float64))
+			e.Score = v.(float64)
+		case float32:
+			e.Score = float64(v.(float32))
 		case int:
-			e.Score = float32(v.(int))
+			e.Score = float64(v.(int))
 		case int8:
-			e.Score = float32(v.(int8))
+			e.Score = float64(v.(int8))
 		case int16:
-			e.Score = float32(v.(int16))
+			e.Score = float64(v.(int16))
 		case int32:
-			e.Score = float32(v.(int32))
+			e.Score = float64(v.(int32))
 		case int64:
-			e.Score = float32(v.(int64))
+			e.Score = float64(v.(int64))
 		default:
 			return ent, fmt.Errorf("erroneus score type, expected float/int, found: %T", v)
 		}

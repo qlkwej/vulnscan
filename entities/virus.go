@@ -7,12 +7,12 @@ import (
 
 type (
 	VirusResponse struct {
-		ResponseCode 	int    `json:"response_code" validate:"min=200"`
-		VerboseMsg 		string `json:"verbose_msg" validate:"required"`
-		Resource 		string `json:"resource" validate:"required"`
-		ScanId 			string `json:"scan_id" validate:"required"`
-		Sha256 			string `json:"sha_256" validate:"required"`
-		PermaLink 		string `json:"perma_link" validate:"required"`
+		ResponseCode int    `json:"response_code"`
+		VerboseMsg   string `json:"verbose_msg" validate:"required"`
+		Resource     string `json:"resource" validate:"required"`
+		ScanId       string `json:"scan_id" validate:"required"`
+		Sha256       string `json:"sha256" validate:"required"`
+		Permalink    string `json:"permalink" validate:"required"`
 	}
 
 	VirusScan struct {
@@ -24,18 +24,18 @@ type (
 
 	VirusReport struct {
 		VirusResponse
-		Md5 		string 				 `json:"md_5" validate:"required"`
-		Sha1 		string 				 `json:"sha_1" validate:"required"`
+		Md5 		string 				 `json:"md5" validate:"required"`
+		Sha1 		string 				 `json:"sha1" validate:"required"`
 		ScanDate 	string 				 `json:"scan_date" validate:"required"`
-		Positives 	int 				 `json:"positives" validate:"required"`
+		Positives 	int 				 `json:"positives"`
 		Total 		int 				 `json:"total" validate:"required"`
 		Scans 		map[string]VirusScan `json:"scans" validate:"required"`
 	}
 
 	VirusAnalysis struct {
-		HasReport bool 			`json:"has_report" validate:"required"`
-		Response  VirusResponse `json:"response"`
-		Report 	  VirusReport 	`json:"report" validate:"required"`
+		HasReport bool 			`json:"has_report"`
+		Response  VirusResponse `json:"response" validate:"required"`
+		Report 	  VirusReport 	`json:"report" validate:"structonly"`
 	}
 )
 
@@ -47,8 +47,8 @@ func (e *VirusResponse) ToMap() map[string]interface{} {
 		"verbose_msg": e.VerboseMsg,
 		"resource": e.Resource,
 		"scan_id": e.ScanId,
-		"sha_256": e.Sha256,
-		"perma_link": e.PermaLink,
+		"sha256": e.Sha256,
+		"permalink": e.Permalink,
 	}
 }
 
@@ -79,7 +79,7 @@ func (e *VirusResponse) FromMap(m map[string]interface{}) (ent Entity, err error
 			return ent, fmt.Errorf("erroneus response_code type, expected int/uint, found: %T", v)
 		}
 	}
-	if v, ok := m["verbose_mode"]; ok {
+	if v, ok := m["verbose_msg"]; ok {
 		switch v.(type) {
 		case string:
 			e.VerboseMsg = v.(string)
@@ -103,20 +103,20 @@ func (e *VirusResponse) FromMap(m map[string]interface{}) (ent Entity, err error
 			return ent, fmt.Errorf("erroneus scan_id type, expected string, found: %T", v)
 		}
 	}
-	if v, ok := m["sha_256"]; ok {
+	if v, ok := m["sha256"]; ok {
 		switch v.(type) {
 		case string:
 			e.Sha256 = v.(string)
 		default:
-			return ent, fmt.Errorf("erroneus sha_256 type, expected string, found: %T", v)
+			return ent, fmt.Errorf("erroneus sha256 type, expected string, found: %T", v)
 		}
 	}
-	if v, ok := m["perma_link"]; ok {
+	if v, ok := m["permalink"]; ok {
 		switch v.(type) {
 		case string:
-			e.PermaLink = v.(string)
+			e.Permalink = v.(string)
 		default:
-			return ent, fmt.Errorf("erroneus perma_link type, expected string, found: %T", v)
+			return ent, fmt.Errorf("erroneus permalink type, expected string, found: %T", v)
 		}
 	}
 	return e, err
@@ -141,7 +141,7 @@ func (e *VirusScan) FromMap(m map[string]interface{}) (ent Entity, err error) {
 		case bool:
 			e.Detected = v.(bool)
 		default:
-			return ent, fmt.Errorf("erroneus perma_link type, expected string, found: %T", v)
+			return ent, fmt.Errorf("erroneus permalink type, expected string, found: %T", v)
 		}
 	}
 	if v, ok := m["version"]; ok {
@@ -168,6 +168,7 @@ func (e *VirusScan) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			return ent, fmt.Errorf("erroneus result type, expected string, found: %T", v)
 		}
 	}
+
 	return e, err
 }
 
@@ -177,12 +178,12 @@ func (e *VirusScan) Validate() []validator.FieldError {
 
 func (e *VirusReport) ToMap() map[string]interface{} {
 	vr := e.VirusResponse.ToMap()
-	vr["md_5"] = e.Md5
-	vr["sha_1"] = e.Sha1
+	vr["md5"] = e.Md5
+	vr["sha1"] = e.Sha1
 	vr["scan_date"] = e.ScanDate
 	vr["positives"] = e.Positives
 	vr["total"] = e.Total
-	scans := map[string]map[string]interface{}{}
+	scans := map[string]interface{}{}
 	for k, s := range e.Scans {
 		scans[k] = s.ToMap()
 	}
@@ -196,7 +197,7 @@ func (e *VirusReport) FromMap(m map[string]interface{}) (ent Entity, err error) 
 		return ent, err
 	}
 	e.VirusResponse = *vr.(*VirusResponse)
-	if v, ok := m["md_5"]; ok {
+	if v, ok := m["md5"]; ok {
 		switch v.(type) {
 		case string:
 			e.Md5 = v.(string)
@@ -204,12 +205,12 @@ func (e *VirusReport) FromMap(m map[string]interface{}) (ent Entity, err error) 
 			return ent, fmt.Errorf("erroneus md_5 type, expected string, found: %T", v)
 		}
 	}
-	if v, ok := m["sha_1"]; ok {
+	if v, ok := m["sha1"]; ok {
 		switch v.(type) {
 		case string:
 			e.Sha1 = v.(string)
 		default:
-			return ent, fmt.Errorf("erroneus sha_1 type, expected string, found: %T", v)
+			return ent, fmt.Errorf("erroneus sha1 type, expected string, found: %T", v)
 		}
 	}
 	if v, ok := m["scan_date"]; ok {
@@ -275,17 +276,23 @@ func (e *VirusReport) FromMap(m map[string]interface{}) (ent Entity, err error) 
 	}
 	if v, ok := m["scans"]; ok {
 		switch v.(type) {
-		case map[string]map[string]interface{}:
+		case map[string]interface{}:
 			scans := map[string]VirusScan{}
-			for n, v := range v.(map[string]map[string]interface{}) {
-				vs, err := (&VirusScan{}).FromMap(v)
-				if err != nil {
-					return ent, err
+			for n, vl := range v.(map[string]interface{}) {
+				switch vl.(type) {
+				case map[string]interface{}:
+					vs, err := (&VirusScan{}).FromMap(vl.(map[string]interface{}))
+					if err != nil {
+						return ent, err
+					}
+					scans[n] = *vs.(*VirusScan)
+				default:
+					return ent, fmt.Errorf("erroneus scan type, expected map[string]interface{}, found: %T", vl)
 				}
-				scans[n] = *vs.(*VirusScan)
 			}
+			e.Scans = scans
 		default:
-			return ent, fmt.Errorf("erroneus scans type, expected int/uint, found: %T", v)
+			return ent, fmt.Errorf("erroneus scans type, expected map[string]interface{}, found: %T", v)
 		}
 	}
 	return e, err
@@ -308,7 +315,7 @@ func (e *VirusAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error
 		return ent, err
 	}
 	e.Response = *response.(*VirusResponse)
-	if v, ok := m["scan_date"]; ok {
+	if _, ok := m["scan_date"]; ok {
 		e.HasReport = true
 		report, err := e.Report.FromMap(m)
 		if err != nil {
@@ -320,7 +327,12 @@ func (e *VirusAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error
 }
 
 func (e *VirusAnalysis) Validate() []validator.FieldError {
-	return Validate(e)
+	var errors []validator.FieldError
+	if e.HasReport {
+		errors = append(errors, Validate(&e.Report)...)
+	}
+	errors = append(errors, Validate(e)...)
+	return errors
 }
 
 

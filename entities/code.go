@@ -11,11 +11,11 @@ type (
 
 	CodeRule struct {
 		// Description of the code rule
-		Desc  	string 		`json:"desc" validate:"min=1"`
+		Description  string 	`json:"description" validate:"min=1"`
 		// level of the issue
-		Level 	Level		`json:"level" validate:"required,valid_levels"`
-		Cvss  	float32 	`json:"cvss"  validate:"required"`
-		Cwe   	string 		`json:"cwe"   validate:"startswith=CWE-"`
+		Level 		 Level		`json:"level"       validate:"required,valid_levels"`
+		Cvss  		 float64 	`json:"cvss"        validate:"required"`
+		Cwe   		 string 	`json:"cwe"         validate:"startswith=CWE-"`
 	}
 
 	CodeMatcher struct {
@@ -54,11 +54,11 @@ type (
 	}
 
 	CodeAnalysis struct {
-		Codes 		[]CodeFinding 	`json:"codes" validate:"required"`
-		Apis 		[]ApiFinding	`json:"apis" validate:"required"`
-		Urls 		[]UrlFinding  	`json:"urls" validate:"required"`
-		Emails 		[]EmailFinding	`json:"emails" validate:"required"`
-		BadDomains 	[]string		`json:"bad_domains" validate:"required"`
+		Codes 		[]CodeFinding 	`json:"codes" validate:"required,dive"`
+		Apis 		[]ApiFinding	`json:"apis" validate:"required,dive"`
+		Urls 		[]UrlFinding  	`json:"urls" validate:"required,dive"`
+		Emails 		[]EmailFinding	`json:"emails" validate:"required,dive"`
+		BadDomains 	[]string		`json:"bad_domains"`
 	}
 )
 
@@ -80,9 +80,10 @@ func levelValidator(fl validator.FieldLevel) bool {
 	return validLevelValues[Level(fl.Field().String())]
 }
 
+
 func (e *CodeRule) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"desc": e.Desc,
+		"description": e.Description,
 		"level": string(e.Level),
 		"cvss": e.Cvss,
 		"cwe": e.Cwe,
@@ -90,10 +91,10 @@ func (e *CodeRule) ToMap() map[string]interface{} {
 }
 
 func (e *CodeRule) FromMap(m map[string]interface{}) (ent Entity, err error) {
-	if v, ok := m["desc"]; ok {
+	if v, ok := m["description"]; ok {
 		switch v.(type) {
 		case string:
-			e.Desc = v.(string)
+			e.Description = v.(string)
 		default:
 			return ent, fmt.Errorf("erroneus desc type, expected string, found: %T", v)
 		}
@@ -110,20 +111,22 @@ func (e *CodeRule) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	}
 	if v, ok := m["cvss"]; ok {
 		switch v.(type) {
-		case float32:
-			e.Cvss = v.(float32)
 		case float64:
-			e.Cvss = float32(v.(float64))
+			e.Cvss = v.(float64)
+		case float32:
+			e.Cvss = float64(v.(float32))
 		case int:
-			e.Cvss = float32(v.(int))
+			e.Cvss = float64(v.(int))
 		case int8:
-			e.Cvss = float32(v.(int8))
+			e.Cvss = float64(v.(int8))
 		case int16:
-			e.Cvss = float32(v.(int16))
+			e.Cvss = float64(v.(int16))
 		case int32:
-			e.Cvss = float32(v.(int32))
+			e.Cvss = float64(v.(int32))
 		case int64:
-			e.Cvss = float32(v.(int64))
+			e.Cvss = float64(v.(int64))
+		default:
+			return ent, fmt.Errorf("erroneus cvss type, expected float, found: %T", v)
 		}
 	}
 	if v, ok := m["cwe"]; ok {
@@ -406,7 +409,7 @@ func (e *CodeAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error)
 		}
 		e.Emails = emails
 	}
-	if v, ok := m["paths"]; ok {
+	if v, ok := m["bad_domains"]; ok {
 		switch v.(type) {
 		case []string:
 			e.BadDomains = v.([]string)

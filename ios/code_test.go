@@ -22,6 +22,7 @@ func TestCodeAnalysis(t *testing.T) {
 	path, _ := utils.FindTest("apps", "vulnerable_app")
 	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		result, e := CodeAnalysis(p)
+		t.Errorf("%#v", result)
 		if e != nil {
 			t.Error(e)
 		} else {

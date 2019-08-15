@@ -8,14 +8,14 @@ import (
 type (
 
 	BundleUrlType struct {
-		Name 	string  	`json:"name"`
-		Schemas []string    `json:"schemas"`
+		Name 	string  	`json:"name" validate:"required"`
+		Schemas []string    `json:"schemas" validate:"min=1"`
 	}
 
 	Permission struct {
-		Name 		string `json:"name"`
-		Description string `json:"description"`
-		Reason 		string `json:"reason"`
+		Name 		string `json:"name" validate:"min=1"`
+		Description string `json:"description" validate:"min=1"`
+		Reason 		string `json:"reason" validate:"min=1"`
 	}
 
 	InsecureConnections struct {
@@ -24,21 +24,21 @@ type (
 	}
 
 	PListAnalysis struct {
-		Xml                      string             `json:"xml"`
-		BinName                  string             `json:"bin_name"`
-		Bin                      string             `json:"bin"`
-		Id                       string             `json:"id"`
-		Build                    string             `json:"build"`
-		SDK                      string             `json:"sdk"`
-		Platform                 string             `json:"platform"`
-		MinimumVersion           string             `json:"minimum_version"`
-		BundleName               string             `json:"bundle_name"`
-		BundleVersionName        string             `json:"bundle_version_name"`
-		BundleSupportedPlatforms []string           `json:"bundle_supported_platforms"`
-		BundleLocalizations      []string           `json:"bundle_localizations"`
-		BundleUrlTypes 			[]BundleUrlType     `json:"bundle_url_types"`
-		Permissions 			[]Permission        `json:"permissions"`
-		InsecureConnections     InsecureConnections `json:"insecure_connections"`
+		Xml                      string             `json:"xml" validate:"min=1"`
+		BinName                  string             `json:"bin_name" validate:"min=1"`
+		Bin                      string             `json:"bin" validate:"min=1"`
+		Id                       string             `json:"id" validate:"min=1"`
+		Build                    string             `json:"build" validate:"min=1"`
+		SDK                      string             `json:"sdk" validate:"min=1"`
+		Platform                 string             `json:"platform" validate:"min=1"`
+		MinimumVersion           string             `json:"minimum_version" validate:"min=1"`
+		BundleName               string             `json:"bundle_name" validate:"min=1"`
+		BundleVersionName        string             `json:"bundle_version_name" validate:"min=1"`
+		BundleSupportedPlatforms []string           `json:"bundle_supported_platforms" validate:"min=1"`
+		BundleLocalizations      []string           `json:"bundle_localizations" validate:"min=1"`
+		BundleUrlTypes 			[]BundleUrlType     `json:"bundle_url_types" validate:"required"`
+		Permissions 			[]Permission        `json:"permissions" validate:"required"`
+		InsecureConnections     InsecureConnections `json:"insecure_connections" validate:"required"`
 	}
 )
 
@@ -145,7 +145,7 @@ func (e *InsecureConnections) Validate() []validator.FieldError {
 }
 
 func (e *PListAnalysis) ToMap() map[string]interface{} {
-	return map[string]interface{}{
+	m := map[string]interface{}{
 		"xml": e.Xml,
 		"bin_name": e.BinName,
 		"bin": e.Bin,
@@ -158,10 +158,17 @@ func (e *PListAnalysis) ToMap() map[string]interface{} {
 		"bundle_version_name": e.BundleVersionName,
 		"bundle_supported_platforms": e.BundleSupportedPlatforms,
 		"bundle_localizations": e.BundleLocalizations,
-		"bundle_url_types": e.BundleLocalizations,
-		"permissions": e.Permissions,
-		"insecure_connections": e.InsecureConnections,
+		"bundle_url_types": []map[string]interface{}{},
+		"permissions": []map[string]interface{}{},
+		"insecure_connections": e.InsecureConnections.ToMap(),
 	}
+	for _, bundle := range e.BundleUrlTypes {
+		m["bundle_url_types"] = append(m["bundle_url_types"].([]map[string]interface{}), bundle.ToMap())
+	}
+	for _, bundle := range e.Permissions {
+		m["permissions"] = append(m["permissions"].([]map[string]interface{}), bundle.ToMap())
+	}
+	return m
 }
 
 func (e *PListAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error) {

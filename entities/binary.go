@@ -24,7 +24,7 @@ type (
 		Issue         string 	`json:"issue" validate:"min=1"`
 		Description   string 	`json:"description" validate:"min=1"`
 		Status        Status 	`json:"status" validate:"valid_status"`
-		Cvss		  float32 	`json:"cvss" validate:"required"`
+		Cvss		  float64 	`json:"cvss" validate:"required"`
 		CWE           string 	`json:"cwe" validate:"startswith=CWE-"`
 	}
 
@@ -443,20 +443,20 @@ func (e *BinaryAnalysisResult) FromMap(m map[string]interface{}) (ent Entity, er
 	}
 	if v, ok := m["cvss"]; ok {
 		switch v.(type) {
-		case float32:
-			e.Cvss = v.(float32)
 		case float64:
-			e.Cvss = float32(v.(float64))
+			e.Cvss = v.(float64)
+		case float32:
+			e.Cvss = float64(v.(float32))
 		case int:
-			e.Cvss = float32(v.(int))
+			e.Cvss = float64(v.(int))
 		case int8:
-			e.Cvss = float32(v.(int8))
+			e.Cvss = float64(v.(int8))
 		case int16:
-			e.Cvss = float32(v.(int16))
+			e.Cvss = float64(v.(int16))
 		case int32:
-			e.Cvss = float32(v.(int32))
+			e.Cvss = float64(v.(int32))
 		case int64:
-			e.Cvss = float32(v.(int64))
+			e.Cvss = float64(v.(int64))
 		default:
 			return ent, fmt.Errorf("erroneus cvss type, expected float, found: %T", v)
 		}
