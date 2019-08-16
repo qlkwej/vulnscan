@@ -117,7 +117,7 @@ func TestOtoolAnalysis(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		if libsLen:=len(analysis["libs"].([]string)); libsLen != 25 {
+		if libsLen := len(analysis["libs"].([]string)); libsLen != 25 {
 			t.Errorf("wrong number of libraries found, expected %d, found %d", 25, libsLen)
 		}
 		if analLen := len(analysis["anal"].([]map[string]interface{})); analLen != 12 {

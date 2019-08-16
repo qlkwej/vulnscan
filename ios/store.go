@@ -107,17 +107,17 @@ func Search(appID string, country string) map[string]interface{} {
 	for _, r := range searchResult["results"].([]interface{}) {
 		result := map[string]interface{}{}
 		for k, v := range map[string]string{
-			"features":          "features",
-			"artworkUrl512":     "icon_url_512",
-			"artworkUrl100":     "icon_url_100",
-			"artworkUrl60":      "icon_url_60",
-			"artistId":          "developer_id",
-			"artistName":        "developer_name",
-			"artistViewUrl":     "developer_url",
-			"sellerUrl":         "developer_website",
-			"supportedDevices":  "supported_devices",
-			"trackName":         "title",
-			"bundleId":          "app_id",
+			"features":         "features",
+			"artworkUrl512":    "icon_url_512",
+			"artworkUrl100":    "icon_url_100",
+			"artworkUrl60":     "icon_url_60",
+			"artistId":         "developer_id",
+			"artistName":       "developer_name",
+			"artistViewUrl":    "developer_url",
+			"sellerUrl":        "developer_website",
+			"supportedDevices": "supported_devices",
+			"trackName":        "title",
+			"bundleId":         "app_id",
 			//"description":		 "description", TODO: TEST THIS
 			"genres":            "categories",
 			"price":             "price",

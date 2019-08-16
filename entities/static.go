@@ -6,34 +6,34 @@ import (
 )
 
 type StaticAnalysis struct {
-	HasBinary bool 			 `json:"has_binary"`
-	HasCode   bool 			 `json:"has_code"`
-	HasFiles  bool 			 `json:"has_files"`
-	HasPlist  bool 			 `json:"has_plist"`
-	HasVirus  bool 			 `json:"has_virus"`
-	HasStore  bool 			 `json:"has_store"`
+	HasBinary bool           `json:"has_binary"`
+	HasCode   bool           `json:"has_code"`
+	HasFiles  bool           `json:"has_files"`
+	HasPlist  bool           `json:"has_plist"`
+	HasVirus  bool           `json:"has_virus"`
+	HasStore  bool           `json:"has_store"`
 	Binary    BinaryAnalysis `json:"binary"`
-	Code 	  CodeAnalysis   `json:"code"`
-	Files 	  FileAnalysis   `json:"files"`
-	Plist 	  PListAnalysis  `json:"plist"`
-	Virus 	  VirusAnalysis  `json:"virus"`
-	Store 	  StoreAnalysis  `json:"store"`
+	Code      CodeAnalysis   `json:"code"`
+	Files     FileAnalysis   `json:"files"`
+	Plist     PListAnalysis  `json:"plist"`
+	Virus     VirusAnalysis  `json:"virus"`
+	Store     StoreAnalysis  `json:"store"`
 }
 
 func (e *StaticAnalysis) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"has_binary": e.HasBinary,
-		"has_code": e.HasCode,
-		"has_files": e.HasFiles,
-		"has_plist": e.HasPlist,
-		"has_virus": e.HasVirus,
-		"has_store": e.HasStore,
-		"binary": e.Binary.ToMap(),
-		"code": e.Code.ToMap(),
-		"files": e.Files.ToMap(),
-		"plist": e.Plist.ToMap(),
-		"virus": e.Virus.ToMap(),
-		"store": e.Store.ToMap(),
+		"has_code":   e.HasCode,
+		"has_files":  e.HasFiles,
+		"has_plist":  e.HasPlist,
+		"has_virus":  e.HasVirus,
+		"has_store":  e.HasStore,
+		"binary":     e.Binary.ToMap(),
+		"code":       e.Code.ToMap(),
+		"files":      e.Files.ToMap(),
+		"plist":      e.Plist.ToMap(),
+		"virus":      e.Virus.ToMap(),
+		"store":      e.Store.ToMap(),
 	}
 }
 
@@ -141,6 +141,3 @@ func (e *StaticAnalysis) Validate() []validator.FieldError {
 	}
 	return errors
 }
-
-
-

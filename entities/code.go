@@ -11,22 +11,22 @@ type (
 
 	CodeRule struct {
 		// Description of the code rule
-		Description  string 	`json:"description" validate:"min=1"`
+		Description string `json:"description" validate:"min=1"`
 		// level of the issue
-		Level 		 Level		`json:"level"       validate:"required,valid_levels"`
-		Cvss  		 float64 	`json:"cvss"        validate:"required"`
-		Cwe   		 string 	`json:"cwe"         validate:"startswith=CWE-"`
+		Level Level   `json:"level"       validate:"required,valid_levels"`
+		Cvss  float64 `json:"cvss"        validate:"required"`
+		Cwe   string  `json:"cwe"         validate:"startswith=CWE-"`
 	}
 
 	CodeMatcher struct {
 		CodeRule
 		// func (string) bool to call against a string to do the match
-		Match 	Match 		`json:"match" validate:"required"`
+		Match Match `json:"match" validate:"required"`
 	}
 
 	CodeFinding struct {
 		CodeRule
-		Paths 	[]string 	`json:"paths" validate:"min=1"`
+		Paths []string `json:"paths" validate:"min=1"`
 	}
 
 	ApiRule struct {
@@ -35,58 +35,57 @@ type (
 
 	ApiMatcher struct {
 		ApiRule
-		Match 	Match 		`json:"match" validate:"required"`
+		Match Match `json:"match" validate:"required"`
 	}
 
 	ApiFinding struct {
 		ApiRule
-		Paths 	[]string 	`json:"paths" validate:"min=1"`
+		Paths []string `json:"paths" validate:"min=1"`
 	}
 
 	UrlFinding struct {
-		Url		string 		`json:"url" validate:"min=1"`
-		Paths 	[]string	`json:"paths" validate:"min=1"`
+		Url   string   `json:"url" validate:"min=1"`
+		Paths []string `json:"paths" validate:"min=1"`
 	}
 
 	EmailFinding struct {
-		Email 	string		`json:"email" validate:"min=1"`
-		Paths  	[]string	`json:"paths" validate:"min=1"`
+		Email string   `json:"email" validate:"min=1"`
+		Paths []string `json:"paths" validate:"min=1"`
 	}
 
 	CodeAnalysis struct {
-		Codes 		[]CodeFinding 	`json:"codes" validate:"required,dive"`
-		Apis 		[]ApiFinding	`json:"apis" validate:"required,dive"`
-		Urls 		[]UrlFinding  	`json:"urls" validate:"required,dive"`
-		Emails 		[]EmailFinding	`json:"emails" validate:"required,dive"`
-		BadDomains 	[]string		`json:"bad_domains"`
+		Codes      []CodeFinding  `json:"codes" validate:"required,dive"`
+		Apis       []ApiFinding   `json:"apis" validate:"required,dive"`
+		Urls       []UrlFinding   `json:"urls" validate:"required,dive"`
+		Emails     []EmailFinding `json:"emails" validate:"required,dive"`
+		BadDomains []string       `json:"bad_domains"`
 	}
 )
 
 const (
-	HighLevel 		Level = "Hight"
-	WarningLevel 	Level = "Warning"
-	InfoLevel		Level = "Info"
-	GoodLevel		Level = "Good"
+	HighLevel    Level = "High"
+	WarningLevel Level = "Warning"
+	InfoLevel    Level = "Info"
+	GoodLevel    Level = "Good"
 )
 
 var validLevelValues = map[Level]bool{
-	HighLevel: true,
+	HighLevel:    true,
 	WarningLevel: true,
-	InfoLevel: true,
-	GoodLevel: true,
+	InfoLevel:    true,
+	GoodLevel:    true,
 }
 
 func levelValidator(fl validator.FieldLevel) bool {
 	return validLevelValues[Level(fl.Field().String())]
 }
 
-
 func (e *CodeRule) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"description": e.Description,
-		"level": string(e.Level),
-		"cvss": e.Cvss,
-		"cwe": e.Cwe,
+		"level":       string(e.Level),
+		"cvss":        e.Cvss,
+		"cwe":         e.Cwe,
 	}
 }
 
@@ -224,7 +223,7 @@ func (e *ApiRule) Validate() []validator.FieldError {
 func (e *ApiMatcher) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"description": e.Description,
-		"match": e.Match,
+		"match":       e.Match,
 	}
 }
 
@@ -249,7 +248,7 @@ func (e *ApiMatcher) Validate() []validator.FieldError {
 func (e *ApiFinding) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"description": e.Description,
-		"paths": e.Paths,
+		"paths":       e.Paths,
 	}
 }
 
@@ -276,7 +275,7 @@ func (e *ApiFinding) Validate() []validator.FieldError {
 
 func (e *UrlFinding) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"url": e.Url,
+		"url":   e.Url,
 		"paths": e.Paths,
 	}
 }
@@ -354,19 +353,19 @@ func (e *CodeAnalysis) ToMap() map[string]interface{} {
 		emails = append(emails, v.ToMap())
 	}
 	return map[string]interface{}{
-		"codes": codes,
-		"apis": apis,
-		"urls": urls,
-		"emails": emails,
+		"codes":       codes,
+		"apis":        apis,
+		"urls":        urls,
+		"emails":      emails,
 		"bad_domains": e.BadDomains,
 	}
 }
 
 func (e *CodeAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	var (
-		codes []CodeFinding
-		apis []ApiFinding
-		urls []UrlFinding
+		codes  []CodeFinding
+		apis   []ApiFinding
+		urls   []UrlFinding
 		emails []EmailFinding
 	)
 	if v, ok := m["codes"]; ok {
@@ -423,7 +422,3 @@ func (e *CodeAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error)
 func (e *CodeAnalysis) Validate() []validator.FieldError {
 	return Validate(e)
 }
-
-
-
-

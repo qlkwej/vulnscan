@@ -11,7 +11,6 @@ import (
 	"strings"
 )
 
-
 // Generates a map[string]interface{} with a list of general files, certifications, databases and plist found in the
 // source.
 func ListFiles(src string) (map[string]interface{}, error) {
@@ -53,7 +52,6 @@ func ListFiles(src string) (map[string]interface{}, error) {
 	}
 	return fileList, nil
 }
-
 
 // Static analyzer is the main entry point of the application. It orchestrates all the other analysis and is in
 // charge of printing their results.
@@ -144,10 +142,10 @@ func StaticAnalyzer(src string, isSrc bool, print printer.Printer) error {
 				}
 				r, e := BinaryAnalysis(p, isSrc, "")
 				if e != nil {
-					errorStream <- analysisError{ "error": e, "analysis": "binary" }
+					errorStream <- analysisError{"error": e, "analysis": "binary"}
 					return
 				}
-				resultStream <- analysisResult{r, printer.Binary }
+				resultStream <- analysisResult{r, printer.Binary}
 			}()
 		}
 		for i := 0; i < nStreams; i++ {

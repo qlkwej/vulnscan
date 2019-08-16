@@ -7,48 +7,48 @@ import (
 
 type (
 	StoreResult struct {
-		Features         	[]string 	`json:"features" validate:"required"`
-		IconUrl512       	string   	`json:"artworkUrl512" validate:"required"`
-		IconUrl100       	string   	`json:"artworkUrl100" validate:"required"`
-		IconUrl60        	string   	`json:"artworkUrl60" validate:"required"`
-		DeveloperId      	int      	`json:"artistId" validate:"required"`
-		DeveloperName    	string   	`json:"artistName" validate:"required"`
-		DeveloperUrl     	string   	`json:"artistViewUrl" validate:"required"`
-		DeveloperWebsite 	string   	`json:"sellerUrl" validate:"required"`
-		SupportedDevices 	[]string 	`json:"supportedDevices" validate:"required"`
-		Title            	string   	`json:"trackName" validate:"required"`
-		AppId            	string   	`json:"bundleId" validate:"required"`
-		Categories       	[]string 	`json:"genres" validate:"required"`
-		Description      	string   	`json:"description" validate:"required"`
-		Price            	float64  	`json:"price"`
-		Url        			string   	`json:"trackViewUrl" validate:"required"`
-		Score            	float64  	`json:"averageUserRating" validate:"required"`
+		Features         []string `json:"features" validate:"required"`
+		IconUrl512       string   `json:"artworkUrl512" validate:"required"`
+		IconUrl100       string   `json:"artworkUrl100" validate:"required"`
+		IconUrl60        string   `json:"artworkUrl60" validate:"required"`
+		DeveloperId      int      `json:"artistId" validate:"required"`
+		DeveloperName    string   `json:"artistName" validate:"required"`
+		DeveloperUrl     string   `json:"artistViewUrl" validate:"required"`
+		DeveloperWebsite string   `json:"sellerUrl" validate:"required"`
+		SupportedDevices []string `json:"supportedDevices" validate:"required"`
+		Title            string   `json:"trackName" validate:"required"`
+		AppId            string   `json:"bundleId" validate:"required"`
+		Categories       []string `json:"genres" validate:"required"`
+		Description      string   `json:"description" validate:"required"`
+		Price            float64  `json:"price"`
+		Url              string   `json:"trackViewUrl" validate:"required"`
+		Score            float64  `json:"averageUserRating" validate:"required"`
 	}
 
 	StoreAnalysis struct {
-		Count 	int 			`json:"count" validate:"len=1"`
-		Results []StoreResult 	`json:"results" validate:"min=1"`
+		Count   int           `json:"count" validate:"len=1"`
+		Results []StoreResult `json:"results" validate:"min=1"`
 	}
 )
 
 func (e *StoreResult) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"features":         	e.Features,
-		"icon_url_512": 		e.IconUrl512,
-		"icon_url_100":			e.IconUrl100,
-		"icon_url_60": 			e.IconUrl60,
-		"developer_id": 		e.DeveloperId,
-		"developer_name":		e.DeveloperName,
-		"developer_url": 		e.DeveloperUrl,
-		"developer_website":	e.DeveloperWebsite,
-		"supported_devices": 	e.SupportedDevices,
-		"title":				e.Title,
-		"app_id":				e.AppId,
-		"categories":			e.Categories,
-		"description": 			e.Description,
-		"price":				e.Price,
-		"url":					e.Url,
-		"score":				e.Score,
+		"features":          e.Features,
+		"icon_url_512":      e.IconUrl512,
+		"icon_url_100":      e.IconUrl100,
+		"icon_url_60":       e.IconUrl60,
+		"developer_id":      e.DeveloperId,
+		"developer_name":    e.DeveloperName,
+		"developer_url":     e.DeveloperUrl,
+		"developer_website": e.DeveloperWebsite,
+		"supported_devices": e.SupportedDevices,
+		"title":             e.Title,
+		"app_id":            e.AppId,
+		"categories":        e.Categories,
+		"description":       e.Description,
+		"price":             e.Price,
+		"url":               e.Url,
+		"score":             e.Score,
 	}
 }
 
@@ -357,13 +357,13 @@ func (e *StoreAnalysis) ToMap() map[string]interface{} {
 		results = append(results, r.ToMap())
 	}
 	return map[string]interface{}{
-		"count": e.Count,
+		"count":   e.Count,
 		"results": results,
 	}
 }
 
 func (e *StoreAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error) {
-	if v, ok :=  m["count"]; ok {
+	if v, ok := m["count"]; ok {
 		switch v.(type) {
 		case int:
 			e.Count = v.(int)
@@ -389,7 +389,7 @@ func (e *StoreAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error
 			return ent, fmt.Errorf("erroneus count type, expected int/uint, found: %T", v)
 		}
 	}
-	if v, ok :=  m["results"]; ok {
+	if v, ok := m["results"]; ok {
 		switch v.(type) {
 		case []map[string]interface{}:
 			for _, m := range v.([]map[string]interface{}) {
@@ -409,6 +409,3 @@ func (e *StoreAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error
 func (e *StoreAnalysis) Validate() []validator.FieldError {
 	return Validate(e)
 }
-
-
-

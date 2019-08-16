@@ -16,39 +16,37 @@ type (
 	}
 
 	VirusScan struct {
-		Detected 	bool 	`json:"detected" validate:"required"`
-		Version 	string 	`json:"version" validate:"required"`
-		Result 		string 	`json:"result" validate:"required"`
-		Update 		string 	`json:"update" validate:"required"`
+		Detected bool   `json:"detected" validate:"required"`
+		Version  string `json:"version" validate:"required"`
+		Result   string `json:"result" validate:"required"`
+		Update   string `json:"update" validate:"required"`
 	}
 
 	VirusReport struct {
 		VirusResponse
-		Md5 		string 				 `json:"md5" validate:"required"`
-		Sha1 		string 				 `json:"sha1" validate:"required"`
-		ScanDate 	string 				 `json:"scan_date" validate:"required"`
-		Positives 	int 				 `json:"positives"`
-		Total 		int 				 `json:"total" validate:"required"`
-		Scans 		map[string]VirusScan `json:"scans" validate:"required"`
+		Md5       string               `json:"md5" validate:"required"`
+		Sha1      string               `json:"sha1" validate:"required"`
+		ScanDate  string               `json:"scan_date" validate:"required"`
+		Positives int                  `json:"positives"`
+		Total     int                  `json:"total" validate:"required"`
+		Scans     map[string]VirusScan `json:"scans" validate:"required"`
 	}
 
 	VirusAnalysis struct {
-		HasReport bool 			`json:"has_report"`
+		HasReport bool          `json:"has_report"`
 		Response  VirusResponse `json:"response" validate:"required"`
-		Report 	  VirusReport 	`json:"report" validate:"structonly"`
+		Report    VirusReport   `json:"report" validate:"structonly"`
 	}
 )
-
-
 
 func (e *VirusResponse) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"response_code": e.ResponseCode,
-		"verbose_msg": e.VerboseMsg,
-		"resource": e.Resource,
-		"scan_id": e.ScanId,
-		"sha256": e.Sha256,
-		"permalink": e.Permalink,
+		"verbose_msg":   e.VerboseMsg,
+		"resource":      e.Resource,
+		"scan_id":       e.ScanId,
+		"sha256":        e.Sha256,
+		"permalink":     e.Permalink,
 	}
 }
 
@@ -129,9 +127,9 @@ func (e *VirusResponse) Validate() []validator.FieldError {
 func (e *VirusScan) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"detected": e.Detected,
-		"version": e.Version,
-		"update": e.Update,
-		"result": e.Result,
+		"version":  e.Version,
+		"update":   e.Update,
+		"result":   e.Result,
 	}
 }
 
@@ -334,5 +332,3 @@ func (e *VirusAnalysis) Validate() []validator.FieldError {
 	errors = append(errors, Validate(e)...)
 	return errors
 }
-
-

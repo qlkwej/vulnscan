@@ -18,7 +18,7 @@ const (
 
 type CodeRule struct {
 	// Description of the code rule
-	Desc  string
+	Desc string
 	// func (string) bool to call against a string to do the match
 	Match Match
 	// level of the issue

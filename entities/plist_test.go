@@ -7,7 +7,7 @@ import (
 
 var (
 	bundleUrlTypeTestMap = map[string]interface{}{
-		"name": "com.terrychou.vim",
+		"name":    "com.terrychou.vim",
 		"schemas": []string{"ivimeditor"},
 	}
 	wrongBundleUrlTypeTestMap = map[string]interface{}{
@@ -25,11 +25,10 @@ var (
 	}
 	insecureConnectionsTestMap = map[string]interface{}{
 		"allow_arbitrary_loads": false,
-		"domains": []string{},
-
+		"domains":               []string{},
 	}
 	plistAnalysisTestMap = map[string]interface{}{
-		"xml":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" " +
+		"xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" " +
 			"\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n\t<dict>\n\t\t" +
 			"<key>CFBundleDisplayName</key>\n\t\t<string></string>\n\t\t<key>CFBundleExecutable</key>\n\t\t" +
 			"<string>iVim</string>\n\t\t<key>CFBundleIdentifier</key>\n\t\t<string>com.terrychou.ivim</string>\n\t\t" +
@@ -58,23 +57,23 @@ var (
 			"<key>NSMotionUsageDescription</key>\n\t\t<string></string>\n\t\t<key>NSPhotoLibraryUsageDescription</key>\n\t\t" +
 			"<string></string>\n\t\t<key>NSRemindersUsageDescription</key>\n\t\t<string></string>\n\t\t" +
 			"<key>NSVideoSubscriberAccountUsageDescription</key>\n\t\t<string></string>\n\t</dict>\n</plist>\n",
-		"bin":"iVim",
-		"bin_name":"iVim",
-		"id":"com.terrychou.ivim",
-		"build":"1",
-		"sdk":"iphonesimulator12.1",
-		"platform":"12.1",
-		"minimum_version":"9.1",
-		"bundle_name":"iVim",
-		"bundle_version_name":"1",
-		"bundle_supported_platforms":[]string{"iPhoneSimulator"},
-		"bundle_localizations": []string{"es"},
-		"bundle_url_types":[]map[string]interface {}{
+		"bin":                        "iVim",
+		"bin_name":                   "iVim",
+		"id":                         "com.terrychou.ivim",
+		"build":                      "1",
+		"sdk":                        "iphonesimulator12.1",
+		"platform":                   "12.1",
+		"minimum_version":            "9.1",
+		"bundle_name":                "iVim",
+		"bundle_version_name":        "1",
+		"bundle_supported_platforms": []string{"iPhoneSimulator"},
+		"bundle_localizations":       []string{"es"},
+		"bundle_url_types": []map[string]interface{}{
 			{"name": "com.terrychou.vim", "schemas": []string{"ivimeditor"}},
 		},
-		"insecure_connections":map[string]interface {}{
-			"allow_arbitrary_loads":false,
-			"domains":[]string{},
+		"insecure_connections": map[string]interface{}{
+			"allow_arbitrary_loads": false,
+			"domains":               []string{},
 		},
 		"permissions": []map[string]interface{}{
 			{
@@ -85,22 +84,21 @@ var (
 		},
 	}
 	wrongPlistAnalysisTestMap = map[string]interface{}{
-		"id":"com.terrychou.ivim",
-		"build":"1",
-		"sdk":"iphonesimulator12.1",
-		"platform":"12.1",
-		"minimum_version":"9.1",
-		"bundle_name":"iVim",
-		"bundle_version_name":"1",
-		"bundle_supported_platforms":[]string{"iPhoneSimulator"},
-		"bundle_localizations": []string{"es"},
-		"insecure_connections":map[string]interface {}{
-			"allow_arbitrary_loads":false,
-			"domains":[]string{},
+		"id":                         "com.terrychou.ivim",
+		"build":                      "1",
+		"sdk":                        "iphonesimulator12.1",
+		"platform":                   "12.1",
+		"minimum_version":            "9.1",
+		"bundle_name":                "iVim",
+		"bundle_version_name":        "1",
+		"bundle_supported_platforms": []string{"iPhoneSimulator"},
+		"bundle_localizations":       []string{"es"},
+		"insecure_connections": map[string]interface{}{
+			"allow_arbitrary_loads": false,
+			"domains":               []string{},
 		},
 	}
 )
-
 
 func TestBundleUrlTypeMapTransformation(t *testing.T) {
 	p, err := (&BundleUrlType{}).FromMap(bundleUrlTypeTestMap)
@@ -117,7 +115,6 @@ func TestBundleUrlTypesValidation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 2)
 }
-
 
 func TestPermissionMapTransformation(t *testing.T) {
 	p, err := (&Permission{}).FromMap(permissionTestMap)
@@ -141,7 +138,6 @@ func TestInsecureConnectionsTransformation(t *testing.T) {
 	assert.Equal(t, insecureConnectionsTestMap, p.ToMap())
 }
 
-
 func TestPlistAnalysisTransformation(t *testing.T) {
 	p, err := (&PListAnalysis{}).FromMap(plistAnalysisTestMap)
 	assert.NoError(t, err)
@@ -157,4 +153,3 @@ func TestPlistAnalysisValidation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 5)
 }
-

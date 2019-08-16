@@ -29,7 +29,7 @@ func TestIosRules(t *testing.T) {
 		{"@select(cut,) || @select(copy,)", false},
 		{"/etc/ssh/sshd_config", true},
 	} {
-		if  CodeRules[i].Match(p[0].(string)) != p[1].(bool) {
+		if CodeRules[i].Match(p[0].(string)) != p[1].(bool) {
 			errors.WriteString(fmt.Sprintf("Error in %d test: Expected %t using string %s\n", i, p[1].(bool), p[0].(string)))
 		}
 	}

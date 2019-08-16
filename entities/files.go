@@ -6,18 +6,18 @@ import (
 )
 
 type FileAnalysis struct {
-	Files 			[]string `json:"files" validate:"min=1"`
-	Certifications 	[]string `json:"certifications" validate:"required"`
-	Databases 		[]string `json:"databases" validate:"required"`
-	PLists 			[]string `json:"plists" validate:"required"`
+	Files          []string `json:"files" validate:"min=1"`
+	Certifications []string `json:"certifications" validate:"required"`
+	Databases      []string `json:"databases" validate:"required"`
+	PLists         []string `json:"plists" validate:"required"`
 }
 
 func (e *FileAnalysis) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"files": e.Files,
+		"files":          e.Files,
 		"certifications": e.Certifications,
-		"databases": e.Databases,
-		"plists": e.PLists,
+		"databases":      e.Databases,
+		"plists":         e.PLists,
 	}
 }
 
@@ -60,5 +60,3 @@ func (e *FileAnalysis) FromMap(m map[string]interface{}) (ent Entity, err error)
 func (e *FileAnalysis) Validate() []validator.FieldError {
 	return Validate(e)
 }
-
-

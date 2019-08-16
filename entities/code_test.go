@@ -16,13 +16,13 @@ var (
 	}
 	wrongApiFindingTestMap = map[string]interface{}{
 		"descriptio": "Encryption API",
-		"paths": []string{},
+		"paths":      []string{},
 	}
 	codeFindingTestMap = map[string]interface{}{
 		"description": "Files may contain hardcoded sensitive informations like usernames, passwords, keys etc.",
-		"cvss":7.4,
-		"cwe":"CWE-312",
-		"level": "Hight",
+		"cvss":        7.4,
+		"cwe":         "CWE-312",
+		"level":       "High",
 		"paths": []string{
 			"/CocoaLumberjack/Extensions/DDDispatchQueueLogFormatter.m", "/GAFirstChallengeViewController.m",
 			"/View Controllers/FlurryFirstChallengeViewController.m", "/View Controllers/SensitiveInformationDetailsVC.m",
@@ -32,10 +32,10 @@ var (
 	}
 	wrongCodeFindingTestMap = map[string]interface{}{
 		"description": "Files may contain hardcoded sensitive informations like usernames, passwords, keys etc.",
-		"cvss":7.4,
-		"cwe":"312",
-		"level": "Low",
-		"paths": []string{},
+		"cvss":        7.4,
+		"cwe":         "312",
+		"level":       "Low",
+		"paths":       []string{},
 	}
 	urlFindingTestMap = map[string]interface{}{
 		"url": "http://code.google.com",
@@ -45,7 +45,7 @@ var (
 		},
 	}
 	wrongUrlFindingTestMap = map[string]interface{}{
-		"url": "",
+		"url":   "",
 		"paths": []string{},
 	}
 	emailFindingTestMap = map[string]interface{}{
@@ -62,7 +62,7 @@ var (
 				"description": "Files may contain hardcoded sensitive informations like usernames, passwords, keys etc.",
 				"cvss":        7.4,
 				"cwe":         "CWE-312",
-				"level":       "Hight",
+				"level":       "High",
 				"paths": []string{
 					"/CocoaLumberjack/Extensions/DDDispatchQueueLogFormatter.m", "/GAFirstChallengeViewController.m",
 					"/View Controllers/FlurryFirstChallengeViewController.m", "/View Controllers/SensitiveInformationDetailsVC.m",
@@ -75,7 +75,7 @@ var (
 				"cvss":        4.3,
 				"cwe":         "CWE-200",
 				"level":       "Info",
-				"paths": []string{"/YapDatabase/YapDatabase.m"},
+				"paths":       []string{"/YapDatabase/YapDatabase.m"},
 			},
 		},
 		"apis": []map[string]interface{}{
@@ -94,7 +94,7 @@ var (
 				"paths": []string{"/YapDatabase/Utilities/YapMurmurHash.m", "/YapDatabase/Utilities/YapMurmurHash.m", "/YapDatabase/Utilities/YapMurmurHash.m"},
 			},
 			{
-				"url": "http://en.wikipedia.org",
+				"url":   "http://en.wikipedia.org",
 				"paths": []string{"/CocoaLumberjack/DDTTYLogger.m", "/CocoaLumberjack/DDTTYLogger.m", "/CocoaLumberjack/DDTTYLogger.m"},
 			},
 			{
@@ -126,7 +126,7 @@ var (
 		"bad_domains": []string{"dangeroussitetovisit.com"},
 	}
 	wrongCodeAnalysisTestMap = map[string]interface{}{
-		"codes":  []map[string]interface{}{
+		"codes": []map[string]interface{}{
 			{
 				"description": "Encryption API",
 				"paths": []string{
@@ -136,12 +136,12 @@ var (
 				},
 			},
 		},
-		"apis":  []map[string]interface{}{
+		"apis": []map[string]interface{}{
 			{
 				"description": "Files may contain hardcoded sensitive informations like usernames, passwords, keys etc.",
 				"cvss":        7.4,
 				"cws":         "CWE-312",
-				"level":       "Hight",
+				"level":       "High",
 				"paths": []string{
 					"/CocoaLumberjack/Extensions/DDDispatchQueueLogFormatter.m", "/GAFirstChallengeViewController.m",
 					"/View Controllers/FlurryFirstChallengeViewController.m", "/View Controllers/SensitiveInformationDetailsVC.m",

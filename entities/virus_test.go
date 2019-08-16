@@ -6,18 +6,18 @@ import (
 )
 
 var (
-	virusAnalysisWithReportTestMap = map[string]interface {}{
-		"md5":       "b956666c9670cff7166d28af88a3e063",
-		"permalink": "https://www.virustotal.com/file/11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144/analysis/1565653959/",
+	virusAnalysisWithReportTestMap = map[string]interface{}{
+		"md5":           "b956666c9670cff7166d28af88a3e063",
+		"permalink":     "https://www.virustotal.com/file/11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144/analysis/1565653959/",
 		"resource":      "b956666c9670cff7166d28af88a3e063",
 		"response_code": 1,
 		"scan_date":     "2019-08-12 23:52:39",
-		"scan_id": "11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144-1565653959",
-		"sha1":"01d4f5b3a7d81a02c8be039124c08a0e389f3eb3",
-		"sha256":"11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144",
-		"total":54,
-		"positives": 0,
-		"verbose_msg":"Scan finished, information embedded",
+		"scan_id":       "11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144-1565653959",
+		"sha1":          "01d4f5b3a7d81a02c8be039124c08a0e389f3eb3",
+		"sha256":        "11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144",
+		"total":         54,
+		"positives":     0,
+		"verbose_msg":   "Scan finished, information embedded",
 		"scans": map[string]interface{}{
 			"ALYac": map[string]interface{}{
 				"detected": false,
@@ -34,18 +34,18 @@ var (
 		},
 	}
 
-	virusAnalysisWithoutReportTestMap = map[string]interface {}{
-		"permalink": "https://www.virustotal.com/file/11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144/analysis/1565653959/",
+	virusAnalysisWithoutReportTestMap = map[string]interface{}{
+		"permalink":     "https://www.virustotal.com/file/11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144/analysis/1565653959/",
 		"resource":      "b956666c9670cff7166d28af88a3e063",
 		"response_code": 1,
-		"scan_id": "11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144-1565653959",
-		"sha256":"11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144",
-		"verbose_msg":"Scan finished, information embedded",
+		"scan_id":       "11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144-1565653959",
+		"sha256":        "11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144",
+		"verbose_msg":   "Scan finished, information embedded",
 	}
 	wrongVirusAnalysisTestMap = map[string]interface{}{
-		"total":54,
-		"positives": 0,
-		"verbose_msg":"Scan finished, information embedded",
+		"total":       54,
+		"positives":   0,
+		"verbose_msg": "Scan finished, information embedded",
 		"scans": map[string]interface{}{
 			"ALYac": map[string]interface{}{
 				"detected": false,

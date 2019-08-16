@@ -7,38 +7,38 @@ import (
 
 var (
 	machoInfoTestMap = map[string]interface{}{
-		"bits": uint(32),
+		"bits":       uint(32),
 		"endianness": "BigEndian",
-		"cpu": "i386",
-		"sub_cpu": "CPU_SUBTYPE_PENTIUM_M",
+		"cpu":        "i386",
+		"sub_cpu":    "CPU_SUBTYPE_PENTIUM_M",
 	}
 
 	wrongMachoInfoTestMap = map[string]interface{}{
-		"bits": uint(17),
+		"bits":       uint(17),
 		"endianness": "Something",
-		"cpu": "i386",
-		"sub_cpu": "CPU_SUBTYPE_PENTIUM_M",
+		"cpu":        "i386",
+		"sub_cpu":    "CPU_SUBTYPE_PENTIUM_M",
 	}
 
 	binaryAnalysisResultMap = map[string]interface{}{
-		"issue": "There is an issue",
+		"issue":       "There is an issue",
 		"description": "A very bad issue",
-		"status": "Insecure",
-		"cvss": 10.8,
-		"cwe": "CWE-144",
+		"status":      "Insecure",
+		"cvss":        10.8,
+		"cwe":         "CWE-144",
 	}
 
 	wrongBinaryAnalysisResultMap = map[string]interface{}{
-		"issue": "There is an issue",
+		"issue":       "There is an issue",
 		"description": "A very bad issue",
-		"status": "Fantastic",
-		"cvss": 10.8,
-		"cwe": "144",
+		"status":      "Fantastic",
+		"cvss":        10.8,
+		"cwe":         "144",
 	}
 
 	binaryAnalysisMap = map[string]interface{}{
 		"libraries": []string{"a library", "some other library", "an even better library"},
-		"macho": machoInfoTestMap,
+		"macho":     machoInfoTestMap,
 		"results": []map[string]interface{}{
 			binaryAnalysisResultMap,
 		},
@@ -46,7 +46,7 @@ var (
 
 	wrongBinaryAnalysisMap = map[string]interface{}{
 		"libraries": []string{},
-		"macho": wrongMachoInfoTestMap,
+		"macho":     wrongMachoInfoTestMap,
 		"results": []map[string]interface{}{
 			wrongBinaryAnalysisResultMap,
 		},

@@ -2,8 +2,6 @@ package entities
 
 import "gopkg.in/go-playground/validator.v9"
 
-
-
 // The interface entity is intended to make easier the communication with external world in a generic way.
 type Entity interface {
 	// ToMap allows the different entities to be transformed to map[string]interface{} objects without using reflection.
@@ -31,7 +29,6 @@ func getValidator() *validator.Validate {
 	return validate
 }
 
-
 func Validate(e Entity) []validator.FieldError {
 	err := getValidator().Struct(e)
 	if err != nil {
@@ -39,4 +36,3 @@ func Validate(e Entity) []validator.FieldError {
 	}
 	return []validator.FieldError{}
 }
-
