@@ -1,4 +1,4 @@
-package macho
+package binary
 
 import (
 	"github.com/simplycubed/vulnscan/utils"

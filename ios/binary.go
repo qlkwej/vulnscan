@@ -3,7 +3,7 @@ package ios
 import (
 	"flag"
 	"fmt"
-	"github.com/simplycubed/vulnscan/macho"
+	"github.com/simplycubed/vulnscan/usecases/binary"
 	"github.com/simplycubed/vulnscan/utils"
 	"os"
 	"os/exec"
@@ -15,7 +15,7 @@ import (
 	"github.com/kardianos/osext"
 )
 
-// Command type determines the otool command flags.
+// AnalysisCommand type determines the otool command flags.
 type CommandType int
 
 const (
@@ -499,7 +499,7 @@ func BinaryAnalysis(ipaPath string, isSrc bool, appName string) (map[string]inte
 		if _, err := os.Stat(binPath); os.IsNotExist(err) {
 			return fmt.Errorf("unable to find the binary at %s", binPath)
 		}
-		binInfo, err := macho.GetMachoInfo(binPath)
+		binInfo, err := binary.GetMachoInfo(binPath)
 		if err != nil {
 			return err
 		}
