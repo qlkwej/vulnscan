@@ -17,6 +17,7 @@ var (
 	wd, _ = os.Getwd()
 )
 
+// Expect is a test helper
 func Expect(t *testing.T, a interface{}, b interface{}) {
 	_, fn, line, _ := runtime.Caller(1)
 	fn = strings.Replace(fn, wd+"/", "", -1)
@@ -26,6 +27,7 @@ func Expect(t *testing.T, a interface{}, b interface{}) {
 	}
 }
 
+// FindMainFolder finds the main project folder
 func FindMainFolder() (string, error) {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -53,7 +55,7 @@ func FindMainFolder() (string, error) {
 	return strings.Join(pathList, string(os.PathSeparator)), nil
 }
 
-// Utility function to help find the test_files folder in different test environments. This solves
+// FindTest is a utility function to help find the test_files folder in different test environments. This solves
 // the problem where running tests from an IDE and from command line differed in how the test_files
 // folder was determined to be.
 //
@@ -87,6 +89,7 @@ func FindTest(testFilePath ...string) (string, error) {
 	return sb.String(), nil
 }
 
+// WithPipeStdout writes to standard out
 func WithPipeStdout(printerFunc func() error) (string, error) {
 	// Let's hack the stdout to get the help message captured
 	old := os.Stdout

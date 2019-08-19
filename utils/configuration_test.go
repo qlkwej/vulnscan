@@ -79,7 +79,7 @@ func TestLoadConfigurationFromPath(t *testing.T) {
 			t.Errorf("wrong message: %s", message)
 		}
 		if Configuration.VirusScanKey != "virus_scan_password" ||
-			Configuration.JsonFormat != true ||
+			Configuration.JSONFormat != true ||
 			!reflect.DeepEqual(Configuration.Scans, []string{"binary", "code", "plist"}) {
 			t.Errorf("wrong Configuration found: %v", Configuration)
 		}
@@ -104,7 +104,7 @@ func TestLoadConfigurationFileFromCwd(t *testing.T) {
 		t.Errorf("wrong message: %s", message)
 	}
 	if Configuration.VirusScanKey != "virus_scan_password" ||
-		Configuration.JsonFormat != true ||
+		Configuration.JSONFormat != true ||
 		!reflect.DeepEqual(Configuration.Scans, []string{"binary", "code", "plist"}) {
 		t.Errorf("wrong Configuration found: %v", Configuration)
 	}
