@@ -16,6 +16,7 @@ func TestListFiles(t *testing.T) {
 		if result, err := ListFiles(p); err != nil {
 			t.Errorf("List files analysis failed with error %s", err)
 		} else {
+			t.Logf("%#v", result)
 			if len(result["certs"].([]string)) > 0 ||
 				len(result["database"].([]string)) > 0 ||
 				len(result["files"].([]string)) < 2 ||

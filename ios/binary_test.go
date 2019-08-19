@@ -113,6 +113,7 @@ func TestOtoolAnalysis(t *testing.T) {
 		}
 		binPath := filepath.Join(appPath, "iVim")
 		analysis, err := otoolAnalysis(binPath)
+		t.Logf("%#v", analysis)
 		if err != nil {
 			return err
 		}
