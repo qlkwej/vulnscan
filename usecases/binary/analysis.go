@@ -9,13 +9,10 @@ import (
 	"strings"
 )
 
-type AnalysisCommand struct {
-	Path    string
-	AppName string
-}
 
 
-func Analysis(command AnalysisCommand, entity *entities.BinaryAnalysis) (entities.Entity, error) {
+
+func Analysis(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
 	if e := utils.Normalize(command.Path, false, func(p string) error {
 		appPath, err := utils.GetApp(p)
 		if err != nil {
@@ -28,7 +25,7 @@ func Analysis(command AnalysisCommand, entity *entities.BinaryAnalysis) (entitie
 		if _, err := os.Stat(binPath); os.IsNotExist(err) {
 			return fmt.Errorf("unable to find the binary at %s", binPath)
 		}
-		if _, err := GetMachoInfo(MachoCommand{Path:binPath}, &entity.Macho); err != nil {
+		if _, err := GetMachoInfo(utils.Command{Path:binPath}, &entity.Macho); err != nil {
 			return err
 		}
 

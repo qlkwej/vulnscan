@@ -4,15 +4,13 @@ import (
 	"debug/macho"
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
+	"github.com/simplycubed/vulnscan/utils"
 )
 
-type MachoCommand struct {
-	Path string
-}
 
 // Analyzes the macho headers to extract the cpu information. We use the standard macho library with some
 // maps to extract the data.
-func GetMachoInfo(command MachoCommand, entity *entities.MachoInfo) (*entities.MachoInfo, error) {
+func GetMachoInfo(command utils.Command, entity *entities.MachoInfo) (*entities.MachoInfo, error) {
 	file, err := macho.Open(command.Path)
 	if err != nil {
 		return entity, err
