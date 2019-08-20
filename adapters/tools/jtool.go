@@ -66,7 +66,7 @@ func JtoolHeadersAdapter(command utils.Command, entity *entities.BinaryAnalysis)
 func JtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
 	out, err := performJtoolAnalysis([][]string{
 		{"-arch", "arm", "-h", "-v", command.Path},
-		{"-arch", "arm", "-lazy_bind", "-v", command.Path}
+		{"-arch", "arm", "-lazy_bind", "-v", command.Path},
 	})
 	if err != nil {
 		return nil, err
