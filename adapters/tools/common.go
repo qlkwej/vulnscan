@@ -307,3 +307,25 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) (entities.Enti
 	}
 	return entity, nil
 }
+
+
+func classDumpExtractor(out string, entity *entities.BinaryAnalysis) (entities.Entity, error) {
+	if strings.Contains(out, "UIWebView") {
+		entity.Results = append(entity.Results, entities.BinaryAnalysisResult{
+			Issue:       "Binary uses WebView Component.",
+			Description: "The binary may use WebView Component.",
+			Status:      "info",
+			Cvss:        0.,
+			CWE:         "",
+		})
+	} else {
+		entity.Results = append(entity.Results, entities.BinaryAnalysisResult{
+			Issue:       "Binary doesn't use WebView Component.",
+			Description: "The binary may not use WebView Component.",
+			Status:      "info",
+			Cvss:        0.,
+			CWE:         "",
+		})
+	}
+	return entity, nil
+}

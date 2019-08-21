@@ -11,6 +11,7 @@ type (
 	CpuType    string
 	SubCpuType string
 	Status     string
+	BinType    string
 
 	MachoInfo struct {
 		Bits       Bits       `json:"bits" validate:"required,valid_bits"`
@@ -28,6 +29,7 @@ type (
 	}
 
 	BinaryAnalysis struct {
+		BinType   BinType                `json:"bin_type" validate:"valid_bin_types"`
 		Libraries []string               `json:"libraries"`
 		Macho     MachoInfo              `json:"macho"`
 		Results   []BinaryAnalysisResult `json:"results"`
@@ -35,6 +37,9 @@ type (
 )
 
 const (
+	Swift BinType = "Swift"
+	ObjC  BinType = "ObjC"
+
 	Bits32 Bits = 32
 	Bits64 Bits = 64
 
@@ -336,6 +341,14 @@ var (
 		},
 	}
 )
+
+func binTypeValidator(fl validator.FieldLevel) bool {
+	repr := BinType(fl.Field().String())
+	if repr == Swift || repr == ObjC {
+		return true
+	}
+	return false
+}
 
 func bitsValidator(fl validator.FieldLevel) bool {
 	return validBitsValues[Bits(fl.Field().Uint())]

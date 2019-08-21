@@ -74,3 +74,13 @@ func JtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis)
 	return symbolExtractor(out, entity)
 }
 
+func JtoolClassDump(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
+	out, err := performJtoolAnalysis([][]string{
+		{"-arch", "arm", "-d", "objc", "-v", command.Path},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return classDumpExtractor(out, entity)
+}
+
