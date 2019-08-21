@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func RuleExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
+func ruleExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
 	for _, rule := range Rules {
 		if rule.Match(data) {
 			var found bool
@@ -34,7 +34,7 @@ func RuleExtractor(data, path string, entity *entities.CodeAnalysis) entities.En
 	return entity
 }
 
-func ApiExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
+func apiExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
 	for _, api := range APIs {
 		if api.Match(data) {
 			var found bool
@@ -56,7 +56,7 @@ func ApiExtractor(data, path string, entity *entities.CodeAnalysis) entities.Ent
 	return entity
 }
 
-func UrlExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
+func urlExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
 	urlPat, _ := regexp.
 		Compile(`https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+`)
 	urls := urlPat.FindAll([]byte(data), -1)
@@ -79,7 +79,7 @@ func UrlExtractor(data, path string, entity *entities.CodeAnalysis) entities.Ent
 	return entity
 }
 
-func EmailExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
+func emailExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
 	emailPat, _ := regexp.Compile(`[\w.-]+@[\w-]+\.[\w.]+`)
 	emails := emailPat.FindAll([]byte(data), -1)
 	for email := range emails {
@@ -127,10 +127,10 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 				data = string(d)
 			}
 			relativeSrcPath := strings.Replace(jfilePath, command.Path, "", 1)
-			_ = RuleExtractor(data, relativeSrcPath, entity)
-			_ = ApiExtractor(data, relativeSrcPath, entity)
-			_ = UrlExtractor(data, relativeSrcPath, entity)
-			_ = EmailExtractor(data, relativeSrcPath, entity)
+			_ = ruleExtractor(data, relativeSrcPath, entity)
+			_ = apiExtractor(data, relativeSrcPath, entity)
+			_ = urlExtractor(data, relativeSrcPath, entity)
+			_ = emailExtractor(data, relativeSrcPath, entity)
 		}
 		return nil
 	}); walkErr != nil {

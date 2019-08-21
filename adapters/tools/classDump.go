@@ -8,7 +8,7 @@ import (
 	"os/exec"
 )
 
-func classDump(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
+func ClassDumpAdapter(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
 	commandBin := getToolsFolder() + "class-dump-z"
 	if entity.BinType == entities.Swift {
 		commandBin = getToolsFolder() + "class-dump-swift"
