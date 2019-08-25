@@ -59,7 +59,11 @@ func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapter ad
 		}
 		return nil
 	}); e != nil {
-		return nil, e
+		_, _ = adapter.Output.Logger(command, &entities.LogMessage{
+			Level:   entities.E,
+			Message: e.Error(),
+		})
+		return entity, e
 	}
 	return entity, nil
 }

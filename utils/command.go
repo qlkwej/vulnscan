@@ -1,6 +1,6 @@
 package utils
 
-
+import "io"
 
 type (
 	AnalysisCheck string
@@ -12,6 +12,7 @@ type (
 		Country 	string
 		Source 		bool
 		Analysis 	map[AnalysisCheck]bool
+		Output 		io.Writer
 	}
 )
 

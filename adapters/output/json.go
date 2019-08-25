@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/utils"
-	"os"
 )
 
 func JsonAdapter(command utils.Command, entity entities.Entity) (entities.Entity, error) {
@@ -13,6 +12,6 @@ func JsonAdapter(command utils.Command, entity entities.Entity) (entities.Entity
 	if err != nil {
 		return entity, err
 	}
-	_, err = fmt.Fprint(os.Stdout, out)
+	_, err = fmt.Fprint(command.Output, out)
 	return entity, err
 }

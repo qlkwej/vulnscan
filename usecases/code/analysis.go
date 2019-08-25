@@ -12,6 +12,50 @@ import (
 	"strings"
 )
 
+func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) (entities.Entity, error) {
+	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if filepath.Ext(path) == ".m" || filepath.Ext(path) == ".swift" {
+			var jfilePath string
+			// TODO: why are we doing this?
+			if strings.Contains(filepath.Base(path), "+") {
+				jfilePath = filepath.Join(filepath.Dir(path),
+					strings.Replace(filepath.Base(path), "+", "x", -1))
+				err := os.Rename(path, jfilePath)
+				if err != nil {
+					return fmt.Errorf("error moving file %s to %s: %s", path, jfilePath, err)
+				}
+			} else {
+				jfilePath = path
+			}
+
+			var data string
+			if d, err := ioutil.ReadFile(jfilePath); err != nil {
+				return fmt.Errorf("error reading file %s: %s", jfilePath, err)
+			} else {
+				data = string(d)
+			}
+			relativeSrcPath := strings.Replace(jfilePath, command.Path, "", 1)
+			_ = ruleExtractor(data, relativeSrcPath, entity)
+			_ = apiExtractor(data, relativeSrcPath, entity)
+			_ = urlExtractor(data, relativeSrcPath, entity)
+			_ = emailExtractor(data, relativeSrcPath, entity)
+		}
+		return nil
+	}); walkErr != nil {
+		return entity, walkErr
+	}
+	if a := adapter.Services.MalwareDomains; a != nil {
+		if _, err := a(command, entity); err != nil {
+			return entity, err
+		}
+	}
+	return entity, nil
+}
+
+
 func ruleExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
 	for _, rule := range Rules {
 		if rule.Match(data) {
@@ -101,45 +145,3 @@ func emailExtractor(data, path string, entity *entities.CodeAnalysis) entities.E
 	return entity
 }
 
-func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) (entities.Entity, error) {
-	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if filepath.Ext(path) == ".m" || filepath.Ext(path) == ".swift" {
-			var jfilePath string
-			// TODO: why are we doing this?
-			if strings.Contains(filepath.Base(path), "+") {
-				jfilePath = filepath.Join(filepath.Dir(path),
-					strings.Replace(filepath.Base(path), "+", "x", -1))
-				err := os.Rename(path, jfilePath)
-				if err != nil {
-					return fmt.Errorf("error moving file %s to %s: %s", path, jfilePath, err)
-				}
-			} else {
-				jfilePath = path
-			}
-
-			var data string
-			if d, err := ioutil.ReadFile(jfilePath); err != nil {
-				return fmt.Errorf("error reading file %s: %s", jfilePath, err)
-			} else {
-				data = string(d)
-			}
-			relativeSrcPath := strings.Replace(jfilePath, command.Path, "", 1)
-			_ = ruleExtractor(data, relativeSrcPath, entity)
-			_ = apiExtractor(data, relativeSrcPath, entity)
-			_ = urlExtractor(data, relativeSrcPath, entity)
-			_ = emailExtractor(data, relativeSrcPath, entity)
-		}
-		return nil
-	}); walkErr != nil {
-		return entity, walkErr
-	}
-	if a := adapter.Services.MalwareDomains; a != nil {
-		if _, err := a(command, entity); err != nil {
-			return entity, err
-		}
-	}
-	return entity, nil
-}

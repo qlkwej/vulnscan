@@ -3,7 +3,6 @@ package output
 import (
 	"fmt"
 	"github.com/gookit/color"
-	"os"
 	"strconv"
 	"strings"
 
@@ -15,19 +14,19 @@ func ConsoleAdapter(command utils.Command, entity entities.Entity) (entities.Ent
 	var e error
 	switch entity.(type) {
 	case *entities.BinaryAnalysis:
-		_, e = color.Fprintf(os.Stdout, createBinaryOutput(entity.(*entities.BinaryAnalysis)))
+		_, e = color.Fprintf(command.Output, createBinaryOutput(entity.(*entities.BinaryAnalysis)))
 	case *entities.CodeAnalysis:
-		_, e = color.Fprintf(os.Stdout, createCodeOutput(entity.(*entities.CodeAnalysis)))
+		_, e = color.Fprintf(command.Output, createCodeOutput(entity.(*entities.CodeAnalysis)))
 	case *entities.FileAnalysis:
-		_, e = color.Fprintf(os.Stdout, createFilesOutput(entity.(*entities.FileAnalysis)))
+		_, e = color.Fprintf(command.Output, createFilesOutput(entity.(*entities.FileAnalysis)))
 	case *entities.PListAnalysis:
-		_, e = color.Fprintf(os.Stdout, createPlistOutput(entity.(*entities.PListAnalysis)))
+		_, e = color.Fprintf(command.Output, createPlistOutput(entity.(*entities.PListAnalysis)))
 	case *entities.StoreAnalysis:
-		_, e = color.Fprintf(os.Stdout, createStoreOutput(entity.(*entities.StoreAnalysis)))
+		_, e = color.Fprintf(command.Output, createStoreOutput(entity.(*entities.StoreAnalysis)))
 	case *entities.VirusAnalysis:
-		_, e = color.Fprintf(os.Stdout, createVirusOutput(entity.(*entities.VirusAnalysis)))
+		_, e = color.Fprintf(command.Output, createVirusOutput(entity.(*entities.VirusAnalysis)))
 	case *entities.StaticAnalysis:
-		_, e = color.Fprintf(os.Stdout, createStaticOutput(entity.(*entities.StaticAnalysis)))
+		_, e = color.Fprintf(command.Output, createStaticOutput(entity.(*entities.StaticAnalysis)))
 	default:
 		e = fmt.Errorf("printing error: unable to detect analysis kind")
 	}
