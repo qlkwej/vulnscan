@@ -43,10 +43,20 @@ func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapter ad
 		}
 		return nil
 	}); e != nil {
-		_ = adapter.Output.Error(output.ParseError(analysisName, e))
+		if adapter.Output.Error(output.ParseError(analysisName, e)) != nil {
+			return
+		}
+	}
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "finished"))
+	if err := adapter.Output.Result(command, entity); err != nil {
+		_ = adapter.Output.Error(output.ParseError(analysisName, err))
 	}
 }
 
+// Extracts the information about the language used by the application: objective c or swift. If libswiftcore.dylib
+// is detected, the application is categorized as swift, so mixed language applications would be marked as swift
+// applications
+// TODO: imrpove the command to detect mixed language applications ?
 func getTypeInfo(command utils.Command, entity *entities.BinaryAnalysis) {
 	entity.BinType = entities.ObjC
 	for _, lib := range entity.Libraries {

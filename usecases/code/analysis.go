@@ -3,6 +3,7 @@ package code
 import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/adapters"
+	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/utils"
 	"io/ioutil"
@@ -12,7 +13,9 @@ import (
 	"strings"
 )
 
-func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) (entities.Entity, error) {
+func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) {
+	var analysisName = entities.Code
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "starting"))
 	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -38,21 +41,31 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 				data = string(d)
 			}
 			relativeSrcPath := strings.Replace(jfilePath, command.Path, "", 1)
+			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting rules..."))
 			_ = ruleExtractor(data, relativeSrcPath, entity)
+			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "rules extracted!"))
+			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting apis..."))
 			_ = apiExtractor(data, relativeSrcPath, entity)
+			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "apis extracted!"))
+			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting urls..."))
 			_ = urlExtractor(data, relativeSrcPath, entity)
+			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "urls extracted!"))
+			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting emails"))
 			_ = emailExtractor(data, relativeSrcPath, entity)
+			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "emails extracted!"))
 		}
 		return nil
-	}); walkErr != nil {
-		return entity, walkErr
+	}); adapter.Output.Error(output.ParseError(analysisName, walkErr)) != nil {
+		return
 	}
 	if a := adapter.Services.MalwareDomains; a != nil {
-		if _, err := a(command, entity); err != nil {
-			return entity, err
+		if adapter.Output.Error(output.ParseError(analysisName,a(command, entity))) != nil {
+			return
 		}
 	}
-	return entity, nil
+	if err := adapter.Output.Result(command, entity); err != nil {
+		_ = adapter.Output.Error(output.ParseError(analysisName, err))
+	}
 }
 
 
