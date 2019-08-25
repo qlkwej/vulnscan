@@ -139,6 +139,8 @@ func Normalize(path string, isSrc bool, fn func(p string) error) error {
 	return fmt.Errorf("unable to normalize path %s", path)
 }
 
+
+// Find the path to the .app file.
 func GetApp(path string) (app string, err error) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {

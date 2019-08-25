@@ -22,31 +22,31 @@ type VirusTotalClient struct {
 	c      *http.Client
 }
 
-func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) (entities.Entity, error) {
+func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) error {
 	client, e := newVirusTotalClient(utils.Configuration.VirusScanKey)
 	if e != nil {
-		return entity, e
+		return e
 	}
 	hash, e := utils.HashMD5(command.Path)
 	if e != nil {
-		return entity, e
+		return e
 	}
 	r, e := client.GetResult(command.Path, hash)
 	if e != nil {
-		return entity, e
+		return e
 	}
 	_ , e = entity.Response.FromMap(r)
 	if e != nil {
-		return entity, fmt.Errorf("error processing virus scan report map: %s", e)
+		return fmt.Errorf("error processing virus scan report map: %s", e)
 	}
 	_ , e = entity.Report.FromMap(r)
 	if e != nil {
-		return entity, fmt.Errorf("error processing virus scan report map: %s", e)
+		return fmt.Errorf("error processing virus scan report map: %s", e)
 	}
 	if entity.Report.ScanId != "" {
 		entity.HasReport = true
 	}
-	return entity, nil
+	return nil
 }
 
 // Creates a new VirusTotalClient. If apiKey has len = 0, it searches for it as an environment variable, and fails,

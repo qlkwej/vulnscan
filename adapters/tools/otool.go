@@ -2,12 +2,41 @@ package tools
 
 import (
 	"fmt"
-	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"os/exec"
 	"runtime"
 	"strings"
+
+	"github.com/simplycubed/vulnscan/entities"
+	"github.com/simplycubed/vulnscan/utils"
 )
+
+
+func OtoolLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+	out, e := performOtoolAnalysis(command.Path, "L")
+	if e != nil {
+		return e
+	}
+	entity.Libraries = strings.Split(out, "\n")
+	return nil
+}
+
+func OtoolHeaderAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+	out, e := performOtoolAnalysis(command.Path, "-hv")
+	if e != nil {
+		return e
+	}
+	return headerExtractor(out, entity)
+}
+
+
+func OtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+	out, e := performOtoolAnalysis(command.Path, "-Iv")
+	if e != nil {
+		return e
+	}
+	return symbolExtractor(out, entity)
+}
+
 
 func performOtoolAnalysis(path, arg string) (out string, err error) {
 	if platform := runtime.GOOS; platform != "darwin" {
@@ -17,29 +46,3 @@ func performOtoolAnalysis(path, arg string) (out string, err error) {
 	return string(outB), err
 }
 
-
-func OtoolLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
-	out, e := performOtoolAnalysis(command.Path, "L")
-	if e != nil {
-		return nil, e
-	}
-	entity.Libraries = strings.Split(out, "\n")
-	return entity, nil
-}
-
-func OtoolHeaderAdapter(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
-	out, e := performOtoolAnalysis(command.Path, "-hv")
-	if e != nil {
-		return nil, e
-	}
-	return headerExtractor(out, entity)
-}
-
-
-func OtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
-	out, e := performOtoolAnalysis(command.Path, "-Iv")
-	if e != nil {
-		return nil, e
-	}
-	return symbolExtractor(out, entity)
-}

@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	Adapter func(command utils.Command, entity entities.Entity) (entities.Entity, error)
+	Adapter func(command utils.Command, entity entities.Entity) error
 
 	ServiceAdapters struct {
 		MalwareDomains 	Adapter
@@ -23,6 +23,7 @@ type (
 	OutputAdapters struct {
 		Logger Adapter
 		Result Adapter
+		Error Adapter
 	}
 
 	AdapterMap struct {

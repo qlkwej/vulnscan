@@ -7,6 +7,7 @@ import (
 
 var messageTestMap = map[string]interface{}{
 	"level": 1,
+	"analysis": "Binary Analysis",
 	"message": "Message to log",
 }
 

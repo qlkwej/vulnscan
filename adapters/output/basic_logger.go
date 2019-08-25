@@ -1,12 +1,14 @@
 package output
 
 import (
-	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/simplycubed/vulnscan/entities"
+	"github.com/simplycubed/vulnscan/utils"
 )
 
 
@@ -17,6 +19,24 @@ type BasicLogger struct {
 }
 
 var basicLogger *BasicLogger
+
+func BasicLoggerAdapter(command utils.Command, entity *entities.LogMessage) error {
+	var message string
+	if entity.Analysis == entities.None {
+		message = entity.Message
+	} else {
+		message = fmt.Sprintf("%s: %s", entity.Analysis, entity.Message)
+	}
+	switch entity.Level {
+	case entities.I:
+		basicLogger.Info.Println(message)
+	case entities.W:
+		basicLogger.Warning.Println(message)
+	case entities.E:
+		basicLogger.Error.Println(message)
+	}
+	return nil
+}
 
 
 // SetLogger sets the logging level preference
@@ -44,15 +64,3 @@ func SetLogger(level entities.LogLevel, logTime bool) {
 	}
 }
 
-
-func BasicLoggerAdapter(command utils.Command, entity *entities.LogMessage) (entities.Entity, error) {
-	switch entity.Level {
-	case entities.I:
-		basicLogger.Info.Println(entity.Message)
-	case entities.W:
-		basicLogger.Warning.Println(entity.Message)
-	case entities.E:
-		basicLogger.Error.Println(entity.Message)
-	}
-	return entity, nil
-}

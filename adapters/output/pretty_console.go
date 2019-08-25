@@ -10,7 +10,7 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-func ConsoleAdapter(command utils.Command, entity entities.Entity) (entities.Entity, error) {
+func PrettyConsoleAdapter(command utils.Command, entity entities.Entity) error {
 	var e error
 	switch entity.(type) {
 	case *entities.BinaryAnalysis:
@@ -30,7 +30,7 @@ func ConsoleAdapter(command utils.Command, entity entities.Entity) (entities.Ent
 	default:
 		e = fmt.Errorf("printing error: unable to detect analysis kind")
 	}
-	return entity, e
+	return e
 }
 
 func createStaticOutput(entity *entities.StaticAnalysis) string {

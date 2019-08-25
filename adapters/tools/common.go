@@ -1,12 +1,54 @@
 package tools
 
 import (
+	"flag"
+	"fmt"
+	"github.com/kardianos/osext"
 	"github.com/simplycubed/vulnscan/entities"
+	"github.com/simplycubed/vulnscan/utils"
+	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 )
 
-func headerExtractor(out string, entity *entities.BinaryAnalysis) (entities.Entity, error) {
+
+// Returns the folder where the program external binary tools (jtool, class-dump) is present. By default, depending on
+// the environment where the program is executing (testing/not testing) the tools will be in vulnscan/tools/tools
+// (testing) or in a sibling folder of the vulnscan binary. The function also looks for a folder configured using the
+// configuration file.
+func getToolsFolder() string {
+	if tf := utils.Configuration.ToolsFolder; tf != "" {
+		return tf
+	}
+	var parentFolder string
+	if flag.Lookup("test.v") == nil {
+		parentFolder, _ = osext.ExecutableFolder()
+	} else {
+		parentFolder, _ = utils.FindMainFolder()
+	}
+	return parentFolder + string(os.PathSeparator) + "tools" + string(os.PathSeparator)
+}
+
+func performJtoolAnalysis(args [][]string) (out string, err error) {
+	command := getToolsFolder() + "jtool"
+	if _, err := os.Stat(command); os.IsNotExist(err) {
+		return out, fmt.Errorf("jtool not found on %s, probably it's not installed", command)
+	}
+	var sb strings.Builder
+	for _, arg := range args {
+		if out, e := exec.Command(command, arg...).CombinedOutput(); e != nil {
+			return string(out), e
+		} else {
+			sb.WriteString(string(out))
+			sb.WriteString("\n")
+		}
+	}
+	return sb.String(), nil
+}
+
+
+func headerExtractor(out string, entity *entities.BinaryAnalysis) error {
 	if strings.Contains(out, "PIE") {
 		entity.Results = append(entity.Results, entities.BinaryAnalysisResult{
 			Issue:  "fPIE -pie flag is Found",
@@ -16,7 +58,7 @@ func headerExtractor(out string, entity *entities.BinaryAnalysis) (entities.Enti
 			Cvss: 0.,
 			CWE:  "",
 		})
-		return entity, nil
+		return nil
 	} else {
 		entity.Results = append(entity.Results, entities.BinaryAnalysisResult{
 			Issue:  "fPIE -pie flag is not Found",
@@ -27,10 +69,10 @@ func headerExtractor(out string, entity *entities.BinaryAnalysis) (entities.Enti
 			CWE:  "",
 		})
 	}
-	return entity, nil
+	return nil
 }
 
-func symbolExtractor(out string, entity *entities.BinaryAnalysis) (entities.Entity, error) {
+func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 	if strings.Contains(out, "stack_chk_guard") {
 		entity.Results = append(entity.Results, entities.BinaryAnalysisResult{
 			Issue:  "fstack-protector-all flag is Found",
@@ -285,7 +327,7 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) (entities.Enti
 	} {
 		reg, err := regexp.Compile(an.reg)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if found := reg.FindAll([]byte(out), -1); found != nil {
 			var foundSet []string
@@ -305,11 +347,11 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) (entities.Enti
 			entity.Results = append(entity.Results, an.good)
 		}
 	}
-	return entity, nil
+	return nil
 }
 
 
-func classDumpExtractor(out string, entity *entities.BinaryAnalysis) (entities.Entity, error) {
+func classDumpExtractor(out string, entity *entities.BinaryAnalysis) error {
 	if strings.Contains(out, "UIWebView") {
 		entity.Results = append(entity.Results, entities.BinaryAnalysisResult{
 			Issue:       "Binary uses WebView Component.",
@@ -327,5 +369,5 @@ func classDumpExtractor(out string, entity *entities.BinaryAnalysis) (entities.E
 			CWE:         "",
 		})
 	}
-	return entity, nil
+	return nil
 }

@@ -3,6 +3,7 @@ package binary
 import (
 	"debug/macho"
 	"fmt"
+
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/utils"
 )
@@ -10,10 +11,10 @@ import (
 
 // Analyzes the macho headers to extract the cpu information. We use the standard macho library with some
 // maps to extract the data.
-func GetMachoInfo(command utils.Command, entity *entities.BinaryAnalysis) (entities.Entity, error) {
+func GetMachoInfo(command utils.Command, entity *entities.BinaryAnalysis) error {
 	file, err := macho.Open(command.Path)
 	if err != nil {
-		return entity, err
+		return err
 	}
 	header := file.FileHeader
 	switch header.Magic {
@@ -30,7 +31,7 @@ func GetMachoInfo(command utils.Command, entity *entities.BinaryAnalysis) (entit
 		entity.Macho.Bits = entities.Bits64
 		entity.Macho.Endianness = entities.LittleEndian
 	default:
-		return entity, fmt.Errorf("magic number %#x not recognized", header.Magic)
+		return fmt.Errorf("magic number %#x not recognized", header.Magic)
 	}
 	if cpu, ok := cpuTypes[header.Cpu]; ok {
 		entity.Macho.Cpu = entities.CpuType(cpu)
@@ -85,7 +86,7 @@ func GetMachoInfo(command utils.Command, entity *entities.BinaryAnalysis) (entit
 			}
 		}
 	} else {
-		return entity, fmt.Errorf("invalid cpu %d number", header.Cpu)
+		return fmt.Errorf("invalid cpu %d number", header.Cpu)
 	}
-	return entity, nil
+	return nil
 }
