@@ -2,6 +2,8 @@ package plist
 
 import (
 	"fmt"
+	"github.com/simplycubed/vulnscan/adapters"
+	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/utils"
 	"io/ioutil"
@@ -114,16 +116,24 @@ func findPListFile(command *utils.Command) error {
 
 // Performs the plist analysis. Extracts information from the plist file found in the binary/source. This function
 // is extracted from the main Analysis function in order to ease testing.
-func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis) (entities.Entity, error) {
-	var plistObject ParsedPList
+func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
+	var (
+		plistObject ParsedPList
+		analysisName = entities.Plist
+	)
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "parsing plist file..."))
 	dat, err := ioutil.ReadFile(command.Path)
 	if err != nil {
-		return entity, fmt.Errorf("error opening Info.plist file. Skipping PList Analysis")
+		_ = adapter.Output.Error(output.ParseError(analysisName, fmt.Errorf("error opening Info.plist file: %s", err)))
+		return
 	}
 	err = plistlib.Unmarshal(dat, &plistObject)
 	if err != nil {
-		return entity, fmt.Errorf("error unmarshalling Info.plist file with error %s. Skipping PList Analysis", err)
+		_ = adapter.Output.Error(output.ParseError(analysisName, fmt.Errorf("error unmarshalling Info.plist file with error %s", err)))
+		return
 	}
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "plist file parsed!"))
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting information..."))
 	xmlBytes, err := plistlib.MarshalIndent(plistObject, "\t")
 	if err != nil {
 		log.Println(err)
@@ -163,15 +173,22 @@ func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis) (e
 	for k := range plistObject.NSAppTransportSecurity.NSExceptionDomains {
 		entity.InsecureConnections.Domains = append(entity.InsecureConnections.Domains, k)
 	}
-	return entity, nil
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "information extracted!"))
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "finished"))
+	if err := adapter.Output.Result(command, entity); err != nil {
+		_ = adapter.Output.Error(output.ParseError(analysisName, err))
+	}
 }
 
 // Search for the plist file calling findPListFile function and performs the PList analysis.
-func Analysis(command utils.Command, entity *entities.PListAnalysis) (entities.Entity, error) {
-	if err := findPListFile(&command); err != nil {
-		return entity, err
+func Analysis(command utils.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
+	var analysisName = entities.Plist
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "starting"))
+	if adapter.Output.Error(output.ParseError(analysisName, findPListFile(&command)))  != nil {
+		return
 	}
-	return makePListAnalysis(command, entity)
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, fmt.Sprintf("plist file found at: %s", command.Path)))
+	makePListAnalysis(command, entity, adapter)
 }
 
 // Returns an array of permissions from a plist object. Each permission is a map where the key is the permission
