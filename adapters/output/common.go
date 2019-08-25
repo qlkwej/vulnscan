@@ -7,7 +7,7 @@ import (
 
 func ParseWarning(a entities.AnalysisName, m string) (utils.Command, *entities.LogMessage) {
 	return utils.Command{}, &entities.LogMessage{
-		Level:   entities.W,
+		Level:   entities.Warn,
 		Analysis:a,
 		Message: m,
 	}
@@ -15,7 +15,7 @@ func ParseWarning(a entities.AnalysisName, m string) (utils.Command, *entities.L
 
 func ParseInfo(a entities.AnalysisName, m string) (utils.Command, *entities.LogMessage) {
 	return utils.Command{}, &entities.LogMessage{
-		Level:   entities.I,
+		Level:   entities.Inf,
 		Analysis:a,
 		Message: m,
 	}

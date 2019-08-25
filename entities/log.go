@@ -17,18 +17,18 @@ type (
 )
 
 const (
-	U LogLevel = iota  // 0: Logs nothing
-	I // 1: Logs Info, Warnings and Errors
-	W // 2: Logs Warning and Errors
-	E // 3: Logs Errors
+	Und  LogLevel = iota // 0: Logs nothing
+	Inf                  // 1: Logs Info, Warnings and Errors
+	Warn                 // 2: Logs Warning and Errors
+	Err                  // 3: Logs Errors
 
 	Binary AnalysisName = "Binary Analysis"
-	Code AnalysisName = "Code Analysis"
-	Files AnalysisName = "Files Analysis"
+	Code   AnalysisName = "Code Analysis"
+	Files  AnalysisName = "Files Analysis"
 	Static AnalysisName = "Static Analysis"
-	Plist AnalysisName = "Plist Analysis"
-	Store AnalysisName = "Store Analysis"
-	None AnalysisName = ""
+	Plist  AnalysisName = "Plist Analysis"
+	Store  AnalysisName = "Store Analysis"
+	None   AnalysisName = ""
 )
 
 

@@ -2,13 +2,11 @@ package output
 
 import (
 	"fmt"
+	"github.com/simplycubed/vulnscan/entities"
+	"github.com/simplycubed/vulnscan/utils"
 	"io"
 	"io/ioutil"
 	"log"
-	"os"
-
-	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 )
 
 
@@ -21,6 +19,9 @@ type BasicLogger struct {
 var basicLogger *BasicLogger
 
 func BasicLoggerAdapter(command utils.Command, entity *entities.LogMessage) error {
+	if basicLogger == nil {
+		return fmt.Errorf("logger not initializated")
+	}
 	var message string
 	if entity.Analysis == entities.None {
 		message = entity.Message
@@ -28,11 +29,11 @@ func BasicLoggerAdapter(command utils.Command, entity *entities.LogMessage) erro
 		message = fmt.Sprintf("%s: %s", entity.Analysis, entity.Message)
 	}
 	switch entity.Level {
-	case entities.I:
+	case entities.Inf:
 		basicLogger.Info.Println(message)
-	case entities.W:
+	case entities.Warn:
 		basicLogger.Warning.Println(message)
-	case entities.E:
+	case entities.Err:
 		basicLogger.Error.Println(message)
 	}
 	return nil
@@ -40,25 +41,25 @@ func BasicLoggerAdapter(command utils.Command, entity *entities.LogMessage) erro
 
 
 // SetLogger sets the logging level preference
-func SetLogger(level entities.LogLevel, logTime bool) {
-	initLog := func(infoHandle io.Writer, warningHandle io.Writer, errorHandle io.Writer) {
+func SetBasicLogger(out io.Writer, level entities.LogLevel, logTime bool) {
+	initLog := func(infoOut io.Writer, warningOut io.Writer, errorOut io.Writer) {
 		flag := 0
 		if logTime {
 			flag = log.Ltime
 		}
 		basicLogger = &BasicLogger{
-			Info:    log.New(infoHandle, "INFO: ", flag),
-			Warning: log.New(warningHandle, "WARNING: ", flag),
-			Error:   log.New(errorHandle, "ERROR: ", flag),
+			Info:    log.New(infoOut, "INFO| ", flag),
+			Warning: log.New(warningOut, "WARNING| ", flag),
+			Error:   log.New(errorOut, "ERROR| ", flag),
 		}
 	}
 	switch level {
-	case entities.I:
-		initLog(os.Stderr, os.Stderr, os.Stderr)
-	case entities.W:
-		initLog(ioutil.Discard, os.Stderr, os.Stderr)
-	case entities.E:
-		initLog(ioutil.Discard, ioutil.Discard, os.Stderr)
+	case entities.Inf:
+		initLog(out, out, out)
+	case entities.Warn:
+		initLog(ioutil.Discard, out, out)
+	case entities.Err:
+		initLog(ioutil.Discard, ioutil.Discard, out)
 	default:
 		initLog(ioutil.Discard, ioutil.Discard, ioutil.Discard)
 	}

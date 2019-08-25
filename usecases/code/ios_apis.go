@@ -18,7 +18,7 @@ var APIs = []entities.ApiMatcher{
 		},
 	},
 	{ entities.ApiRule{
-			Description: "Local File I/O Operations.",
+			Description: "Local File Inf/O Operations.",
 		},
 		func(s string) bool {
 			r, _ := regexp.MatchString(
