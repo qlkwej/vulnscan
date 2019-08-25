@@ -1,6 +1,7 @@
 package files
 
 import (
+	"github.com/simplycubed/vulnscan/adapters/output"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -11,8 +12,10 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-func Analysis(command utils.Command, entity *entities.FileAnalysis, adapter adapters.AdapterMap) (entities.Entity, error) {
-	walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
+func Analysis(command utils.Command, entity *entities.FileAnalysis, adapter adapters.AdapterMap) {
+	var analysisName = entities.Files
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "starting"))
+	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
 		filePath := path
 		dirName, fileName := filepath.Split(path)
 		if !strings.HasSuffix(fileName, ".DS_Store") {
@@ -38,9 +41,11 @@ func Analysis(command utils.Command, entity *entities.FileAnalysis, adapter adap
 			}
 		}
 		return nil
-	})
-	if walkErr != nil {
-		return entity, walkErr
+	}); adapter.Output.Error(output.ParseError(analysisName, walkErr)) != nil {
+		return
 	}
-	return entity, nil
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "finished"))
+	if err := adapter.Output.Result(command, entity); err != nil {
+		_ = adapter.Output.Error(output.ParseError(analysisName, err))
+	}
 }

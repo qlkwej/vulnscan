@@ -63,6 +63,7 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 			return
 		}
 	}
+	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "finished"))
 	if err := adapter.Output.Result(command, entity); err != nil {
 		_ = adapter.Output.Error(output.ParseError(analysisName, err))
 	}
