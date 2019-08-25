@@ -6,10 +6,12 @@ type (
 	AnalysisCheck string
 
 	Command struct {
-		Path    string
-		AppName string
-		Source bool
-		Analysis map[AnalysisCheck]bool
+		Path    	string
+		AppName 	string
+		AppId 		string
+		Country 	string
+		Source 		bool
+		Analysis 	map[AnalysisCheck]bool
 	}
 )
 
