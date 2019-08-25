@@ -21,16 +21,23 @@ func GetTypeInfo(command utils.Command, entity *entities.BinaryAnalysis) (entiti
 	return entity, nil
 }
 
-func OtoolInfo(command utils.Command, entity *entities.BinaryAnalysis, adapters ...adapters.Adapter) (entities.Entity, error) {
-	for _, adapter := range adapters {
-		if _, err := adapter(command, entity); err != nil {
-			return nil, err
+func OtoolInfo(command utils.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) (entities.Entity, error) {
+	for _, adapter := range []adapters.Adapter{
+		adapter.Tools.Headers,
+		adapter.Tools.Libs,
+		adapter.Tools.Symbols,
+		adapter.Tools.ClassDump,
+	} {
+		if adapter != nil {
+			if _, err := adapter(command, entity); err != nil {
+				return nil, err
+			}
 		}
 	}
 	return entity, nil
 }
 
-func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapters ...adapters.Adapter) (entities.Entity, error) {
+func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) (entities.Entity, error) {
 	if e := utils.Normalize(command.Path, false, func(p string) error {
 		appPath, err := utils.GetApp(p)
 		if err != nil {
@@ -47,7 +54,7 @@ func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapters .
 			return err
 		}
 		_, _ = GetTypeInfo(command, entity)
-		if _, err := OtoolInfo(utils.Command{Path:binPath}, entity, adapters...); err !=  nil {
+		if _, err := OtoolInfo(utils.Command{Path:binPath}, entity, adapter); err !=  nil {
 			return err
 		}
 		return nil

@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
+	github.com/gookit/color v1.1.10
 	github.com/groob/plist v0.0.0-20190114192801-a99fbe489d03
 	github.com/joho/godotenv v1.3.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0

@@ -101,7 +101,7 @@ func emailExtractor(data, path string, entity *entities.CodeAnalysis) entities.E
 	return entity
 }
 
-func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adapters.Adapter) (entities.Entity, error) {
+func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) (entities.Entity, error) {
 	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -136,8 +136,8 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 	}); walkErr != nil {
 		return entity, walkErr
 	}
-	if adapter != nil {
-		if _, err := adapter(command, entity); err != nil {
+	if a := adapter.Services.MalwareDomains; a != nil {
+		if _, err := a(command, entity); err != nil {
 			return entity, err
 		}
 	}

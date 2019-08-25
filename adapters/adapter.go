@@ -5,4 +5,30 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-type Adapter func(command utils.Command, entity entities.Entity) (entities.Entity, error)
+type (
+	Adapter func(command utils.Command, entity entities.Entity) (entities.Entity, error)
+
+	ServiceAdapters struct {
+		MalwareDomains 	Adapter
+		VirusScan 		Adapter
+	}
+
+	ToolAdapters struct {
+		ClassDump 	Adapter
+		Libs 		Adapter
+		Headers 	Adapter
+		Symbols 	Adapter
+	}
+
+	OutputAdapters struct {
+		Logger Adapter
+		Result Adapter
+	}
+
+	AdapterMap struct {
+		Services ServiceAdapters
+		Tools    ToolAdapters
+		Output   OutputAdapters
+	}
+)
+
