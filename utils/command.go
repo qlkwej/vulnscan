@@ -6,13 +6,14 @@ type (
 	AnalysisCheck string
 
 	Command struct {
-		Path    	string
-		AppName 	string
-		AppId 		string
-		Country 	string
-		Source 		bool
-		Analysis 	map[AnalysisCheck]bool
-		Output 		io.Writer
+		Path    		string
+		AppName 		string
+		AppId 			string
+		Country 		string
+		VirusTotalKey	string
+		Source 			bool
+		Analysis 		map[AnalysisCheck]bool
+		Output 			io.Writer
 	}
 )
 

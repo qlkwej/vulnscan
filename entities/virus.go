@@ -73,6 +73,10 @@ func (e *VirusResponse) FromMap(m map[string]interface{}) (ent Entity, err error
 			e.ResponseCode = int(v.(int32))
 		case uint64:
 			e.ResponseCode = int(v.(int64))
+		case float32:
+			e.ResponseCode = int(v.(float32))
+		case float64:
+			e.ResponseCode = int(v.(float64))
 		default:
 			return ent, fmt.Errorf("erroneus response_code type, expected int/uint, found: %T", v)
 		}
@@ -154,6 +158,8 @@ func (e *VirusScan) FromMap(m map[string]interface{}) (ent Entity, err error) {
 		switch v.(type) {
 		case string:
 			e.Update = v.(string)
+		case nil:
+			e.Update = ""
 		default:
 			return ent, fmt.Errorf("erroneus update type, expected string, found: %T", v)
 		}
@@ -162,6 +168,8 @@ func (e *VirusScan) FromMap(m map[string]interface{}) (ent Entity, err error) {
 		switch v.(type) {
 		case string:
 			e.Result = v.(string)
+		case nil:
+			e.Update = ""
 		default:
 			return ent, fmt.Errorf("erroneus result type, expected string, found: %T", v)
 		}
@@ -241,6 +249,10 @@ func (e *VirusReport) FromMap(m map[string]interface{}) (ent Entity, err error) 
 			e.Positives = int(v.(int32))
 		case uint64:
 			e.Positives = int(v.(int64))
+		case float32:
+			e.Positives = int(v.(float32))
+		case float64:
+			e.Positives = int(v.(float64))
 		default:
 			return ent, fmt.Errorf("erroneus positives type, expected int/uint, found: %T", v)
 		}
@@ -268,6 +280,10 @@ func (e *VirusReport) FromMap(m map[string]interface{}) (ent Entity, err error) 
 			e.Total = int(v.(int32))
 		case uint64:
 			e.Total = int(v.(int64))
+		case float32:
+			e.Total = int(v.(float32))
+		case float64:
+			e.Total = int(v.(float64))
 		default:
 			return ent, fmt.Errorf("erroneus total type, expected int/uint, found: %T", v)
 		}

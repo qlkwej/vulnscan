@@ -23,7 +23,7 @@ type VirusTotalClient struct {
 }
 
 func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) error {
-	client, e := newVirusTotalClient(utils.Configuration.VirusScanKey)
+	client, e := newVirusTotalClient(command.VirusTotalKey)
 	if e != nil {
 		return e
 	}
