@@ -41,18 +41,10 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 				data = string(d)
 			}
 			relativeSrcPath := strings.Replace(jfilePath, command.Path, "", 1)
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting rules..."))
 			_ = ruleExtractor(data, relativeSrcPath, entity)
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "rules extracted!"))
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting apis..."))
 			_ = apiExtractor(data, relativeSrcPath, entity)
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "apis extracted!"))
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting urls..."))
 			_ = urlExtractor(data, relativeSrcPath, entity)
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "urls extracted!"))
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting emails"))
 			_ = emailExtractor(data, relativeSrcPath, entity)
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "emails extracted!"))
 		}
 		return nil
 	}); adapter.Output.Error(output.ParseError(command, analysisName, walkErr)) != nil {

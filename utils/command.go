@@ -16,6 +16,7 @@ type (
 		VirusTotalKey	string
 		Source 			bool
 		Analysis 		map[AnalysisCheck]bool
+		CheckDomains	bool
 		Output 			io.Writer
 		T   			*testing.T
 	}
