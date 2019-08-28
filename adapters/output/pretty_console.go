@@ -64,13 +64,13 @@ func createVirusOutput(entity *entities.VirusAnalysis) string {
 	getResponseData := func() {
 		for _, s := range []string{"scan_id", "permalink"} {
 			sb.WriteString(pretifyKey(s))
-			sb.WriteString(responseMap[s].(string))
+			sb.WriteString(value(responseMap[s].(string)))
 		}
 	}
 	sb.WriteString(title("Virus analysis"))
 	if entity.HasReport {
 		reportMap := entity.Report.ToMap()
-		sb.WriteString("Virus scan has been completed, results:\n\n")
+		sb.WriteString("Virus scan has been completed, results:\n")
 		sb.WriteString(subTitle("General information"))
 		getResponseData()
 		for _, s := range []string{"md5", "sha1", "scan_date"} {
@@ -82,7 +82,7 @@ func createVirusOutput(entity *entities.VirusAnalysis) string {
 		sb.WriteString(key("Number of positives"))
 		sb.WriteString(value(strconv.Itoa(entity.Report.Positives)))
 		for n, s := range entity.Report.Scans {
-			sb.WriteString(subTitle(fmt.Sprintf("Analysis name: %s\n", n)))
+			sb.WriteString(subTitle(fmt.Sprintf("Analysis name: %s", n)))
 			sb.WriteString(key("Detected"))
 			if s.Detected{
 				sb.WriteString(value("True"))
@@ -110,7 +110,7 @@ func createStoreOutput(entity *entities.StoreAnalysis) string {
 	sb.WriteString(value(strconv.Itoa(entity.Count)))
 	for i, r := range entity.Results {
 		mapResult := r.ToMap()
-		sb.WriteString(fmt.Sprintf("<bold>RESULT %s</>\n\n", strconv.Itoa(i)))
+		sb.WriteString(fmt.Sprintf("\n<bold>RESULT %s</>\n", strconv.Itoa(i)))
 		sb.WriteString(subTitle("Basic information"))
 		for _, s := range []string{"title", "app_id", "url", "price", "score"} {
 			sb.WriteString(key(s))
@@ -175,27 +175,47 @@ func createPlistOutput(entity *entities.PListAnalysis) string {
 	}
 	sb.WriteString(subTitle("Insecure connections information"))
 	if entity.InsecureConnections.AllowArbitraryLoads {
-		sb.WriteString("<red>The app allows arbitrary web loads</>")
+		sb.WriteString("<red>The app allows arbitrary web loads</>\n\n")
 	} else {
-		sb.WriteString("<green>The app doesn't allow arbitrary web loads</>")
+		sb.WriteString("<green>The app doesn't allow arbitrary web loads</>\n\n")
 	}
 	sb.WriteString(key("Allowed connection domains"))
-	sb.WriteString(value(""))
-	sb.WriteString(list(entity.InsecureConnections.Domains))
+	if len(entity.InsecureConnections.Domains) > 0 {
+		sb.WriteString(value(""))
+		sb.WriteString(list(entity.InsecureConnections.Domains))
+	} else {
+		sb.WriteString(value("None"))
+	}
 	sb.WriteString(subTitle("Complete XML output"))
-	sb.WriteString(utils.FormatXML(entity.Xml, "\t", "  "))
+	sb.WriteString(utils.FormatXML(entity.Xml, "", "  "))
+	// Without this line (or something similar with open and close tags), the next element is interpreted on screen
+	// as xml.
+	// TODO: better solution?
+	sb.WriteString("<>End of xml</>\n")
 	return sb.String()
 }
 
 func createFilesOutput(entity *entities.FileAnalysis) string {
 	var sb strings.Builder
-	sb.WriteString(title("Files found in code"))
+	sb.WriteString(title("Files found in application"))
 	sb.WriteString(subTitle("Certifications"))
-	sb.WriteString(list(entity.Certifications))
+	if len(entity.Certifications) > 0 {
+		sb.WriteString(list(entity.Certifications))
+	} else {
+		sb.WriteString("<red>No certifications found</>\n")
+	}
 	sb.WriteString(subTitle("Databases"))
-	sb.WriteString(list(entity.Databases))
+	if len(entity.Databases) > 0 {
+		sb.WriteString(list(entity.Databases))
+	} else {
+		sb.WriteString("<red>No databases found</>")
+	}
 	sb.WriteString(subTitle("Plists"))
-	sb.WriteString(list(entity.PLists))
+	if len(entity.PLists) > 0 {
+		sb.WriteString(list(entity.PLists))
+	} else {
+		sb.WriteString("<red>No plist files found</>")
+	}
 	sb.WriteString(subTitle("Complete list of files"))
 	sb.WriteString(list(entity.Files))
 	return sb.String()
@@ -210,6 +230,8 @@ func createCodeOutput(entity *entities.CodeAnalysis) string {
 			sb.WriteString(pretifyKey(k))
 			if k == "level" {
 				sb.WriteString(level(entities.Level(v.(string))))
+			} else if k == "cvss" {
+				sb.WriteString(value(fmt.Sprintf("%0.2f", v.(float64))))
 			} else {
 				sb.WriteString(value(v.(string)))
 			}
@@ -255,6 +277,9 @@ func createBinaryOutput(entity *entities.BinaryAnalysis) string {
 	sb.WriteString(key("Binary language"))
 	sb.WriteString(value(string(entity.BinType)))
 	for k, v := range entity.Macho.ToMap() {
+		 if t, ok := v.(uint); ok {
+		 	v = strconv.Itoa(int(t))
+		 }
 		sb.WriteString(pretifyKey(k))
 		sb.WriteString(value(v.(string)))
 	}
@@ -264,8 +289,10 @@ func createBinaryOutput(entity *entities.BinaryAnalysis) string {
 	for _, r := range entity.Results {
 		for k, v := range r.ToMap() {
 			sb.WriteString(key(k))
-			if k == "status"{
+			if k == "status" {
 				sb.WriteString(status(entities.Status(v.(string))))
+			} else if k == "cvss" {
+				sb.WriteString(value(fmt.Sprintf("%0.2f", v.(float64))))
 			} else {
 				sb.WriteString(value(v.(string)))
 			}
@@ -277,11 +304,11 @@ func createBinaryOutput(entity *entities.BinaryAnalysis) string {
 
 
 func title(s string) string {
-	return fmt.Sprintf("<mga>===%s===</>\n\n", s)
+	return fmt.Sprintf("\n<mga>===%s===</>\n\n", s)
 }
 
 func subTitle(s string) string {
-	return fmt.Sprintf("<cyan>-%s</>\n", s)
+	return fmt.Sprintf("\n<cyan>-%s</>\n\n", s)
 }
 
 

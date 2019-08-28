@@ -8,10 +8,10 @@ import (
 )
 
 func JsonAdapter(command utils.Command, entity entities.Entity) error {
-	out, err := json.MarshalIndent(entity.ToMap(), "", "  ")
+	out, err := json.MarshalIndent(entity, "", "  ")
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprint(command.Output, out)
+	_, err = fmt.Fprint(command.Output, string(out))
 	return err
 }
