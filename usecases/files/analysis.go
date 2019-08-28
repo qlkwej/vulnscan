@@ -14,7 +14,7 @@ import (
 
 func Analysis(command utils.Command, entity *entities.FileAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Files
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "starting"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
 		filePath := path
 		dirName, fileName := filepath.Split(path)
@@ -41,11 +41,11 @@ func Analysis(command utils.Command, entity *entities.FileAnalysis, adapter adap
 			}
 		}
 		return nil
-	}); adapter.Output.Error(output.ParseError(analysisName, walkErr)) != nil {
+	}); adapter.Output.Error(output.ParseError(command, analysisName, walkErr)) != nil {
 		return
 	}
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "finished"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "finished"))
 	if err := adapter.Output.Result(command, entity); err != nil {
-		_ = adapter.Output.Error(output.ParseError(analysisName, err))
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 	}
 }

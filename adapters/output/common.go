@@ -5,16 +5,16 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-func ParseWarning(a entities.AnalysisName, m string) (utils.Command, *entities.LogMessage) {
-	return utils.Command{}, &entities.LogMessage{
+func ParseWarning(c utils.Command, a entities.AnalysisName, m string) (utils.Command, *entities.LogMessage) {
+	return c, &entities.LogMessage{
 		Level:   entities.Warn,
 		Analysis:a,
 		Message: m,
 	}
 }
 
-func ParseInfo(a entities.AnalysisName, m string) (utils.Command, *entities.LogMessage) {
-	return utils.Command{}, &entities.LogMessage{
+func ParseInfo(c utils.Command, a entities.AnalysisName, m string) (utils.Command, *entities.LogMessage) {
+	return c, &entities.LogMessage{
 		Level:   entities.Inf,
 		Analysis:a,
 		Message: m,
@@ -22,7 +22,7 @@ func ParseInfo(a entities.AnalysisName, m string) (utils.Command, *entities.LogM
 }
 
 
-func ParseError(a entities.AnalysisName, e error) (utils.Command, *entities.Error) {
-	return utils.Command{}, &entities.Error{E:e, Analysis:a}
+func ParseError(c utils.Command, a entities.AnalysisName, e error) (utils.Command, *entities.Error) {
+	return c, &entities.Error{E:e, Analysis:a}
 }
 

@@ -121,19 +121,19 @@ func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, ad
 		plistObject ParsedPList
 		analysisName = entities.Plist
 	)
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "parsing plist file..."))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "parsing plist file..."))
 	dat, err := ioutil.ReadFile(command.Path)
 	if err != nil {
-		_ = adapter.Output.Error(output.ParseError(analysisName, fmt.Errorf("error opening Info.plist file: %s", err)))
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, fmt.Errorf("error opening Info.plist file: %s", err)))
 		return
 	}
 	err = plistlib.Unmarshal(dat, &plistObject)
 	if err != nil {
-		_ = adapter.Output.Error(output.ParseError(analysisName, fmt.Errorf("error unmarshalling Info.plist file with error %s", err)))
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, fmt.Errorf("error unmarshalling Info.plist file with error %s", err)))
 		return
 	}
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "plist file parsed!"))
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting information..."))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "plist file parsed!"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting information..."))
 	xmlBytes, err := plistlib.MarshalIndent(plistObject, "\t")
 	if err != nil {
 		log.Println(err)
@@ -173,21 +173,21 @@ func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, ad
 	for k := range plistObject.NSAppTransportSecurity.NSExceptionDomains {
 		entity.InsecureConnections.Domains = append(entity.InsecureConnections.Domains, k)
 	}
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "information extracted!"))
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "finished"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "information extracted!"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "finished"))
 	if err := adapter.Output.Result(command, entity); err != nil {
-		_ = adapter.Output.Error(output.ParseError(analysisName, err))
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 	}
 }
 
 // Search for the plist file calling findPListFile function and performs the PList analysis.
 func Analysis(command utils.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Plist
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "starting"))
-	if adapter.Output.Error(output.ParseError(analysisName, findPListFile(&command)))  != nil {
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
+	if adapter.Output.Error(output.ParseError(command, analysisName, findPListFile(&command)))  != nil {
 		return
 	}
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, fmt.Sprintf("plist file found at: %s", command.Path)))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("plist file found at: %s", command.Path)))
 	makePListAnalysis(command, entity, adapter)
 }
 

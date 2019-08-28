@@ -10,7 +10,7 @@ import (
 
 func TestParseError(t *testing.T) {
 	err := fmt.Errorf("everyone can make a mistake")
-	c, e := ParseError(entities.Code, err)
+	c, e := ParseError(utils.Command{}, entities.Code, err)
 	assert.Equal(t, utils.Command{}, c)
 	assert.Equal(t, &entities.Error{
 		Analysis: entities.Code,
@@ -31,7 +31,7 @@ func TestParseInfo(t *testing.T) {
 
 func TestParseWarning(t *testing.T) {
 	info := "may I have your attention please"
-	c, e := ParseWarning(entities.Plist, info)
+	c, e := ParseWarning(utils.Command{}, entities.Plist, info)
 	assert.Equal(t, utils.Command{}, c)
 	assert.Equal(t, &entities.LogMessage{
 		Level:    entities.Warn,

@@ -22,7 +22,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 	)
 	// We change the output so we can print the report ordered later
 	command.Output = ioutil.Discard
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "starting"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if err := utils.Normalize(command.Path, command.Source, func(p string) error {
 		if command.Analysis[utils.DoPList] {
 			wg.Add(1)
@@ -67,20 +67,20 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				_ = adapter.Output.Logger(output.ParseInfo(analysisName, "starting virus analysis..."))
-				if adapter.Output.Error(output.ParseError(analysisName, adapter.Services.MalwareDomains(command, entity))) != nil {
+				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting virus analysis..."))
+				if adapter.Output.Error(output.ParseError(command, analysisName, adapter.Services.MalwareDomains(command, entity))) != nil {
 					return
 				}
-				_ = adapter.Output.Logger(output.ParseInfo(analysisName, "virus analysis completed!"))
+				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "virus analysis completed!"))
 			}()
 		}
 		wg.Wait()
 		return nil
-	}); adapter.Output.Error(output.ParseError(analysisName, err)) != nil {
+	}); adapter.Output.Error(output.ParseError(command, analysisName, err)) != nil {
 		return
 	}
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "finished"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "finished"))
 	if err := adapter.Output.Result(command, entity); err != nil {
-		_ = adapter.Output.Error(output.ParseError(analysisName, err))
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 	}
 }

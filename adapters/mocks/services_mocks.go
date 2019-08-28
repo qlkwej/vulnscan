@@ -61,4 +61,5 @@ func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) er
 			},
 		},
 	}
+	return nil
 }

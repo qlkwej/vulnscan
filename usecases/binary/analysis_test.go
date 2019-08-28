@@ -1,7 +1,6 @@
 package binary
 
 import (
-	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/utils"
@@ -9,13 +8,14 @@ import (
 	"testing"
 )
 
-func binaryTestAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
-	assert.Len(command.T, entity.Results, 13)
-	assert.Len(command.T, entity.Libraries, 25)
-	assert.Equal(command.T, entities.Swift, entity.BinType)
-	assert.Equal(command.T, entities.Bits64, entity.Macho.Bits)
-	assert.Equal(command.T, entities.LittleEndian, entity.Macho.Endianness)
-	assert.Equal(command.T, entities.X8664, entity.Macho.Cpu)
+func binaryTestAdapter(command utils.Command, entity entities.Entity) error {
+	ent := entity.(*entities.BinaryAnalysis)
+	assert.Len(command.T, ent.Results, 14)
+	assert.Len(command.T, ent.Libraries, 4)
+	assert.Equal(command.T, entities.ObjC, ent.BinType)
+	assert.Equal(command.T, entities.Bits64, ent.Macho.Bits)
+	assert.Equal(command.T, entities.BigEndian, ent.Macho.Endianness)
+	assert.Equal(command.T, entities.X8664, ent.Macho.Cpu)
 	return nil
 }
 
@@ -27,19 +27,7 @@ func TestAnalysis(t *testing.T) {
 			T:    t,
 		}
 		entity = entities.BinaryAnalysis{}
-		adapter = adapters.AdapterMap{
-			Tools:    adapters.ToolAdapters{
-				ClassDump: mocks.MockClassDumpAdapter,
-				Libs:      mocks.LibsAdapter,
-				Headers:   mocks.HeadersAdapter,
-				Symbols:   mocks.SymbolsAdapter,
-			},
-			Output:   adapters.OutputAdapters{
-				Logger: nil,
-				Result: nil,
-				Error:  nil,
-			},
-		}
+		adapter = mocks.GetTestMap(binaryTestAdapter)
 	)
-
+	Analysis(command, &entity, adapter)
 }

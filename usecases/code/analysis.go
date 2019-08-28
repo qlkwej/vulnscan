@@ -15,7 +15,7 @@ import (
 
 func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Code
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "starting"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -41,31 +41,31 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 				data = string(d)
 			}
 			relativeSrcPath := strings.Replace(jfilePath, command.Path, "", 1)
-			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting rules..."))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting rules..."))
 			_ = ruleExtractor(data, relativeSrcPath, entity)
-			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "rules extracted!"))
-			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting apis..."))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "rules extracted!"))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting apis..."))
 			_ = apiExtractor(data, relativeSrcPath, entity)
-			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "apis extracted!"))
-			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting urls..."))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "apis extracted!"))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting urls..."))
 			_ = urlExtractor(data, relativeSrcPath, entity)
-			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "urls extracted!"))
-			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "extracting emails"))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "urls extracted!"))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting emails"))
 			_ = emailExtractor(data, relativeSrcPath, entity)
-			_ = adapter.Output.Logger(output.ParseInfo(analysisName, "emails extracted!"))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "emails extracted!"))
 		}
 		return nil
-	}); adapter.Output.Error(output.ParseError(analysisName, walkErr)) != nil {
+	}); adapter.Output.Error(output.ParseError(command, analysisName, walkErr)) != nil {
 		return
 	}
 	if a := adapter.Services.MalwareDomains; a != nil {
-		if adapter.Output.Error(output.ParseError(analysisName,a(command, entity))) != nil {
+		if adapter.Output.Error(output.ParseError(command, analysisName,a(command, entity))) != nil {
 			return
 		}
 	}
-	_ = adapter.Output.Logger(output.ParseInfo(analysisName, "finished"))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "finished"))
 	if err := adapter.Output.Result(command, entity); err != nil {
-		_ = adapter.Output.Error(output.ParseError(analysisName, err))
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 	}
 }
 
