@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func MockLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func LibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
 	if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 		return fmt.Errorf("command.path doesn't exists")
 	}
@@ -20,7 +20,7 @@ func MockLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) err
 	return nil
 }
 
-func MockHeadersAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func HeadersAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
 	if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 		return fmt.Errorf("command.path doesn't exists")
 	}
@@ -35,7 +35,7 @@ func MockHeadersAdapter(command utils.Command, entity *entities.BinaryAnalysis) 
 	return nil
 }
 
-func MockSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func SymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
 	if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 		return fmt.Errorf("command.path doesn't exists")
 	}
