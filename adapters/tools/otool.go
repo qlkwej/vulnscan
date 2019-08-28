@@ -12,7 +12,7 @@ import (
 
 
 func OtoolLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
-	out, e := performOtoolAnalysis(command.Path, "L")
+	out, e := performOtoolAnalysis(command.Path, "-L")
 	if e != nil {
 		return e
 	}

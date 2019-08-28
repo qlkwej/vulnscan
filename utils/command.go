@@ -1,6 +1,9 @@
 package utils
 
-import "io"
+import (
+	"io"
+	"testing"
+)
 
 type (
 	AnalysisCheck string
@@ -14,6 +17,7 @@ type (
 		Source 			bool
 		Analysis 		map[AnalysisCheck]bool
 		Output 			io.Writer
+		T   			*testing.T
 	}
 )
 
