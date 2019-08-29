@@ -36,7 +36,7 @@ func Analysis(command utils.Command, entity *entities.StoreAnalysis, adapter ada
 		_ = adapter.Output.Error(output.ParseError(command, analysisName, fmt.Errorf("error decoding store result: %s", err)))
 		return
 	}
-	err = res.Body.Close()
+	_ = res.Body.Close()
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "finished"))
 	if err := adapter.Output.Result(command, entity); err != nil {
 		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))

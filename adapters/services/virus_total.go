@@ -127,6 +127,9 @@ func (client *VirusTotalClient) makeApiRequest(
 				return result, err
 			}
 			resp, err = client.c.Do(req)
+			if err != nil {
+				return result, err
+			}
 		case "POST":
 			resp, err = client.c.PostForm(fullUrl, values)
 		default:
@@ -193,6 +196,9 @@ func (client *VirusTotalClient) makeApiUploadRequest(
 	postReq.Header.Add("Content-Type", contentType)
 
 	resp, err = client.c.Do(postReq)
+	if err != nil {
+		return resp, err
+	}
 	if cerr := <-errChan; cerr != nil {
 		return resp, cerr
 	}
