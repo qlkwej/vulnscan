@@ -17,7 +17,7 @@ var Configuration = struct {
 	// String slice with the scans to make when calling scan command
 	Scans []string `id:"scans" desc:"Test to do when calling scan command"`
 	// Whether or not we output in json. Defaults to false
-	JsonFormat bool `id:"json" desc:"Activate the json output"`
+	JSONFormat bool `id:"json" desc:"Activate the json output"`
 	// Whether or not we output colored logs. Defaults to true.
 	ColoredLog bool `id:"colored" desc:"Do colored output"`
 	// Path where the source to analyze is present in the filesystem.
@@ -36,7 +36,7 @@ var Configuration = struct {
 	PerformDomainCheck bool `id:"domains" desc:"Activate domain check from www.malwaredomainlist.com"`
 }{
 	Scans:              []string{"binary", "code", "plist", "lookup", "files"},
-	JsonFormat:         false,
+	JSONFormat:         false,
 	SourcePath:         "",
 	BinaryPath:         "",
 	VirusScanKey:       "",
@@ -120,7 +120,7 @@ func resetConfiguration() {
 	}
 }
 
-// Loads the Configuration file in three locations:
+// LoadConfiguration loads the Configuration file in three locations:
 // - The path provided by the user, if any.
 // - The current working directory
 // - The binary path (the path where the executable is right now)
@@ -186,26 +186,22 @@ func LoadConfiguration(path string) string {
 					if sb.Len() > 0 {
 						sb.WriteString(fmt.Sprintf(", but it was loaded from current execution path %s", currentDir))
 						return nil
-					} else {
-						sb.WriteString(fmt.Sprintf("Configuration file loaded from current execution path %s", currentDir))
-						return nil
 					}
-				} else {
-					// If we find a file in the path, but we get an error, we exit the search directly
-					if sb.Len() > 0 {
-						return fmt.Errorf(", error loading file from current execution path %s: %s", currentDir, err)
-					} else {
-						return fmt.Errorf("error loading file loaded from current execution path %s: %s", currentDir, err)
-					}
+					sb.WriteString(fmt.Sprintf("Configuration file loaded from current execution path %s", currentDir))
+					return nil
 				}
+				// If we find a file in the path, but we get an error, we exit the search directly
+				if sb.Len() > 0 {
+					return fmt.Errorf(", error loading file from current execution path %s: %s", currentDir, err)
+				}
+				return fmt.Errorf("error loading file loaded from current execution path %s: %s", currentDir, err)
 			}
 		}
 		// We have not found a Configuration file in the current execution directory
 		if sb.Len() > 0 {
 			return fmt.Errorf(", file not found execution path %s", currentDir)
-		} else {
-			return fmt.Errorf("configuration file not found in execution path %s", currentDir)
 		}
+		return fmt.Errorf("configuration file not found in execution path %s", currentDir)
 	}(); err != nil {
 		sb.WriteString(err.Error())
 	} else {
@@ -222,10 +218,9 @@ func LoadConfiguration(path string) string {
 				if err := loadConfigurationFile(p, d); err == nil {
 					sb.WriteString(fmt.Sprintf(", but it was loaded from the binary path %s", p))
 					return sb.String()
-				} else {
-					sb.WriteString(fmt.Sprintf(" and error loading the file from binary path %s: %s", p, err))
-					return sb.String()
 				}
+				sb.WriteString(fmt.Sprintf(" and error loading the file from binary path %s: %s", p, err))
+				return sb.String()
 			}
 		}
 		sb.WriteString(fmt.Sprintf(" and not found in the binary path %s", binaryPath))
@@ -235,7 +230,7 @@ func LoadConfiguration(path string) string {
 	return fmt.Sprintf("unable to find a valid Configuration file")
 }
 
-// Checks if the scan is in the configuration
+// CheckScan checks if the scan is in the configuration
 func CheckScan(scan string) bool {
 	for _, s := range Configuration.Scans {
 		if scan == strings.ToLower(s) {

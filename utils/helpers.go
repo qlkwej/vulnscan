@@ -2,11 +2,13 @@ package utils
 
 import "os"
 
+// DefaultPath returns the default path
 func DefaultPath() string {
 	dir, _ := os.Getwd()
 	return dir
 }
 
+// PathExists checks if the path exists and is accessible
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -18,7 +20,7 @@ func PathExists(path string) (bool, error) {
 	return true, err
 }
 
-// Check the paths passed by the user and determines if it's a binary or source path
+// CheckPathIsSrc checks the paths passed by the user and determines if it's a binary or source path
 func CheckPathIsSrc(binaryPath, sourcePath string) (string, bool) {
 	// If user has not used flags, we check the configuration file
 	if binaryPath == "" && sourcePath == "" {
