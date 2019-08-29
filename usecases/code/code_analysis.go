@@ -41,10 +41,10 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 				data = string(d)
 			}
 			relativeSrcPath := strings.Replace(jfilePath, command.Path, "", 1)
-			_ = ruleExtractor(data, relativeSrcPath, entity)
-			_ = apiExtractor(data, relativeSrcPath, entity)
-			_ = urlExtractor(data, relativeSrcPath, entity)
-			_ = emailExtractor(data, relativeSrcPath, entity)
+			ruleExtractor(data, relativeSrcPath, entity)
+			apiExtractor(data, relativeSrcPath, entity)
+			urlExtractor(data, relativeSrcPath, entity)
+			emailExtractor(data, relativeSrcPath, entity)
 		}
 		return nil
 	}); adapter.Output.Error(output.ParseError(command, analysisName, walkErr)) != nil {
@@ -61,7 +61,7 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 	}
 }
 
-func ruleExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
+func ruleExtractor(data, path string, entity *entities.CodeAnalysis) {
 	for _, rule := range Rules {
 		if rule.Match(data) {
 			var found bool
@@ -80,10 +80,9 @@ func ruleExtractor(data, path string, entity *entities.CodeAnalysis) entities.En
 			}
 		}
 	}
-	return entity
 }
 
-func apiExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
+func apiExtractor(data, path string, entity *entities.CodeAnalysis) {
 	for _, api := range APIs {
 		if api.Match(data) {
 			var found bool
@@ -102,10 +101,9 @@ func apiExtractor(data, path string, entity *entities.CodeAnalysis) entities.Ent
 			}
 		}
 	}
-	return entity
 }
 
-func urlExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
+func urlExtractor(data, path string, entity *entities.CodeAnalysis) {
 	urlPat, _ := regexp.
 		Compile(`https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+`)
 	urls := urlPat.FindAll([]byte(data), -1)
@@ -125,10 +123,9 @@ func urlExtractor(data, path string, entity *entities.CodeAnalysis) entities.Ent
 			})
 		}
 	}
-	return entity
 }
 
-func emailExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
+func emailExtractor(data, path string, entity *entities.CodeAnalysis) {
 	emailPat, _ := regexp.Compile(`[\w.-]+@[\w-]+\.[\w.]+`)
 	emails := emailPat.FindAll([]byte(data), -1)
 	for email := range emails {
@@ -147,5 +144,4 @@ func emailExtractor(data, path string, entity *entities.CodeAnalysis) entities.E
 			})
 		}
 	}
-	return entity
 }

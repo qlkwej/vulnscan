@@ -193,7 +193,7 @@ func Analysis(command utils.Command, entity *entities.PListAnalysis, adapter ada
 
 // Returns an array of permissions from a plist object. Each permission is a map where the key is the permission
 // description and the value a map[string]interface{} with a name, a description and a reason.
-func permissionsExtractor(plistObj *ParsedPList, entity *entities.PListAnalysis) entities.Entity {
+func permissionsExtractor(plistObj *ParsedPList, entity *entities.PListAnalysis) {
 	for k, v := range map[interface{}]entities.Permission{
 		plistObj.NSAppleMusicUsageDescription: {
 			"NSAppleMusicUsageDescription",
@@ -280,5 +280,4 @@ func permissionsExtractor(plistObj *ParsedPList, entity *entities.PListAnalysis)
 			entity.Permissions = append(entity.Permissions, v)
 		}
 	}
-	return entity
 }
