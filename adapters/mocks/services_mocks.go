@@ -21,7 +21,7 @@ func MalwareDomainsAdapter(command utils.Command, entity *entities.CodeAnalysis)
 
 func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) error {
 	assert.NotEmpty(command.T, command.VirusTotalKey)
-	entity = &entities.VirusAnalysis{
+	*entity = entities.VirusAnalysis{
 		HasReport: true,
 		Response: entities.VirusResponse{
 			ResponseCode: 1,

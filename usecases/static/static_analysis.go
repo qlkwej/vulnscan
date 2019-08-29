@@ -24,6 +24,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 	command.Output = ioutil.Discard
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if err := utils.Normalize(command.Path, command.Source, func(p string) error {
+		command.Path = p
 		if command.Analysis[utils.DoPList] {
 			wg.Add(1)
 			go func() {
@@ -38,6 +39,8 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 					}()
 				}
 			}()
+		} else {
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping plist and store analysis"))
 		}
 		if command.Analysis[utils.DoFiles] {
 			wg.Add(1)
@@ -45,6 +48,8 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 				defer wg.Done()
 				files.Analysis(command, &entity.Files, adapter)
 			}()
+		} else {
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping files analysis"))
 		}
 
 		if command.Analysis[utils.DoCode] {
@@ -53,6 +58,8 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 				defer wg.Done()
 				code.Analysis(command, &entity.Code, adapter)
 			}()
+		} else {
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping code analysis"))
 		}
 
 		if command.Analysis[utils.DoBinary] {
@@ -61,6 +68,8 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 				defer wg.Done()
 				binary.Analysis(command, &entity.Binary, adapter)
 			}()
+		} else {
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping binary analysis"))
 		}
 
 		if doVirus {
@@ -68,11 +77,13 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 			go func() {
 				defer wg.Done()
 				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting virus analysis..."))
-				if adapter.Output.Error(output.ParseError(command, analysisName, adapter.Services.MalwareDomains(command, entity))) != nil {
+				if adapter.Output.Error(output.ParseError(command, analysisName, adapter.Services.VirusScan(command, &entity.Virus))) != nil {
 					return
 				}
 				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "virus analysis completed!"))
 			}()
+		} else {
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping virus analysis"))
 		}
 		wg.Wait()
 		return nil

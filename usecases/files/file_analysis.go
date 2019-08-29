@@ -28,7 +28,9 @@ func Analysis(command utils.Command, entity *entities.FileAnalysis, adapter adap
 				filePath = plus2X
 			}
 			fileParam := strings.Replace(filePath, command.Path, "", 1)
-			entity.Files = append(entity.Files, fileParam)
+			if fileParam != "" {
+				entity.Files = append(entity.Files, fileParam)
+			}
 			ext := filepath.Ext(fileName)
 			if r, _ := regexp.MatchString(`cer|pem|cert|crt|pub|key|pfx|p12`, ext); r {
 				entity.Certifications = append(entity.Certifications, fileParam)
