@@ -18,7 +18,6 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 	var (
 		wg           sync.WaitGroup
 		analysisName = entities.Static
-		doVirus      = !command.Source && adapter.Services.VirusScan != nil
 	)
 	// We change the output so we can print the report ordered later
 	command.Output = ioutil.Discard
@@ -62,7 +61,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping code analysis"))
 		}
 
-		if command.Analysis[utils.DoBinary] {
+		if !command.Source && command.Analysis[utils.DoBinary] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
@@ -72,7 +71,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping binary analysis"))
 		}
 
-		if doVirus {
+		if !command.Source && command.Analysis[utils.DoVirus] && len(command.VirusTotalKey) > 0 {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
