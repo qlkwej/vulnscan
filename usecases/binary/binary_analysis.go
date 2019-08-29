@@ -68,6 +68,7 @@ func getTypeInfo(command utils.Command, entity *entities.BinaryAnalysis) {
 }
 
 func otoolInfo(command utils.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) error {
+	output.CheckNil(adapter)
 	var analysisName = entities.Binary
 	for n, a := range map[string]adapters.ToolAdapter{
 		"headers":    adapter.Tools.Headers,

@@ -117,6 +117,7 @@ func findPListFile(command *utils.Command) error {
 // Performs the plist analysis. Extracts information from the plist file found in the binary/source. This function
 // is extracted from the main Analysis function in order to ease testing.
 func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
+	output.CheckNil(adapter)
 	var (
 		plistObject  ParsedPList
 		analysisName = entities.Plist

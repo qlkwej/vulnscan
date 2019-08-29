@@ -38,7 +38,7 @@ type (
 	// adapters the program may need to use, classified by their utility. This way, if a usecases needs to access an adapter.
 	// all it has to do is to call the asigned adapter in the map.
 	//
-	// Usecases don't check if an adapter is nil when calling it, so no key in the adapter map can be null.
+	// Usecases check if an adapter is nil when calling it, so every value on the map can be nil.
 	AdapterMap struct {
 		Services ServiceAdapters
 		Tools    ToolAdapters

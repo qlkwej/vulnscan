@@ -28,5 +28,4 @@ const (
 	DoCode   AnalysisCheck = "DoCode"
 	DoBinary AnalysisCheck = "DoAnalysis"
 	DoStore  AnalysisCheck = "DoStore"
-	DoVirus  AnalysisCheck = "DoVirus"
 )

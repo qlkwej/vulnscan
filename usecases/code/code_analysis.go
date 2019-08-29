@@ -14,6 +14,7 @@ import (
 )
 
 func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) {
+	output.CheckNil(adapter)
 	var analysisName = entities.Code
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {

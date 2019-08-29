@@ -15,6 +15,7 @@ import (
 )
 
 func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter adapters.AdapterMap) {
+	output.CheckNil(adapter)
 	var (
 		wg           sync.WaitGroup
 		analysisName = entities.Static
@@ -71,7 +72,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping binary analysis"))
 		}
 
-		if !command.Source && command.Analysis[utils.DoVirus] && len(command.VirusTotalKey) > 0 {
+		if !command.Source && len(command.VirusTotalKey) > 0 && adapter.Services.VirusScan != nil {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()

@@ -11,6 +11,7 @@ import (
 )
 
 func Analysis(command utils.Command, entity *entities.StoreAnalysis, adapter adapters.AdapterMap) {
+	output.CheckNil(adapter)
 	var analysisName = entities.Files
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	lookupURL := "https://itunes.apple.com/lookup"

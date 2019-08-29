@@ -40,7 +40,6 @@ func TestAnalysis(t *testing.T) {
 				utils.DoStore:  true,
 				utils.DoFiles:  true,
 				utils.DoPList:  true,
-				utils.DoVirus:  true,
 			},
 			CheckDomains: true,
 			Output:       nil,

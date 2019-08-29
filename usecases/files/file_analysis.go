@@ -13,6 +13,7 @@ import (
 )
 
 func Analysis(command utils.Command, entity *entities.FileAnalysis, adapter adapters.AdapterMap) {
+	output.CheckNil(adapter)
 	var analysisName = entities.Files
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
