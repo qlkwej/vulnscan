@@ -12,7 +12,6 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-
 func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Binary
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
@@ -39,7 +38,7 @@ func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapter ad
 		}
 		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "macho information extraction completed"))
 		getTypeInfo(command, entity)
-		if err := otoolInfo(command, entity, adapter); err !=  nil {
+		if err := otoolInfo(command, entity, adapter); err != nil {
 			return err
 		}
 		return nil
@@ -71,9 +70,9 @@ func getTypeInfo(command utils.Command, entity *entities.BinaryAnalysis) {
 func otoolInfo(command utils.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) error {
 	var analysisName = entities.Binary
 	for n, a := range map[string]adapters.ToolAdapter{
-		"headers": adapter.Tools.Headers,
-		"libraries": adapter.Tools.Libs,
-		"symbols": adapter.Tools.Symbols,
+		"headers":    adapter.Tools.Headers,
+		"libraries":  adapter.Tools.Libs,
+		"symbols":    adapter.Tools.Symbols,
 		"class dump": adapter.Tools.ClassDump,
 	} {
 		if a != nil {
@@ -86,4 +85,3 @@ func otoolInfo(command utils.Command, entity *entities.BinaryAnalysis, adapter a
 	}
 	return nil
 }
-

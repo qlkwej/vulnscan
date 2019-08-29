@@ -9,7 +9,6 @@ import (
 	"log"
 )
 
-
 type BasicLogger struct {
 	Info    *log.Logger
 	Warning *log.Logger
@@ -39,7 +38,6 @@ func BasicLoggerAdapter(command utils.Command, entity *entities.LogMessage) erro
 	return nil
 }
 
-
 // SetLogger sets the logging level preference
 func SetBasicLogger(out io.Writer, level entities.LogLevel, logTime bool) {
 	initLog := func(infoOut io.Writer, warningOut io.Writer, errorOut io.Writer) {
@@ -64,4 +62,3 @@ func SetBasicLogger(out io.Writer, level entities.LogLevel, logTime bool) {
 		initLog(ioutil.Discard, ioutil.Discard, ioutil.Discard)
 	}
 }
-

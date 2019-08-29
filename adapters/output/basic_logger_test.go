@@ -10,8 +10,8 @@ import (
 
 func TestBasicLoggerAdapter(t *testing.T) {
 	var (
-		buffer = bytes.Buffer{}
-		command = utils.Command{}
+		buffer      = bytes.Buffer{}
+		command     = utils.Command{}
 		infoMessage = entities.LogMessage{
 			Level:    entities.Inf,
 			Analysis: entities.Code,
@@ -33,9 +33,9 @@ func TestBasicLoggerAdapter(t *testing.T) {
 	assert.NoError(t, BasicLoggerAdapter(command, &warnMessage))
 	assert.NoError(t, BasicLoggerAdapter(command, &errorMessage))
 	assert.Equal(t,
-		"INFO| Code Analysis: a very informative note, sir\n" +
-		"WARNING| Plist Analysis: be careful with wath you wish\n" +
-		"ERROR| last Star Wars trilogy is awesome\n",
+		"INFO| Code Analysis: a very informative note, sir\n"+
+			"WARNING| Plist Analysis: be careful with wath you wish\n"+
+			"ERROR| last Star Wars trilogy is awesome\n",
 		buffer.String())
 
 	buffer.Reset()
@@ -44,8 +44,8 @@ func TestBasicLoggerAdapter(t *testing.T) {
 	assert.NoError(t, BasicLoggerAdapter(command, &warnMessage))
 	assert.NoError(t, BasicLoggerAdapter(command, &errorMessage))
 	assert.Equal(t,
-		"WARNING| Plist Analysis: be careful with wath you wish\n" +
-		"ERROR| last Star Wars trilogy is awesome\n",
+		"WARNING| Plist Analysis: be careful with wath you wish\n"+
+			"ERROR| last Star Wars trilogy is awesome\n",
 		buffer.String())
 
 	buffer.Reset()

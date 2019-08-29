@@ -118,7 +118,7 @@ func findPListFile(command *utils.Command) error {
 // is extracted from the main Analysis function in order to ease testing.
 func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
 	var (
-		plistObject ParsedPList
+		plistObject  ParsedPList
 		analysisName = entities.Plist
 	)
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "parsing plist file..."))
@@ -149,13 +149,13 @@ func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, ad
 		entity.BinName = plistObject.CFBundleDisplayName
 	}
 	entity.Bin = plistObject.CFBundleExecutable
-	entity.Id =  plistObject.CFBundleIdentifier
+	entity.Id = plistObject.CFBundleIdentifier
 	entity.Build = plistObject.CFBundleVersion
 	entity.SDK = plistObject.DTSDKName
 	entity.Platform = plistObject.DTPlatformVersion
 	entity.MinimumVersion = plistObject.MinimumOSVersion
 	entity.BundleName = plistObject.CFBundleName
-	entity.BundleVersionName =  plistObject.CFBundleVersion
+	entity.BundleVersionName = plistObject.CFBundleVersion
 	entity.BundleSupportedPlatforms = plistObject.CFBundleSupportedPlatforms
 	entity.BundleLocalizations = plistObject.CFBundleLocalizations
 	if len(plistObject.CFBundleURLTypes) > 0 {
@@ -184,7 +184,7 @@ func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, ad
 func Analysis(command utils.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Plist
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
-	if adapter.Output.Error(output.ParseError(command, analysisName, findPListFile(&command)))  != nil {
+	if adapter.Output.Error(output.ParseError(command, analysisName, findPListFile(&command))) != nil {
 		return
 	}
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("plist file found at: %s", command.Path)))
@@ -198,7 +198,7 @@ func permissionsExtractor(plistObj *ParsedPList, entity *entities.PListAnalysis)
 		plistObj.NSAppleMusicUsageDescription: {
 			"NSAppleMusicUsageDescription",
 			"Access Apple Media Library.",
-			 plistObj.NSAppleMusicUsageDescription,
+			plistObj.NSAppleMusicUsageDescription,
 		},
 		plistObj.NSBluetoothPeripheralUsageDescription: {
 			"NSBluetoothPeripheralUsageDescription",
@@ -208,70 +208,70 @@ func permissionsExtractor(plistObj *ParsedPList, entity *entities.PListAnalysis)
 		plistObj.NSCalendarsUsageDescription: {
 			"NSCalendarsUsageDescription",
 			"Access Calendars.",
-			 plistObj.NSCalendarsUsageDescription,
+			plistObj.NSCalendarsUsageDescription,
 		},
 		plistObj.NSCameraUsageDescription: {
-			 "NSCameraUsageDescription",
-			 "Access the Camera.",
-			 plistObj.NSCameraUsageDescription,
+			"NSCameraUsageDescription",
+			"Access the Camera.",
+			plistObj.NSCameraUsageDescription,
 		},
 		plistObj.NSContactsUsageDescription: {
 			"NSContactsUsageDescription",
 			"Access Contacts.",
-			 plistObj.NSContactsUsageDescription,
+			plistObj.NSContactsUsageDescription,
 		},
 		plistObj.NSHealthShareUsageDescription: {
-			 "NSHealthShareUsageDescription",
+			"NSHealthShareUsageDescription",
 			"Read Health Data.",
-			 plistObj.NSHealthShareUsageDescription,
+			plistObj.NSHealthShareUsageDescription,
 		},
 		plistObj.NSHealthUpdateUsageDescription: {
-			 "NSHealthUpdateUsageDescription",
+			"NSHealthUpdateUsageDescription",
 			"Write Health Data.",
 			plistObj.NSHealthUpdateUsageDescription,
 		},
 		plistObj.NSHomeKitUsageDescription: {
 			"NSHomeKitUsageDescription",
-			 "Access HomeKit configuration data.",
+			"Access HomeKit configuration data.",
 			plistObj.NSHomeKitUsageDescription,
 		},
 		plistObj.NSLocationAlwaysUsageDescription: {
-			 "NSLocationAlwaysUsageDescription",
+			"NSLocationAlwaysUsageDescription",
 			"Access location information at all times.",
 			plistObj.NSLocationAlwaysUsageDescription,
 		},
 		plistObj.NSLocationUsageDescription: {
-			 "NSLocationUsageDescription",
+			"NSLocationUsageDescription",
 			"Access location information at all times (< iOS 8).",
-			 plistObj.NSLocationUsageDescription,
+			plistObj.NSLocationUsageDescription,
 		},
 		plistObj.NSLocationWhenInUseUsageDescription: {
 			"NSLocationWhenInUseUsageDescription",
-			 "Access location information when app is in the foreground.",
-			 plistObj.NSLocationWhenInUseUsageDescription,
+			"Access location information when app is in the foreground.",
+			plistObj.NSLocationWhenInUseUsageDescription,
 		},
 		plistObj.NSMicrophoneUsageDescription: {
 			"NSMicrophoneUsageDescription",
-			 "Access microphone.",
-			 plistObj.NSMicrophoneUsageDescription,
+			"Access microphone.",
+			plistObj.NSMicrophoneUsageDescription,
 		},
 		plistObj.NSMotionUsageDescription: {
-			 "NSMotionUsageDescription",
-			 "Access the device’s accelerometer.",
-			 plistObj.NSMotionUsageDescription,
+			"NSMotionUsageDescription",
+			"Access the device’s accelerometer.",
+			plistObj.NSMotionUsageDescription,
 		},
 		plistObj.NSPhotoLibraryUsageDescription: {
-			 "NSPhotoLibraryUsageDescription",
-			 "Access the user’s photo library.",
-			 plistObj.NSPhotoLibraryUsageDescription,
+			"NSPhotoLibraryUsageDescription",
+			"Access the user’s photo library.",
+			plistObj.NSPhotoLibraryUsageDescription,
 		},
 		plistObj.NSRemindersUsageDescription: {
-			 "NSRemindersUsageDescription",
+			"NSRemindersUsageDescription",
 			"Access the user’s reminders.",
-			 plistObj.NSRemindersUsageDescription,
+			plistObj.NSRemindersUsageDescription,
 		},
 		plistObj.NSVideoSubscriberAccountUsageDescription: {
-			 "NSVideoSubscriberAccountUsageDescription",
+			"NSVideoSubscriberAccountUsageDescription",
 			"Access the user’s TV provider account.",
 			plistObj.NSVideoSubscriberAccountUsageDescription,
 		},
@@ -282,4 +282,3 @@ func permissionsExtractor(plistObj *ParsedPList, entity *entities.PListAnalysis)
 	}
 	return entity
 }
-

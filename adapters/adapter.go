@@ -9,11 +9,11 @@ type (
 	// Due to the lack of generics in Go 1, we have to do this (or enter a type casting hell).
 	// Looking forward to Go 2
 	GenericAdapter func(utils.Command, entities.Entity) error
-	ToolAdapter func(utils.Command, *entities.BinaryAnalysis) error
+	ToolAdapter    func(utils.Command, *entities.BinaryAnalysis) error
 	MalwareAdapter func(utils.Command, *entities.CodeAnalysis) error
-	VirusAdapter func(utils.Command, *entities.VirusAnalysis) error
-	ErrorAdapter func(utils.Command, *entities.Error) error
-	LogAdapter func(utils.Command, *entities.LogMessage) error
+	VirusAdapter   func(utils.Command, *entities.VirusAnalysis) error
+	ErrorAdapter   func(utils.Command, *entities.Error) error
+	LogAdapter     func(utils.Command, *entities.LogMessage) error
 
 	ServiceAdapters struct {
 		MalwareDomains MalwareAdapter
@@ -39,4 +39,3 @@ type (
 		Output   OutputAdapters
 	}
 )
-

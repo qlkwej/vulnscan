@@ -58,7 +58,7 @@ func createStaticOutput(entity *entities.StaticAnalysis) string {
 
 func createVirusOutput(entity *entities.VirusAnalysis) string {
 	var (
-		sb strings.Builder
+		sb          strings.Builder
 		responseMap = entity.Response.ToMap()
 	)
 	getResponseData := func() {
@@ -84,7 +84,7 @@ func createVirusOutput(entity *entities.VirusAnalysis) string {
 		for n, s := range entity.Report.Scans {
 			sb.WriteString(subTitle(fmt.Sprintf("Analysis name: %s", n)))
 			sb.WriteString(key("Detected"))
-			if s.Detected{
+			if s.Detected {
 				sb.WriteString(value("True"))
 			} else {
 				sb.WriteString(value("False"))
@@ -115,7 +115,7 @@ func createStoreOutput(entity *entities.StoreAnalysis) string {
 		for _, s := range []string{"title", "app_id", "url", "price", "score"} {
 			sb.WriteString(key(s))
 			v := mapResult[s]
-			if vt, ok :=  v.(string); ok {
+			if vt, ok := v.(string); ok {
 				sb.WriteString(value(vt))
 			} else if vt, ok := v.(float64); ok {
 				sb.WriteString(value(fmt.Sprintf("%0.2f", vt)))
@@ -125,7 +125,7 @@ func createStoreOutput(entity *entities.StoreAnalysis) string {
 		for _, s := range []string{"developer_id", "developer_name", "developer_url", "developer_website"} {
 			sb.WriteString(key(s))
 			v := mapResult[s]
-			if vt, ok :=  v.(string); ok {
+			if vt, ok := v.(string); ok {
 				sb.WriteString(value(vt))
 			} else if vt, ok := v.(int); ok {
 				sb.WriteString(value(fmt.Sprintf("%d", vt)))
@@ -277,9 +277,9 @@ func createBinaryOutput(entity *entities.BinaryAnalysis) string {
 	sb.WriteString(key("Binary language"))
 	sb.WriteString(value(string(entity.BinType)))
 	for k, v := range entity.Macho.ToMap() {
-		 if t, ok := v.(uint); ok {
-		 	v = strconv.Itoa(int(t))
-		 }
+		if t, ok := v.(uint); ok {
+			v = strconv.Itoa(int(t))
+		}
 		sb.WriteString(pretifyKey(k))
 		sb.WriteString(value(v.(string)))
 	}
@@ -302,7 +302,6 @@ func createBinaryOutput(entity *entities.BinaryAnalysis) string {
 	return sb.String()
 }
 
-
 func title(s string) string {
 	return fmt.Sprintf("\n<mga>===%s===</>\n\n", s)
 }
@@ -310,7 +309,6 @@ func title(s string) string {
 func subTitle(s string) string {
 	return fmt.Sprintf("\n<cyan>-%s</>\n\n", s)
 }
-
 
 func key(s string) string {
 	return fmt.Sprintf("<green>%s</>: ", s)
@@ -361,4 +359,3 @@ func level(s entities.Level) string {
 	}
 	return value(fmt.Sprintf("<%s>%s</>", col, s))
 }
-

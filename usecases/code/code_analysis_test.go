@@ -23,14 +23,13 @@ func TestAnalysis(t *testing.T) {
 	path, _ := utils.FindTest("apps", "vulnerable_app")
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
 		Analysis(utils.Command{
-			Path:          p,
-			Source:        false,
-			CheckDomains:  true,
-			T:             t,
+			Path:         p,
+			Source:       false,
+			CheckDomains: true,
+			T:            t,
 		},
-		&entities.CodeAnalysis{},
-		mocks.GetTestMap(codeTestAdapter))
+			&entities.CodeAnalysis{},
+			mocks.GetTestMap(codeTestAdapter))
 		return nil
 	}))
 }
-

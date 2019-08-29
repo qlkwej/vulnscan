@@ -208,7 +208,6 @@ func TestApiFindingValidation(t *testing.T) {
 func TestCodeFindingMapTransformation(t *testing.T) {
 	af := &CodeFinding{}
 	p, err := af.FromMap(codeFindingTestMap)
-	t.Log(p)
 	assert.NoError(t, err)
 	assert.Equal(t, codeFindingTestMap, p.ToMap())
 }
@@ -226,7 +225,6 @@ func TestCodeFindingValidation(t *testing.T) {
 func TestUrlFindingMapTransformation(t *testing.T) {
 	af := &UrlFinding{}
 	p, err := af.FromMap(urlFindingTestMap)
-	t.Log(p)
 	assert.NoError(t, err)
 	assert.Equal(t, urlFindingTestMap, p.ToMap())
 }
@@ -244,7 +242,6 @@ func TestUrlFindingValidation(t *testing.T) {
 func TestEmailFindingMapTransformation(t *testing.T) {
 	af := &EmailFinding{}
 	p, err := af.FromMap(emailFindingTestMap)
-	t.Log(p)
 	assert.NoError(t, err)
 	assert.Equal(t, emailFindingTestMap, p.ToMap())
 }
@@ -262,7 +259,6 @@ func TestEmailFindingValidation(t *testing.T) {
 func TestCodeAnalysisMapTransformation(t *testing.T) {
 	af := &CodeAnalysis{}
 	p, err := af.FromMap(codeAnalysisTestMap)
-	t.Logf("%v", p)
 	assert.NoError(t, err)
 	assert.Equal(t, codeAnalysisTestMap, p.ToMap())
 }
@@ -273,7 +269,6 @@ func TestCodeAnalysisValidation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 0)
 	p, err = af.FromMap(wrongCodeAnalysisTestMap)
-	t.Logf("%#v", p)
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 9)
 }

@@ -32,9 +32,9 @@ func storeTestAdapter(command utils.Command, entity entities.Entity) error {
 func TestAnalysis(t *testing.T) {
 	Analysis(
 		utils.Command{
-			AppId:         "com.easilydo.mail",
-			Country:       "us",
-			T:             t,
+			AppId:   "com.easilydo.mail",
+			Country: "us",
+			T:       t,
 		},
 		&entities.StoreAnalysis{},
 		mocks.GetTestMap(storeTestAdapter),

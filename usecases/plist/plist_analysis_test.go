@@ -23,9 +23,9 @@ func TestPlistSearch(t *testing.T) {
 	path, _ := utils.FindTest("apps", "source")
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
 		command := utils.Command{
-			Path:          p,
-			Source:        true,
-			T:             t,
+			Path:   p,
+			Source: true,
+			T:      t,
 		}
 		assert.NoError(t, findPListFile(&command))
 		_, err := os.Stat(command.Path)
@@ -38,9 +38,9 @@ func TestPlistSearch(t *testing.T) {
 	path, _ = utils.FindTest("apps", "binary")
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
 		command := utils.Command{
-			Path:          p,
-			Source:        false,
-			T:             t,
+			Path:   p,
+			Source: false,
+			T:      t,
 		}
 		assert.NoError(t, findPListFile(&command))
 		_, err := os.Stat(command.Path)
@@ -56,8 +56,8 @@ func TestMakeAnalysis(t *testing.T) {
 		path, _ := utils.FindTest("plist", fmt.Sprintf("plist%d.plist", i))
 		makePListAnalysis(
 			utils.Command{
-				Path:          path,
-				T:             t,
+				Path: path,
+				T:    t,
 			},
 			&entities.PListAnalysis{},
 			adapter)

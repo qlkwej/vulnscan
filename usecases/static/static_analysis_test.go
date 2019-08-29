@@ -26,7 +26,7 @@ func staticTestAdapter(command utils.Command, entity entities.Entity) error {
 
 func TestAnalysis(t *testing.T) {
 	mainFolder, _ := utils.FindMainFolder()
-	assert.NoError(t, godotenv.Load(mainFolder + string(os.PathSeparator) + ".env"))
+	assert.NoError(t, godotenv.Load(mainFolder+string(os.PathSeparator)+".env"))
 	testPath, _ := utils.FindTest("apps", "binary.ipa")
 	Analysis(
 		utils.Command{
@@ -36,14 +36,14 @@ func TestAnalysis(t *testing.T) {
 			Source:        false,
 			Analysis: map[utils.AnalysisCheck]bool{
 				utils.DoBinary: true,
-				utils.DoCode: true,
-				utils.DoStore: true,
-				utils.DoFiles: true,
-				utils.DoPList: true,
+				utils.DoCode:   true,
+				utils.DoStore:  true,
+				utils.DoFiles:  true,
+				utils.DoPList:  true,
 			},
-			CheckDomains:  true,
-			Output:        nil,
-			T:             t,
+			CheckDomains: true,
+			Output:       nil,
+			T:            t,
 		},
 		&entities.StaticAnalysis{},
 		mocks.GetTestMap(staticTestAdapter),

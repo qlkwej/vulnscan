@@ -7,7 +7,7 @@ import (
 
 type Error struct {
 	Analysis AnalysisName `json:"analysis"`
-	E error `json:"e" validate:"required"`
+	E        error        `json:"e" validate:"required"`
 }
 
 func (e *Error) FromMap(m map[string]interface{}) (ent Entity, err error) {
@@ -24,7 +24,7 @@ func (e *Error) FromMap(m map[string]interface{}) (ent Entity, err error) {
 
 func (e *Error) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"e": e.E,
+		"e":        e.E,
 		"analysis": string(e.Analysis),
 	}
 }

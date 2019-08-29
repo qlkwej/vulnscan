@@ -25,12 +25,12 @@ func HeadersAdapter(command utils.Command, entity *entities.BinaryAnalysis) erro
 		return fmt.Errorf("command.path doesn't exists")
 	}
 	entity.Results = append(entity.Results, entities.BinaryAnalysisResult{
-			Issue:  "fPIE -pie flag is Found",
-			Status: "secure",
-			Description: "App is compiled with Position Independent Executable (PIE) flag. This enables Address " +
+		Issue:  "fPIE -pie flag is Found",
+		Status: "secure",
+		Description: "App is compiled with Position Independent Executable (PIE) flag. This enables Address " +
 			"Space Layout Randomization (ASLR), a memory protectionmechanism for exploit mitigation.",
-			Cvss: 0.,
-			CWE:  "",
+		Cvss: 0.,
+		CWE:  "",
 	})
 	return nil
 }
@@ -64,7 +64,7 @@ func SymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) erro
 				"feature that provides automatic memory management of Objective-C objects and protects from memory " +
 				"corruption vulnerabilities.",
 			Cvss: 2.,
-			CWE: "CWE-119",
+			CWE:  "CWE-119",
 		},
 		{
 			Issue:       "Binary use of banned API(s) not found",
@@ -147,4 +147,3 @@ func MockClassDumpAdapter(command utils.Command, entity *entities.BinaryAnalysis
 	})
 	return nil
 }
-

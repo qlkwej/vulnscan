@@ -14,11 +14,11 @@ import (
 	"sync"
 )
 
-func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter adapters.AdapterMap)  {
+func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter adapters.AdapterMap) {
 	var (
-		wg sync.WaitGroup
+		wg           sync.WaitGroup
 		analysisName = entities.Static
-		doVirus = !command.Source && adapter.Services.VirusScan != nil
+		doVirus      = !command.Source && adapter.Services.VirusScan != nil
 	)
 	// We change the output so we can print the report ordered later
 	command.Output = ioutil.Discard

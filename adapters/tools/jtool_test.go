@@ -16,8 +16,8 @@ func TestJtoolAdapters(t *testing.T) {
 		binPath := filepath.Join(appPath, "iVim")
 
 		var (
-			command = utils.Command{ Path: binPath }
-			entity = entities.BinaryAnalysis{}
+			command = utils.Command{Path: binPath}
+			entity  = entities.BinaryAnalysis{}
 		)
 
 		assert.NoError(t, JtoolHeadersAdapter(command, &entity))
@@ -29,4 +29,3 @@ func TestJtoolAdapters(t *testing.T) {
 		return nil
 	}))
 }
-

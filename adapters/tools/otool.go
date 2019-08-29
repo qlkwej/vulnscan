@@ -10,7 +10,6 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-
 func OtoolLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
 	out, e := performOtoolAnalysis(command.Path, "-L")
 	if e != nil {
@@ -28,7 +27,6 @@ func OtoolHeaderAdapter(command utils.Command, entity *entities.BinaryAnalysis) 
 	return headerExtractor(out, entity)
 }
 
-
 func OtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
 	out, e := performOtoolAnalysis(command.Path, "-Iv")
 	if e != nil {
@@ -37,7 +35,6 @@ func OtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis)
 	return symbolExtractor(out, entity)
 }
 
-
 func performOtoolAnalysis(path, arg string) (out string, err error) {
 	if platform := runtime.GOOS; platform != "darwin" {
 		return out, fmt.Errorf("platform %s not supported", platform)
@@ -45,4 +42,3 @@ func performOtoolAnalysis(path, arg string) (out string, err error) {
 	outB, err := exec.Command("otool", arg, path).CombinedOutput()
 	return string(outB), err
 }
-

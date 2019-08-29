@@ -42,6 +42,7 @@ var (
 		"results": []map[string]interface{}{
 			binaryAnalysisResultMap,
 		},
+		"bin_type": "Swift",
 	}
 
 	wrongBinaryAnalysisMap = map[string]interface{}{
@@ -50,6 +51,7 @@ var (
 		"results": []map[string]interface{}{
 			wrongBinaryAnalysisResultMap,
 		},
+		"bin_type": "Rust",
 	}
 )
 
@@ -98,5 +100,5 @@ func TestBinaryAnalysisValidatiom(t *testing.T) {
 	assert.Len(t, a.Validate(), 0)
 	a, err = (&BinaryAnalysis{}).FromMap(wrongBinaryAnalysisMap)
 	assert.NoError(t, err)
-	assert.Len(t, a.Validate(), 2)
+	assert.Len(t, a.Validate(), 3)
 }

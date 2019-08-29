@@ -127,7 +127,6 @@ func TestPermissionValidation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 0)
 	p, err = (&Permission{}).FromMap(wrongPermissionTestMap)
-	t.Logf("%#v", p)
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 3)
 }
@@ -149,7 +148,6 @@ func TestPlistAnalysisValidation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 0)
 	p, err = (&PListAnalysis{}).FromMap(wrongPlistAnalysisTestMap)
-	t.Logf("%#v", p)
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 5)
 }

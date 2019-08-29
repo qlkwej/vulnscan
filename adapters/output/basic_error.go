@@ -8,9 +8,9 @@ import (
 func BasicErrorAdapter(command utils.Command, entity *entities.Error) error {
 	if err := entity.E; err != nil {
 		_ = BasicLoggerAdapter(command, &entities.LogMessage{
-			Level:   entities.Err,
+			Level:    entities.Err,
 			Analysis: entity.Analysis,
-			Message: entity.E.Error(),
+			Message:  entity.E.Error(),
 		})
 		return err
 	}

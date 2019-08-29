@@ -35,11 +35,11 @@ func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) er
 	if e != nil {
 		return e
 	}
-	_ , e = entity.Response.FromMap(r)
+	_, e = entity.Response.FromMap(r)
 	if e != nil {
 		return fmt.Errorf("error processing virus scan report map: %s", e)
 	}
-	_ , e = entity.Report.FromMap(r)
+	_, e = entity.Report.FromMap(r)
 	if e != nil {
 		return fmt.Errorf("error processing virus scan report map: %s", e)
 	}
@@ -208,4 +208,3 @@ func handleError(resp *http.Response) error {
 	}
 	return nil
 }
-

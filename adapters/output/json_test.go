@@ -11,7 +11,7 @@ import (
 
 func TestJsonAdapter(t *testing.T) {
 	var (
-		buffer bytes.Buffer
+		buffer  bytes.Buffer
 		command = utils.Command{
 			Output: &buffer,
 		}

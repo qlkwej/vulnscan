@@ -71,9 +71,9 @@ var Rules = [...]entities.CodeMatcher{
 	{
 		entities.CodeRule{
 			Description: "IP Address disclosure",
-			Level: entities.WarningLevel,
-			Cvss: 4.3,
-			Cwe: "CWE-200",
+			Level:       entities.WarningLevel,
+			Cvss:        4.3,
+			Cwe:         "CWE-200",
 		},
 		func(s string) bool {
 			r, _ := regexp.MatchString(`\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}`, s)
@@ -83,9 +83,9 @@ var Rules = [...]entities.CodeMatcher{
 	{
 		entities.CodeRule{
 			Description: "The App logs information. Sensitive information should never be logged.",
-			Level: entities.InfoLevel,
-			Cvss: 7.5,
-			Cwe: "CWE-532",
+			Level:       entities.InfoLevel,
+			Cvss:        7.5,
+			Cwe:         "CWE-532",
 		},
 		func(s string) bool {
 			r, _ := regexp.MatchString(`NSLog|NSAssert|fprintf|Logging`, s)
@@ -129,9 +129,9 @@ var Rules = [...]entities.CodeMatcher{
 	{
 		entities.CodeRule{
 			Description: "User input in \"loadHTMLString\" will result in JavaScript Injection.",
-			Level: entities.WarningLevel,
-			Cvss: 8.8,
-			Cwe: "CWE-95",
+			Level:       entities.WarningLevel,
+			Cvss:        8.8,
+			Cwe:         "CWE-95",
 		},
 		func(s string) bool {
 			return strings.Contains(s, "loadHTMLString") && strings.Contains(s, "webView")
@@ -164,7 +164,7 @@ var Rules = [...]entities.CodeMatcher{
 	{
 		entities.CodeRule{
 			Description: "MD5 is a weak hash known to have hash collisions.",
-			Level:      entities.HighLevel,
+			Level:       entities.HighLevel,
 			Cvss:        7.4,
 			Cwe:         "CWE-327",
 		},
@@ -187,9 +187,9 @@ var Rules = [...]entities.CodeMatcher{
 		entities.CodeRule{
 			Description: "The App uses ECB mode in Cryptographic encryption algorithm. ECB mode is known to be weak as it " +
 				"results in the same ciphertext for identical blocks of plaintext.",
-			Level:       entities.HighLevel,
-			Cvss:        5.9,
-			Cwe:         "CWE-327",
+			Level: entities.HighLevel,
+			Cvss:  5.9,
+			Cwe:   "CWE-327",
 		},
 		func(s string) bool {
 			return strings.Contains(s, "kCCOptionECBMode") && strings.Contains(s, "kCCAlgorithmAES")
@@ -222,9 +222,9 @@ var Rules = [...]entities.CodeMatcher{
 		entities.CodeRule{
 			Description: "This App copies data to clipboard. Sensitive data should not be copied to clipboard as other " +
 				"applications can access it.",
-			Level:       entities.InfoLevel,
-			Cvss:        0,
-			Cwe:         "",
+			Level: entities.InfoLevel,
+			Cvss:  0,
+			Cwe:   "",
 		},
 		func(s string) bool {
 			return strings.Contains(s, "UITextField") && (strings.Contains(s, "@select(cut:)") ||

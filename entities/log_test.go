@@ -6,9 +6,9 @@ import (
 )
 
 var messageTestMap = map[string]interface{}{
-	"level": 1,
+	"level":    1,
 	"analysis": "Binary Analysis",
-	"message": "Message to log",
+	"message":  "Message to log",
 }
 
 func TestMessageTransformation(t *testing.T) {

@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-
 var APIs = []entities.ApiMatcher{
 	{
 		entities.ApiRule{
@@ -17,9 +16,9 @@ var APIs = []entities.ApiMatcher{
 			return r
 		},
 	},
-	{ entities.ApiRule{
-			Description: "Local File Inf/O Operations.",
-		},
+	{entities.ApiRule{
+		Description: "Local File Inf/O Operations.",
+	},
 		func(s string) bool {
 			r, _ := regexp.MatchString(
 				`Keychain|kSecAttrAccessibleWhenUnlocked|kSecAttrAccessibleAfterFirstUnlock|SecItemAdd|`+`
@@ -47,7 +46,7 @@ var APIs = []entities.ApiMatcher{
 	},
 	{
 		entities.ApiRule{
-			Description:"Keychain Access",
+			Description: "Keychain Access",
 		},
 		func(s string) bool {
 			return strings.Contains(s, "PDKeychainBindings")

@@ -26,7 +26,7 @@ func TestAnalysis(t *testing.T) {
 			Path: ipaPath,
 			T:    t,
 		}
-		entity = entities.BinaryAnalysis{}
+		entity  = entities.BinaryAnalysis{}
 		adapter = mocks.GetTestMap(binaryTestAdapter)
 	)
 	Analysis(command, &entity, adapter)

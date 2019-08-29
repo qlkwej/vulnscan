@@ -8,7 +8,6 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-
 // Analyzes the macho headers to extract the cpu information. We use the standard macho library with some
 // maps to extract the data.
 func GetMachoInfo(command utils.Command, entity *entities.BinaryAnalysis) error {

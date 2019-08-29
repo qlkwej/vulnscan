@@ -3,7 +3,7 @@ package ios
 import (
 	"flag"
 	"fmt"
-	"github.com/simplycubed/vulnscan/usecases/binary"
+	"github.com/simplycubed/vulnscan/ios/macho"
 	"github.com/simplycubed/vulnscan/utils"
 	"os"
 	"os/exec"
@@ -499,7 +499,7 @@ func BinaryAnalysis(ipaPath string, isSrc bool, appName string) (map[string]inte
 		if _, err := os.Stat(binPath); os.IsNotExist(err) {
 			return fmt.Errorf("unable to find the binary at %s", binPath)
 		}
-		binInfo, err := binary.GetMachoInfo(binPath)
+		binInfo, err := macho.GetMachoInfo(binPath)
 		if err != nil {
 			return err
 		}

@@ -23,13 +23,13 @@ func TestAnalysis(t *testing.T) {
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
 		Analysis(
 			utils.Command{
-				Path:          p,
-				Source:        false,
-				T:             t,
+				Path:   p,
+				Source: false,
+				T:      t,
 			},
 			&entities.FileAnalysis{},
 			mocks.GetTestMap(codeTestAdapter),
-			)
+		)
 		return nil
 	}))
 }

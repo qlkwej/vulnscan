@@ -10,7 +10,6 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-
 var (
 	binaryAnalysisTest = entities.BinaryAnalysis{
 		BinType:   entities.ObjC,
@@ -27,12 +26,12 @@ var (
 				Description: "A very bad issue",
 				Status:      entities.WarningStatus,
 				Cvss:        10.8,
-				CWE:          "CWE-144",
+				CWE:         "CWE-144",
 			},
 		},
 	}
 	codeAnalysisTest = entities.CodeAnalysis{
-		Codes:      []entities.CodeFinding{
+		Codes: []entities.CodeFinding{
 			{
 				CodeRule: entities.CodeRule{
 					Description: "Files may contain hardcoded sensitive informations like usernames, passwords, keys etc.",
@@ -40,7 +39,7 @@ var (
 					Cvss:        0,
 					Cwe:         "CWE-312",
 				},
-				Paths:   []string{
+				Paths: []string{
 					"/CocoaLumberjack/Extensions/DDDispatchQueueLogFormatter.m", "/GAFirstChallengeViewController.m",
 					"/View Controllers/FlurryFirstChallengeViewController.m", "/View Controllers/SensitiveInformationDetailsVC.m",
 					"/View Controllers/SideChannelDataLeakageDetailsVC.m", "/YapDatabase/YapDatabase.m",
@@ -48,25 +47,25 @@ var (
 				},
 			},
 		},
-		Apis:       []entities.ApiFinding{
+		Apis: []entities.ApiFinding{
 			{
 				ApiRule: entities.ApiRule{
 					Description: "Encryption API",
 				},
-				Paths:  []string{
+				Paths: []string{
 					"/Third Party Classes/RNCryptor/RNCryptor.m", "/Third Party Classes/RNCryptor/RNDecryptor.m",
 					"/Third Party Classes/RNCryptor/RNEncryptor.m", "/Third Party Classes/RNCryptor/RNOpenSSLDecryptor.m",
 					"/Third Party Classes/RNCryptor/RNOpenSSLEncryptor.m", "/View Controllers/BrokenCryptographyDetailsVC.m",
 				},
 			},
 		},
-		Urls:       []entities.UrlFinding{
+		Urls: []entities.UrlFinding{
 			{
-				Url: "http://code.google.com",
+				Url:   "http://code.google.com",
 				Paths: []string{"/CocoaLumberjack/DDTTYLogger.m", "/CocoaLumberjack/DDTTYLogger.m", "/CocoaLumberjack/DDTTYLogger.m"},
 			},
 		},
-		Emails:     []entities.EmailFinding{
+		Emails: []entities.EmailFinding{
 			{
 				Email: "an@email.com",
 				Paths: []string{
@@ -131,26 +130,26 @@ var (
 		BundleVersionName:        "1",
 		BundleSupportedPlatforms: []string{"iPhoneSimulator"},
 		BundleLocalizations:      []string{"es"},
-		BundleUrlTypes:           []entities.BundleUrlType{
+		BundleUrlTypes: []entities.BundleUrlType{
 			{
 				Name:    "com.terrychou.vim",
 				Schemas: []string{"ivimeditor"},
 			},
 		},
-		Permissions:              []entities.Permission{
+		Permissions: []entities.Permission{
 			{
 				Name:        "NSMicrophoneUsageDescription",
 				Description: "Access microphone.",
 				Reason:      "Reason",
 			},
 		},
-		InsecureConnections:      entities.InsecureConnections{
+		InsecureConnections: entities.InsecureConnections{
 			AllowArbitraryLoads: false,
 			Domains:             []string{},
 		},
 	}
 	storeAnalysisTest = entities.StoreAnalysis{
-		Count:   1,
+		Count: 1,
 		Results: []entities.StoreResult{
 			{
 				Features:         []string{"iosUniversal"},
@@ -162,10 +161,10 @@ var (
 				DeveloperUrl:     "https://apps.apple.com/us/developer/edison-software-inc/id481881468?uo=4",
 				DeveloperWebsite: "http://mail.edison.tech",
 				SupportedDevices: []string{"iPhone5-iPhone5", "iPadFourthGen-iPadFourthGen", "iPadFourthGen4G-iPadFourthGen4G"},
-				Title:             "Email - Edison Mail",
+				Title:            "Email - Edison Mail",
 				AppId:            "com.easilydo.mail",
 				Categories:       []string{"Productivity", "Business"},
-				Description:     "Description",
+				Description:      "Description",
 				Price:            0.0,
 				Url:              "https://apps.apple.com/us/app/email-edison-mail/id922793622?uo=4",
 				Score:            4.5,
@@ -174,7 +173,7 @@ var (
 	}
 	virusAnalysisTest = entities.VirusAnalysis{
 		HasReport: true,
-		Response:  entities.VirusResponse{
+		Response: entities.VirusResponse{
 			ResponseCode: 1,
 			VerboseMsg:   "Scan finished, information embedded",
 			Resource:     "b956666c9670cff7166d28af88a3e063",
@@ -182,7 +181,7 @@ var (
 			Sha256:       "11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144",
 			Permalink:    "https://www.virustotal.com/file/11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144/analysis/1565653959/",
 		},
-		Report:    entities.VirusReport{
+		Report: entities.VirusReport{
 			VirusResponse: entities.VirusResponse{
 				ResponseCode: 1,
 				VerboseMsg:   "Scan finished, information embedded",
@@ -191,18 +190,17 @@ var (
 				Sha256:       "11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144",
 				Permalink:    "https://www.virustotal.com/file/11ff8b84c2dd786d259ace96c7a658e79a667d76db33fc3b2f1b021504d03144/analysis/1565653959/",
 			},
-			Md5:           "b956666c9670cff7166d28af88a3e063",
-			Sha1:          "01d4f5b3a7d81a02c8be039124c08a0e389f3eb3",
-			ScanDate:      "2019-08-12 23:52:39",
-			Positives:     0,
-			Total:         54,
+			Md5:       "b956666c9670cff7166d28af88a3e063",
+			Sha1:      "01d4f5b3a7d81a02c8be039124c08a0e389f3eb3",
+			ScanDate:  "2019-08-12 23:52:39",
+			Positives: 0,
+			Total:     54,
 			Scans: map[string]entities.VirusScan{
 				"ALYac": {
 					false,
 					"1.1.1.5",
 					"",
 					"20190812",
-
 				},
 				"Ad-Aware": {
 					false,
@@ -233,7 +231,7 @@ var (
 // see a complete result too, so we can make any change on the styling.
 func TestPrettyConsoleAdapter(t *testing.T) {
 	var (
-		buffer bytes.Buffer
+		buffer  bytes.Buffer
 		command = utils.Command{
 			Output: &buffer,
 		}

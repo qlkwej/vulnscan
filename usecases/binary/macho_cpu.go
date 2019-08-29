@@ -20,7 +20,6 @@ const (
 	Cigam64 uint32 = 0xCFFAEDFE
 )
 
-
 var (
 	cpuTypes = cpuTypesMap{
 		1:           "VAX",

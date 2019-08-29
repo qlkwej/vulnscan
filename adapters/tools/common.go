@@ -12,7 +12,6 @@ import (
 	"strings"
 )
 
-
 // Returns the folder where the program external binary tools (jtool, class-dump) is present. By default, depending on
 // the environment where the program is executing (testing/not testing) the tools will be in vulnscan/tools/tools
 // (testing) or in a sibling folder of the vulnscan binary. The function also looks for a folder configured using the
@@ -46,7 +45,6 @@ func performJtoolAnalysis(args [][]string) (out string, err error) {
 	}
 	return sb.String(), nil
 }
-
 
 func headerExtractor(out string, entity *entities.BinaryAnalysis) error {
 	if strings.Contains(out, "PIE") {
@@ -110,7 +108,7 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 				"feature that provides automatic memory management of Objective-C objects and protects from memory " +
 				"corruption vulnerabilities.",
 			Cvss: 2.,
-			CWE: "CWE-119",
+			CWE:  "CWE-119",
 		})
 	}
 	// Here we build a loop in order to execute multiple similar regex tests over the otool/jtool output.
@@ -125,7 +123,7 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 				"StrCpy|_strlen|StrLen|_strncat|StrNCat|_strncpy|StrNCpy|_strtok|_swprintf|_vsnprintf|" +
 				"_vsprintf|_vswprintf|_wcscat|_wcscpy|_wcslen|_wcsncat|_wcsncpy|_wcstok|_wmemcpy|" +
 				"_fopen|_chmod|_chown|_stat|_mktemp",
-			func(s string) entities.BinaryAnalysisResult{
+			func(s string) entities.BinaryAnalysisResult {
 				return entities.BinaryAnalysisResult{
 					Issue:       "Binary make use of banned API(s)",
 					Status:      "insecure",
@@ -145,7 +143,7 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 		{
 			"kCCAlgorithmDES|kCCAlgorithm3DES|kCCAlgorithmRC2|kCCAlgorithmRC4|" +
 				"kCCOptionECBMode|kCCOptionCBCMode",
-			func(s string) entities.BinaryAnalysisResult{
+			func(s string) entities.BinaryAnalysisResult {
 				return entities.BinaryAnalysisResult{
 					Issue:       "Binary make use of some Weak Crypto API(s)",
 					Status:      "insecure",
@@ -267,7 +265,7 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 		},
 		{
 			"_NSLog",
-			func(s string) entities.BinaryAnalysisResult{
+			func(s string) entities.BinaryAnalysisResult {
 				return entities.BinaryAnalysisResult{
 					Issue:       "Binary make use of Logging Function",
 					Status:      "info",
@@ -286,7 +284,7 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 		},
 		{
 			"_malloc",
-			func(s string) entities.BinaryAnalysisResult{
+			func(s string) entities.BinaryAnalysisResult {
 				return entities.BinaryAnalysisResult{
 					Issue:       "Binary make use of malloc Function",
 					Status:      "insecure",
@@ -349,7 +347,6 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 	}
 	return nil
 }
-
 
 func classDumpExtractor(out string, entity *entities.BinaryAnalysis) error {
 	if strings.Contains(out, "UIWebView") {

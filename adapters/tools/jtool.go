@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-
 func JtoolLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
 	out, err := performJtoolAnalysis([][]string{{"-arch", "arm", "-L", "-v", command.Path}})
 	if err != nil {
@@ -44,6 +43,3 @@ func JtoolClassDumpAdapter(command utils.Command, entity *entities.BinaryAnalysi
 	}
 	return classDumpExtractor(out, entity)
 }
-
-
-

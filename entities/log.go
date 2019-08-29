@@ -6,13 +6,13 @@ import (
 )
 
 type (
-	LogLevel int
+	LogLevel     int
 	AnalysisName string
 
 	LogMessage struct {
-		Level LogLevel `json:"level"`
+		Level    LogLevel     `json:"level"`
 		Analysis AnalysisName `json:"analysis"`
-		Message string `json:"message" validate:"min=1"`
+		Message  string       `json:"message" validate:"min=1"`
 	}
 )
 
@@ -30,7 +30,6 @@ const (
 	Store  AnalysisName = "Store Analysis"
 	None   AnalysisName = ""
 )
-
 
 func (e *LogMessage) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	if v, ok := m["level"]; ok {
@@ -72,9 +71,9 @@ func (e *LogMessage) FromMap(m map[string]interface{}) (ent Entity, err error) {
 
 func (e *LogMessage) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"level": int(e.Level),
+		"level":    int(e.Level),
 		"analysis": string(e.Analysis),
-		"message": e.Message,
+		"message":  e.Message,
 	}
 }
 

@@ -20,7 +20,7 @@ func TestParseError(t *testing.T) {
 
 func TestParseInfo(t *testing.T) {
 	info := "breaking news are not so breaking anymore"
-	c, e := ParseInfo(entities.Plist, info)
+	c, e := ParseInfo(utils.Command{}, entities.Plist, info)
 	assert.Equal(t, utils.Command{}, c)
 	assert.Equal(t, &entities.LogMessage{
 		Level:    entities.Inf,

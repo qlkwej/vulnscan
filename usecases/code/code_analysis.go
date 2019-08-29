@@ -51,7 +51,7 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 		return
 	}
 	if a := adapter.Services.MalwareDomains; a != nil {
-		if adapter.Output.Error(output.ParseError(command, analysisName,a(command, entity))) != nil {
+		if adapter.Output.Error(output.ParseError(command, analysisName, a(command, entity))) != nil {
 			return
 		}
 	}
@@ -60,7 +60,6 @@ func Analysis(command utils.Command, entity *entities.CodeAnalysis, adapter adap
 		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 	}
 }
-
 
 func ruleExtractor(data, path string, entity *entities.CodeAnalysis) entities.Entity {
 	for _, rule := range Rules {
@@ -98,7 +97,7 @@ func apiExtractor(data, path string, entity *entities.CodeAnalysis) entities.Ent
 			if !found {
 				entity.Apis = append(entity.Apis, entities.ApiFinding{
 					ApiRule: api.ApiRule,
-					Paths:    []string{path},
+					Paths:   []string{path},
 				})
 			}
 		}
@@ -121,8 +120,8 @@ func urlExtractor(data, path string, entity *entities.CodeAnalysis) entities.Ent
 		}
 		if !found {
 			entity.Urls = append(entity.Urls, entities.UrlFinding{
-				Url: 	  string(url),
-				Paths:    []string{path},
+				Url:   string(url),
+				Paths: []string{path},
 			})
 		}
 	}
@@ -143,11 +142,10 @@ func emailExtractor(data, path string, entity *entities.CodeAnalysis) entities.E
 		}
 		if !found {
 			entity.Emails = append(entity.Emails, entities.EmailFinding{
-				Email: 	  string(email),
-				Paths:    []string{path},
+				Email: string(email),
+				Paths: []string{path},
 			})
 		}
 	}
 	return entity
 }
-

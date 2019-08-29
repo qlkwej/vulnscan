@@ -41,4 +41,3 @@ func replaceTag(prefix, indent string) func(string) string {
 			"\r\n" + prefix + strings.Repeat(indent, indentLevel)
 	}
 }
-
