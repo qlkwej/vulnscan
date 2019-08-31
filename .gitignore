@@ -33,3 +33,4 @@ vendor
 
 # Folder where task creates the builds
 build
+app
