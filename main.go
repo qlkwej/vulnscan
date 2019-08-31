@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/simplycubed/vulnscan/entities"
 	"log"
 	"os"
 	"sort"
@@ -120,6 +121,16 @@ func getApp() *cli.App {
 		makeDomainCheck bool
 
 		applicationFlags = []cli.Flag{jsonFlag(&useJSON), configurationFlag(&configurationPath)}
+
+		parseFlags = func() entities.Command {
+			command := entities.Command{
+				Country:       "us",
+				VirusTotalKey: virusKey,
+				Source:        false,
+				CheckDomains:  makeDomainCheck,
+				Output:        os.Stdout,
+			}
+		}
 	)
 
 	app := cli.NewApp()

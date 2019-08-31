@@ -27,6 +27,7 @@ func getValidator() *validator.Validate {
 		_ = validate.RegisterValidation("valid_levels", levelValidator)
 		_ = validate.RegisterValidation("valid_bin_types", binTypeValidator)
 		_ = validate.RegisterValidation("valid_analysis", analysisCheckValidator)
+		_ = validate.RegisterValidation("valid_country_codes", countryCodesValidator)
 	}
 	return validate
 }
