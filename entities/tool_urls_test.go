@@ -7,14 +7,14 @@ import (
 
 var (
 	toolUrlsTestMap = map[string]interface{}{
-		"j_tool": "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/jtool",
-		"class_dump_z": "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/class-dump-z",
-		"class_dump_swift": "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/class-dump-swift",
+		"jtool": "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/jtool",
+		"class-dump-z": "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/class-dump-z",
+		"class-dump-swift": "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/class-dump-swift",
 	}
 
 	wrongToolUrlsTestMap = map[string]interface{}{
-		"j_tool": "github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/jtool",
-		"class_dump_z": "definitelly/not/an/url",
+		"jtool": "github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/jtool",
+		"class-dump-z": "definitelly/not/an/url",
 	}
 )
 

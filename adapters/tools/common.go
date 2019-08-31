@@ -14,7 +14,7 @@ import (
 func performJtoolAnalysis(command entities.Command, args [][]string) (out string, err error) {
 	com := command.Tools + "jtool"
 	if _, err := os.Stat(com); os.IsNotExist(err) {
-		return out, fmt.Errorf("jtool not found on %s, probably it's not installed", command)
+		return out, fmt.Errorf("jtool not found on %s, probably it's not installed", command.Path)
 	}
 	var sb strings.Builder
 	for _, arg := range args {

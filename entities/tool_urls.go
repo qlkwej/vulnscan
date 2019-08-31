@@ -6,9 +6,9 @@ import (
 )
 
 type ToolUrls struct {
-	JTool string `json:"j_tool" validate:"url"`
-	ClassDumpZ string `json:"class_dump_z" validate:"url"`
-	ClassDumpSwift string `json:"class_dump_swift" validate:"url"`
+	JTool string `json:"jtool" validate:"url"`
+	ClassDumpZ string `json:"class-dump-z" validate:"url"`
+	ClassDumpSwift string `json:"class-dump-swift" validate:"url"`
 }
 
 
