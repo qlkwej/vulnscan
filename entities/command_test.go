@@ -7,6 +7,7 @@ import (
 
 var commandTestMap = map[string]interface{}{
 	"path": "/usr/app/binary",
+	"tools": "/var/tools/folder",
 	"app_name": "Binary",
 	"app_id": "183948394",
 	"country": "us",

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/kardianos/osext"
 	"github.com/simplycubed/vulnscan/adapters"
+	"github.com/simplycubed/vulnscan/adapters/output"
+	"github.com/simplycubed/vulnscan/adapters/services"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/utils"
 	"github.com/stevenroose/gonfig"
@@ -21,131 +23,115 @@ import (
 // tries the next location in the list. If everything fails, the default Configuration would be used.
 // As we really don't care about where we get the Configuration, it doesn't make a lot of sense to return an error, so
 // the function just returns a string to tell the user what happened
-func ConfigurationAdapter(command entities.Command, entity *entities.Command, adapter *adapters.AdapterMap) error {
-	var sb strings.Builder
+func ConfigurationAdapter(command entities.Command, entity *entities.Command, adapter *adapters.AdapterMap) {
+	configuration := entities.Configuration{
+		Analysis:           []string{"binary", "code", "plist", "lookup", "files"},
+		JSONFormat:         false,
+		DefaultCountry:     "us",
+		ToolsFolder:        getToolsFolder(),
+		PerformDomainCheck: false,
+	}
+	_ = adapter.Output.Error(output.ParseError(command, "", extractConfigurationFile(getPaths(command), &configuration, adapter)))
+	loadConfiguration(&configuration, entity, adapter)
+}
+
+// Returns the folder where the program external binary tools (jtool, class-dump) is present. By default, depending on
+// the environment where the program is executing (testing/not testing) the tools will be in vulnscan/tools/tools
+// (testing) or in a sibling folder of the vulnscan binary. The function also looks for a folder configured using the
+// configuration file.
+func getToolsFolder() string {
+	var parentFolder string
+	if flag.Lookup("test.v") == nil {
+		parentFolder, _ = osext.ExecutableFolder()
+	} else {
+		parentFolder, _ = utils.FindMainFolder()
+	}
+	return parentFolder + string(os.PathSeparator) + "tools" + string(os.PathSeparator)
+}
+
+func getPaths(command entities.Command) []string {
+	var paths []string
 	// First, we try the provided path, if it is not empty
 	if command.Path != "" {
-		// As we need to exit and continue if the extension of the file is not one of the supported ones, we encapsulate
-		// the checks in a function (similar effect to a do {} while false in C++).
-		if err := func() error {
-			if _, err := os.Stat(command.Path); os.IsNotExist(err) {
-				return err
-			}
-
-			// We check the format of the Configuration file to load the decoder
-			var decoder gonfig.FileDecoderFn
-			if ext := strings.ToLower(filepath.Ext(command.Path)); ext == ".toml" {
-				decoder = gonfig.DecoderTOML
-			} else if ext == ".json" {
-				decoder = gonfig.DecoderJSON
-			} else if ext == ".yaml" {
-				decoder = gonfig.DecoderYAML
-			} else {
-				return fmt.Errorf("configuration file %s doesn't have one of the required formats (TOML, YAML, JSON)", command.Path)
-			}
-			if err := loadConfigurationFile(command.Path, decoder); err != nil {
-				return fmt.Errorf("error loading the Configuration file found in %s: %s", command.Path, err)
-			}
-			// If we get here, we have loaded the Configuration file successfully...
-			return nil
-		}(); err == nil {
-			// ... so we return a success string
-			return nil
-			// In any other case, we pass the error to the returning string and keep searching in other locations.
-		} else if os.IsNotExist(err) {
-			sb.WriteString(fmt.Sprintf("Configuration file not found in %s", command.Path))
-		} else {
-			sb.WriteString(err.Error())
-		}
+		paths = append(paths, command.Path)
 	}
 	// Next we check the current execution path
-	if err := func() error {
-		var currentDir string
-		if flag.Lookup("test.v") == nil {
-			// Not testing
-			currentDir, _ = os.Getwd()
-		} else {
-			currentDir, _ = utils.FindMainFolder()
-		}
-		for p, d := range map[string]gonfig.FileDecoderFn{
-			filepath.Join(currentDir, "vulnscan.toml"): gonfig.DecoderTOML,
-			filepath.Join(currentDir, "vulnscan.yaml"): gonfig.DecoderYAML,
-			filepath.Join(currentDir, "vulnscan.json"): gonfig.DecoderJSON,
-		} {
-			// If the file exist, we try to load the Configuration
-			if _, err := os.Stat(p); !os.IsNotExist(err) {
-				if err := loadConfigurationFile(p, d); err == nil {
-					// If we succeed, we can return a message indicating it
-					if sb.Len() > 0 {
-						sb.WriteString(fmt.Sprintf(", but it was loaded from current execution path %s", currentDir))
-						return nil
-					}
-					sb.WriteString(fmt.Sprintf("Configuration file loaded from current execution path %s", currentDir))
-					return nil
-				}
-				// If we find a file in the path, but we get an error, we exit the search directly
-				if sb.Len() > 0 {
-					return fmt.Errorf(", error loading file from current execution path %s: %s", currentDir, err)
-				}
-				return fmt.Errorf("error loading file loaded from current execution path %s: %s", currentDir, err)
-			}
-		}
-		// We have not found a Configuration file in the current execution directory
-		if sb.Len() > 0 {
-			return fmt.Errorf(", file not found execution path %s", currentDir)
-		}
-		return fmt.Errorf("configuration file not found in execution path %s", currentDir)
-	}(); err != nil {
-		sb.WriteString(err.Error())
+	var currentDir string
+	if flag.Lookup("test.v") == nil {
+		// Not testing
+		currentDir, _ = os.Getwd()
 	} else {
-		return nil
+		currentDir, _ = utils.FindMainFolder()
+	}
+	for _, ex := range []string{".toml", ".yaml", ".json"} {
+		paths = append(paths, filepath.Join(currentDir, "vulnscan" + ex))
 	}
 	// Finally, we check the folder where the vulnscan binary is located
 	if binaryPath, err := osext.ExecutableFolder(); err == nil {
-		for p, d := range map[string]gonfig.FileDecoderFn{
-			filepath.Join(binaryPath, "vulnscan.toml"): gonfig.DecoderTOML,
-			filepath.Join(binaryPath, "vulnscan.yaml"): gonfig.DecoderYAML,
-			filepath.Join(binaryPath, "vulnscan.json"): gonfig.DecoderJSON,
-		} {
-			if _, err := os.Stat(p); !os.IsNotExist(err) {
-				if err := loadConfigurationFile(p, d); err == nil {
-					sb.WriteString(fmt.Sprintf(", but it was loaded from the binary path %s", p))
-					return nil
-				}
-				sb.WriteString(fmt.Sprintf(" and error loading the file from binary path %s: %s", p, err))
-				return nil
-			}
-		}
-		sb.WriteString(fmt.Sprintf(" and not found in the binary path %s", binaryPath))
-		return nil
-	}
-	// This should not happen
-	return nil
-}
-
-
-// Loads the configuration file and checks that:
-// - The activated scan names are all valid
-// - The source/binary paths exists
-func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
-	if err := gonfig.Load(&utils.Configuration, gonfig.Conf{
-		FileDefaultFilename: path,
-		FileDecoder:         decoder,
-		FlagDisable:         true, // does not work, so we have to do it manually
-		EnvPrefix:           "VULNSCAN_",
-	}); err != nil {
-		return err
-	}
-	if err := utils.CheckConfigurationScans(utils.Configuration.Scans); err != nil {
-		utils.ResetConfiguration()
-		return err
-	}
-	for _, p := range []*string{&utils.Configuration.BinaryPath, &utils.Configuration.SourcePath} {
-		*p, _ = filepath.Abs(*p)
-		if _, err := os.Stat(*p); os.IsNotExist(err) {
-			utils.ResetConfiguration()
-			return err
+		for _, ex := range []string{".toml", ".yaml", ".json"} {
+			paths = append(paths, filepath.Join(binaryPath, "vulnscan" + ex))
 		}
 	}
-	return nil
+	return paths
 }
+
+func extractConfigurationFile(paths []string, configuration *entities.Configuration, adapter *adapters.AdapterMap) error {
+	var d gonfig.FileDecoderFn
+	for _, p := range paths {
+		if _, err := os.Stat(p); !os.IsNotExist(err) {
+			continue
+		}
+		switch strings.ToLower(filepath.Ext(p)) {
+		case ".json":
+			d = gonfig.DecoderJSON
+		case ".yaml":
+			d = gonfig.DecoderYAML
+		case ".toml":
+			d = gonfig.DecoderTOML
+		default:
+			return fmt.Errorf(
+				"%s is not a valid extension for the configuration file. Only json, yaml and toml are allowed",
+				strings.ToLower(filepath.Ext(p)))
+		}
+		_ = adapter.Output.Logger(output.ParseInfo(entities.Command{}, "", fmt.Sprintf("Configuration file found at %s, loading...", p)))
+		// Now we have a valid path and a valid extension, we can return the error
+		return gonfig.Load(configuration, gonfig.Conf{
+			FileDefaultFilename: p,
+			FileDecoder:         d,
+			FlagDisable:         true, // does not work, so we have to do it manually
+			EnvPrefix:           "VULNSCAN_",
+		})
+	}
+	return fmt.Errorf("configuration file not found on %s", strings.Join(paths, ", "))
+}
+
+func loadConfiguration(configuration *entities.Configuration, command *entities.Command, adapter *adapters.AdapterMap) {
+	// Command configuration
+	if len(configuration.BinaryPath) > 0 {
+		command.Path = configuration.BinaryPath
+	} else if len(configuration.SourcePath) > 0 {
+		command.Path = configuration.SourcePath
+		command.Source = true
+	}
+	if len(configuration.ToolsFolder) > 0 {
+
+	}
+	for _, a := range configuration.Analysis {
+		command.Analysis[entities.AnalysisCheck(a)] = true
+	}
+	command.Country = configuration.DefaultCountry
+
+
+	// Adapter configuration
+	if configuration.JSONFormat {
+		adapter.Output.Result = output.JsonAdapter
+	}
+	if configuration.PerformDomainCheck {
+		adapter.Services.MalwareDomains = services.MalwareDomainsAdapter
+	}
+	if len(configuration.VirusScanKey) > 0 {
+		command.VirusTotalKey = configuration.VirusScanKey
+		adapter.Services.VirusScan = services.VirusTotalAdapter
+	}
+}
+

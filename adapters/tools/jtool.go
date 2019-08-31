@@ -6,7 +6,7 @@ import (
 )
 
 func JtoolLibsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
-	out, err := performJtoolAnalysis([][]string{{"-arch", "arm", "-L", "-v", command.Path}})
+	out, err := performJtoolAnalysis(command, [][]string{{"-arch", "arm", "-L", "-v", command.Path}})
 	if err != nil {
 		return err
 	}
@@ -15,7 +15,7 @@ func JtoolLibsAdapter(command entities.Command, entity *entities.BinaryAnalysis)
 }
 
 func JtoolHeadersAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
-	out, err := performJtoolAnalysis([][]string{{"-arch", "arm", "-h", "-v", command.Path}})
+	out, err := performJtoolAnalysis(command, [][]string{{"-arch", "arm", "-h", "-v", command.Path}})
 	if err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func JtoolHeadersAdapter(command entities.Command, entity *entities.BinaryAnalys
 }
 
 func JtoolSymbolsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
-	out, err := performJtoolAnalysis([][]string{
+	out, err := performJtoolAnalysis(command, [][]string{
 		{"-arch", "arm", "-h", "-v", command.Path},
 		{"-arch", "arm", "-lazy_bind", "-v", command.Path},
 	})
@@ -34,7 +34,7 @@ func JtoolSymbolsAdapter(command entities.Command, entity *entities.BinaryAnalys
 }
 
 func JtoolClassDumpAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
-	out, err := performJtoolAnalysis([][]string{
+	out, err := performJtoolAnalysis(command, [][]string{
 		{"-arch", "arm", "-d", "objc", "-v", command.Path},
 	})
 	if err != nil {

@@ -12,31 +12,16 @@ import (
 	"strings"
 )
 
-// Returns the folder where the program external binary tools (jtool, class-dump) is present. By default, depending on
-// the environment where the program is executing (testing/not testing) the tools will be in vulnscan/tools/tools
-// (testing) or in a sibling folder of the vulnscan binary. The function also looks for a folder configured using the
-// configuration file.
-func getToolsFolder() string {
-	if tf := utils.Configuration.ToolsFolder; tf != "" {
-		return tf
-	}
-	var parentFolder string
-	if flag.Lookup("test.v") == nil {
-		parentFolder, _ = osext.ExecutableFolder()
-	} else {
-		parentFolder, _ = utils.FindMainFolder()
-	}
-	return parentFolder + string(os.PathSeparator) + "tools" + string(os.PathSeparator)
-}
 
-func performJtoolAnalysis(args [][]string) (out string, err error) {
-	command := getToolsFolder() + "jtool"
-	if _, err := os.Stat(command); os.IsNotExist(err) {
+
+func performJtoolAnalysis(command entities.Command, args [][]string) (out string, err error) {
+	com := command.Tools + "jtool"
+	if _, err := os.Stat(com); os.IsNotExist(err) {
 		return out, fmt.Errorf("jtool not found on %s, probably it's not installed", command)
 	}
 	var sb strings.Builder
 	for _, arg := range args {
-		if out, e := exec.Command(command, arg...).CombinedOutput(); e != nil {
+		if out, e := exec.Command(com, arg...).CombinedOutput(); e != nil {
 			return string(out), e
 		} else {
 			sb.WriteString(string(out))

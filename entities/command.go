@@ -13,6 +13,7 @@ type (
 
 	Command struct {
 		Path          string 				 `json:"path" validate:"min=1"`
+		Tools		  string 				 `json:"tools"`
 		SourcePath	  string				 `json:"source_path"`
 		AppName       string 				 `json:"app_name"`
 		AppId         string 				 `json:"app_id"`
@@ -222,6 +223,7 @@ func analysisCheckValidator(fl validator.FieldLevel) bool {
 func (c Command) ToMap() map[string]interface{} {
 	m := map[string]interface{}{
 		"path": c.Path,
+		"tools": c.Tools,
 		"app_name": c.AppName,
 		"app_id": c.AppId,
 		"country": c.Country,
@@ -244,6 +246,14 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			c.Path = v.(string)
 		default:
 			return ent, fmt.Errorf("erroneus path type, expected string, found: %T", v)
+		}
+	}
+	if v, ok := m["tools"]; ok {
+		switch v.(type) {
+		case string:
+			c.Tools = v.(string)
+		default:
+			return ent, fmt.Errorf("erroneus tools type, expected string, found: %T", v)
 		}
 	}
 	if v, ok := m["app_name"]; ok {
