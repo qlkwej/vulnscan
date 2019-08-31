@@ -23,7 +23,7 @@ func TestParseInfo(t *testing.T) {
 	c, e := ParseInfo(utils.Command{}, entities.Plist, info)
 	assert.Equal(t, utils.Command{}, c)
 	assert.Equal(t, &entities.LogMessage{
-		Level:    entities.Inf,
+		Level:    entities.Info,
 		Analysis: entities.Plist,
 		Message:  info,
 	}, e)

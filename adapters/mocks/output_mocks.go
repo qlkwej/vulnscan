@@ -16,7 +16,7 @@ func ErrorAdapter(command utils.Command, entity *entities.Error) error {
 func LogAdapter(command utils.Command, entity *entities.LogMessage) error {
 	var level string
 	switch entity.Level {
-	case entities.Inf:
+	case entities.Info:
 		level = "INFO| "
 	case entities.Warn:
 		level = "WARN| "

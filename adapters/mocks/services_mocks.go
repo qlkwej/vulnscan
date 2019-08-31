@@ -48,15 +48,15 @@ func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) er
 			Scans: map[string]entities.VirusScan{
 				"ALYac": {
 					Detected: false,
-					Version: "1.1.1.5",
-					Result: "",
-					Update: "20190812",
+					Version:  "1.1.1.5",
+					Result:   "",
+					Update:   "20190812",
 				},
 				"Ad-Aware": {
 					Detected: false,
-					Version: "3.0.5.370",
-					Result: "",
-					Update: "20190813",
+					Version:  "3.0.5.370",
+					Result:   "",
+					Update:   "20190813",
 				},
 			},
 		},

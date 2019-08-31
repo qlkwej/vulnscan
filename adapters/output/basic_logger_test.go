@@ -13,7 +13,7 @@ func TestBasicLoggerAdapter(t *testing.T) {
 		buffer      = bytes.Buffer{}
 		command     = utils.Command{}
 		infoMessage = entities.LogMessage{
-			Level:    entities.Inf,
+			Level:    entities.Info,
 			Analysis: entities.Code,
 			Message:  "a very informative note, sir",
 		}
@@ -28,7 +28,7 @@ func TestBasicLoggerAdapter(t *testing.T) {
 			Message:  "last Star Wars trilogy is awesome",
 		}
 	)
-	SetBasicLogger(&buffer, entities.Inf, false)
+	SetBasicLogger(&buffer, entities.Info, false)
 	assert.NoError(t, BasicLoggerAdapter(command, &infoMessage))
 	assert.NoError(t, BasicLoggerAdapter(command, &warnMessage))
 	assert.NoError(t, BasicLoggerAdapter(command, &errorMessage))
@@ -56,7 +56,7 @@ func TestBasicLoggerAdapter(t *testing.T) {
 	assert.Equal(t, "ERROR| last Star Wars trilogy is awesome\n", buffer.String())
 
 	buffer.Reset()
-	SetBasicLogger(&buffer, entities.Und, true)
+	SetBasicLogger(&buffer, entities.Undefined, true)
 	assert.NoError(t, BasicLoggerAdapter(command, &infoMessage))
 	assert.NoError(t, BasicLoggerAdapter(command, &warnMessage))
 	assert.NoError(t, BasicLoggerAdapter(command, &errorMessage))
