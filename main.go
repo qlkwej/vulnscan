@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/kardianos/osext"
+	"github.com/simplycubed/vulnscan/utils"
 	"log"
 	"os"
 	"sort"
@@ -23,7 +25,6 @@ import (
 )
 
 
-
 // Flags
 var (
 	jsonFlag = func(b *bool) cli.BoolFlag {
@@ -35,7 +36,7 @@ var (
 	virusFlag = func(s *string) cli.StringFlag {
 		return cli.StringFlag{
 			Name:        "virus, v",
-			Usage:       "Activate the virus scan using Virus Total",
+			Usage:       "activate the virus scan using Virus Total",
 			Value:       "",
 			Destination: s,
 		}
@@ -43,7 +44,7 @@ var (
 	domainCheckFlag = func(b *bool) cli.BoolFlag {
 		return cli.BoolFlag{
 			Name:        "domains, d",
-			Usage:       "Activate the domains check at www.malwaredomainlist.com",
+			Usage:       "activate the domains check at www.malwaredomainlist.com",
 			Destination: b,
 		}
 	}
@@ -54,7 +55,7 @@ var (
 				dir, _ := os.Getwd()
 				return dir
 			}(),
-			Usage:       "Full path to binary (ipa) file",
+			Usage:       "full path to binary (ipa) file",
 			Destination: p,
 		}
 	}
@@ -62,7 +63,7 @@ var (
 		return cli.StringFlag{
 			Name:        "source, s",
 			Value:       "",
-			Usage:       "Full path to source code directory",
+			Usage:       "full path to source code directory",
 			Destination: p,
 		}
 	}
@@ -85,9 +86,21 @@ var (
 
 	configurationFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
-			Name:        "Configuration, conf",
+			Name:        "configuration, conf",
 			Value:       "",
 			Usage:       "scan Configuration /path/to/conf(.toml|.yaml|.json)",
+			Destination: p,
+		}
+	}
+
+	toolsFlag = func(p *string) cli.StringFlag {
+		return cli.StringFlag{
+			Name:        "tools_folder, tools, t",
+			Usage:       "folder where the external tools are / should be downloaded",
+			Value: 		 func() string {
+				p, _ := osext.ExecutableFolder()
+				return p
+			}(),
 			Destination: p,
 		}
 	}
@@ -98,16 +111,21 @@ func getApp() *cli.App {
 	var (
 		configurationPath string
 
-		appID      string
-		country    string
-		binaryPath string
-		sourcePath string
-		virusKey   string
+		appID       string
+		country     string
+		binaryPath  string
+		sourcePath  string
+		virusKey    string
+		toolsFolder string
 
 		useJSON         bool
 		makeDomainCheck bool
 
-		applicationFlags = []cli.Flag{jsonFlag(&useJSON), configurationFlag(&configurationPath)}
+		applicationFlags = []cli.Flag{
+			jsonFlag(&useJSON),
+			configurationFlag(&configurationPath),
+			toolsFlag(&toolsFolder),
+		}
 
 		command = entities.Command{
 			Output:        os.Stdout,
@@ -146,6 +164,9 @@ func getApp() *cli.App {
 			} else {
 				command.Path = sourcePath
 				command.Source = true
+			}
+			if len(toolsFolder) > 0 {
+				command.Tools = toolsFolder
 			}
 			if makeDomainCheck {
 				adapter.Services.MalwareDomains = services.MalwareDomainsAdapter
@@ -239,6 +260,20 @@ func getApp() *cli.App {
 				parseConfiguration()
 				static.Analysis(command, &entities.StaticAnalysis{}, adapter)
 				return nil
+			},
+		},
+		{
+			Name: "download",
+			Aliases: []string{"d"},
+			Usage: "downloads the external tools used by vulnscan to work",
+			Flags: []cli.Flag{toolsFlag(&toolsFolder)},
+			Action: func(c *cli.Context) error {
+				parseConfiguration()
+				return tools.DownloaderAdapter(command, &entities.ToolUrls{
+					JTool:          utils.JtoolUrl,
+					ClassDumpZ:     utils.ClassDumpZUrl,
+					ClassDumpSwift: utils.ClassDumpSwiftUrl,
+				})
 			},
 		},
 	}
