@@ -1,6 +1,8 @@
 package services
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
@@ -205,6 +207,7 @@ func (client *VirusTotalClient) makeApiUploadRequest(
 	return resp, nil
 }
 
+// handleError check the status code of the response and generates an error if it's not ok
 func handleError(resp *http.Response) error {
 	if resp.StatusCode != http.StatusOK {
 		if resp.Body != nil {
@@ -214,3 +217,24 @@ func handleError(resp *http.Response) error {
 	}
 	return nil
 }
+
+
+// hashMD5 returns MD5 hash of a file located at filePath
+func hashMD5(filePath string) (string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", err
+	}
+	//noinspection GoUnhandledErrorResult
+	defer file.Close()
+
+	hash := md5.New()
+	//Copy the file in the hash interface
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", err
+	}
+	hashInBytes := hash.Sum(nil)[:16]
+	//Convert the bytes to a string
+	return hex.EncodeToString(hashInBytes), nil
+}
+

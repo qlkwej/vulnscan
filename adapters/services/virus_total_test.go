@@ -24,3 +24,13 @@ func TestVirusTotalAdapter(t *testing.T) {
 		"Scan finished, information embedded",
 		entity.Response.VerboseMsg, "wrong api response")
 }
+
+
+func TestHashMD5(t *testing.T) {
+	file, _ := utils.FindTest("apps", "binary.ipa")
+	if hash, e := hashMD5(file); e != nil {
+		t.Error(e)
+	} else if len(hash) != 32 {
+		t.Errorf("Invalid hash length: %d", len(hash))
+	}
+}

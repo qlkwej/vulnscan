@@ -22,6 +22,12 @@ import (
 	"github.com/simplycubed/vulnscan/usecases/store"
 )
 
+const (
+	jtoolRoute = "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/jtool"
+	classDumpZRoute = "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/class-dump-z"
+	classDumpSwiftRoute = "https://github.com/simplycubed/vulnscan-dependencies/releases/download/0.0.1-beta/class-dump-swift"
+)
+
 // Flags
 var (
 	jsonFlag = func(b *bool) cli.BoolFlag {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/urfave/cli.v1"
 	"testing"
 )
@@ -45,25 +45,25 @@ func TestCommands(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	utils.Expect(t, counts.CommandNotFound, 0)
-	utils.Expect(t, counts.SubCommand, 1)
-	utils.Expect(t, counts.Total, 1)
+	assert.Equal(t, 0, counts.CommandNotFound)
+	assert.Equal(t, 1, counts.SubCommand)
+	assert.Equal(t, 1, counts.Total)
 	resetCounts()
 
 	err = a.Run([]string{"command", "scan"})
 	if err != nil {
 		t.Error(err)
 	}
-	utils.Expect(t, counts.CommandNotFound, 0)
-	utils.Expect(t, counts.SubCommand, 1)
-	utils.Expect(t, counts.Total, 1)
+	assert.Equal(t, 0, counts.CommandNotFound)
+	assert.Equal(t, 1, counts.SubCommand)
+	assert.Equal(t, 1, counts.Total)
 	resetCounts()
 
 	err = a.Run([]string{"command", "foo"})
 	if err != nil {
 		t.Error(err)
 	}
-	utils.Expect(t, counts.CommandNotFound, 1)
-	utils.Expect(t, counts.SubCommand, 0)
-	utils.Expect(t, counts.Total, 1)
+	assert.Equal(t, 1, counts.CommandNotFound)
+	assert.Equal(t, 0, counts.SubCommand)
+	assert.Equal(t, 1, counts.Total)
 }
