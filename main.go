@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sort"
@@ -107,23 +108,21 @@ func getApp() *cli.App {
 		applicationFlags = []cli.Flag{jsonFlag(&useJSON), configurationFlag(&configurationPath)}
 
 		command = entities.Command{
-			Country:       "us",
-			Source:        false,
 			Output:        os.Stdout,
 		}
 
 		adapter = adapters.AdapterMap{
-			Services: adapters.ServiceAdapters{
+			Services: adapters.ServiceAdapters {
 				MalwareDomains: nil,
 				VirusScan:      nil,
 			},
-			Tools: adapters.ToolAdapters{
+			Tools: adapters.ToolAdapters {
 				ClassDump: tools.JtoolClassDumpAdapter,
 				Libs:      tools.JtoolLibsAdapter,
 				Headers:   tools.JtoolHeadersAdapter,
 				Symbols:   tools.JtoolSymbolsAdapter,
 			},
-			Output: adapters.OutputAdapters{
+			Output: adapters.OutputAdapters {
 				Logger: output.BasicLoggerAdapter,
 				Result: output.PrettyConsoleAdapter,
 				Error:  output.BasicErrorAdapter,
@@ -131,9 +130,10 @@ func getApp() *cli.App {
 		}
 
 		parseConfiguration = func() {
-			_ = adapter.Output.Error(output.ParseError(entities.Command{}, entities.None,
-				input.ConfigurationAdapter(entities.Command{Path: configurationPath}, &command, &adapter)))
-			command.AppId = appID
+			input.ConfigurationAdapter(entities.Command{Path: configurationPath}, &command, &adapter)
+			if len(appID) > 0 {
+				command.AppId = appID
+			}
 			if len(country) > 0 {
 				command.Country = country
 			}
@@ -154,6 +154,9 @@ func getApp() *cli.App {
 			}
 			if useJSON {
 				adapter.Output.Result = output.JsonAdapter
+			}
+			if ves := command.Validate(); len(ves) > 0 {
+				log.Fatal(fmt.Sprintf("Invalid generated command, validation errors: %s", fmt.Sprintf("%s", ves)))
 			}
 		}
 	)

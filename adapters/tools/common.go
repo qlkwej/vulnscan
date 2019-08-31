@@ -1,11 +1,8 @@
 package tools
 
 import (
-	"flag"
 	"fmt"
-	"github.com/kardianos/osext"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"os"
 	"os/exec"
 	"regexp"
