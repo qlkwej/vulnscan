@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func codeTestAdapter(command utils.Command, entity entities.Entity) error {
+func codeTestAdapter(command entities.Command, entity entities.Entity) error {
 	ent := entity.(*entities.PListAnalysis)
 	assert.NotEmpty(command.T, ent.Xml)
 	return nil
@@ -22,7 +22,7 @@ func TestPlistSearch(t *testing.T) {
 	zipFile, _ := utils.FindTest("apps", "source.zip")
 	path, _ := utils.FindTest("apps", "source")
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
-		command := utils.Command{
+		command := entities.Command{
 			Path:   p,
 			Source: true,
 			T:      t,
@@ -37,7 +37,7 @@ func TestPlistSearch(t *testing.T) {
 	zipFile, _ = utils.FindTest("apps", "binary.ipa")
 	path, _ = utils.FindTest("apps", "binary")
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
-		command := utils.Command{
+		command := entities.Command{
 			Path:   p,
 			Source: false,
 			T:      t,
@@ -55,7 +55,7 @@ func TestMakeAnalysis(t *testing.T) {
 	for i := 1; i <= 5; i++ {
 		path, _ := utils.FindTest("plist", fmt.Sprintf("plist%d.plist", i))
 		makePListAnalysis(
-			utils.Command{
+			entities.Command{
 				Path: path,
 				T:    t,
 			},
@@ -71,7 +71,7 @@ func TestAnalysis(t *testing.T) {
 	path, _ := utils.FindTest("apps", "source")
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
 		Analysis(
-			utils.Command{
+			entities.Command{
 				Path:   p,
 				Source: true,
 				T:      t,
@@ -86,7 +86,7 @@ func TestAnalysis(t *testing.T) {
 	path, _ = utils.FindTest("apps", "binary")
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
 		Analysis(
-			utils.Command{
+			entities.Command{
 				Path:   p,
 				Source: true,
 				T:      t,

@@ -3,7 +3,6 @@ package output
 import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"io"
 	"io/ioutil"
 	"log"
@@ -17,7 +16,7 @@ type BasicLogger struct {
 
 var basicLogger *BasicLogger
 
-func BasicLoggerAdapter(command utils.Command, entity *entities.LogMessage) error {
+func BasicLoggerAdapter(command entities.Command, entity *entities.LogMessage) error {
 	if basicLogger == nil {
 		return fmt.Errorf("logger not initializated")
 	}

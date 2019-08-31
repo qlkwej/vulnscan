@@ -6,11 +6,10 @@ import (
 	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"net/http"
 )
 
-func Analysis(command utils.Command, entity *entities.StoreAnalysis, adapter adapters.AdapterMap) {
+func Analysis(command entities.Command, entity *entities.StoreAnalysis, adapter adapters.AdapterMap) {
 	output.CheckNil(adapter)
 	var analysisName = entities.Files
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))

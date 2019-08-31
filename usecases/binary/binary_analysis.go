@@ -12,7 +12,7 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) {
+func Analysis(command entities.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Binary
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if e := utils.Normalize(command.Path, false, func(p string) error {
@@ -57,7 +57,7 @@ func Analysis(command utils.Command, entity *entities.BinaryAnalysis, adapter ad
 // is detected, the application is categorized as swift, so mixed language applications would be marked as swift
 // applications
 // TODO: imrpove the command to detect mixed language applications ?
-func getTypeInfo(command utils.Command, entity *entities.BinaryAnalysis) {
+func getTypeInfo(command entities.Command, entity *entities.BinaryAnalysis) {
 	entity.BinType = entities.ObjC
 	for _, lib := range entity.Libraries {
 		if strings.Contains(lib, "libswiftCore.dylib") {
@@ -67,7 +67,7 @@ func getTypeInfo(command utils.Command, entity *entities.BinaryAnalysis) {
 	}
 }
 
-func otoolInfo(command utils.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) error {
+func otoolInfo(command entities.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) error {
 	output.CheckNil(adapter)
 	var analysisName = entities.Binary
 	for n, a := range map[string]adapters.ToolAdapter{

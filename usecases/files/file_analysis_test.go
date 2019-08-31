@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func codeTestAdapter(command utils.Command, entity entities.Entity) error {
+func codeTestAdapter(command entities.Command, entity entities.Entity) error {
 	ent := entity.(*entities.FileAnalysis)
 	assert.Empty(command.T, ent.Certifications)
 	assert.Empty(command.T, ent.Databases)
@@ -22,7 +22,7 @@ func TestAnalysis(t *testing.T) {
 	path, _ := utils.FindTest("apps", "source")
 	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
 		Analysis(
-			utils.Command{
+			entities.Command{
 				Path:   p,
 				Source: false,
 				T:      t,

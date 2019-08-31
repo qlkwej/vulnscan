@@ -10,7 +10,7 @@ import (
 	"github.com/simplycubed/vulnscan/utils"
 )
 
-func PrettyConsoleAdapter(command utils.Command, entity entities.Entity) error {
+func PrettyConsoleAdapter(command entities.Command, entity entities.Entity) error {
 	var e error
 	switch entity.(type) {
 	case *entities.BinaryAnalysis:

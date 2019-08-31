@@ -3,12 +3,11 @@ package tools
 import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"os"
 	"os/exec"
 )
 
-func ClassDumpAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func ClassDumpAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	commandBin := getToolsFolder() + "class-dump-z"
 	if entity.BinType == entities.Swift {
 		commandBin = getToolsFolder() + "class-dump-swift"

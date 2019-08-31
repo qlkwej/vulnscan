@@ -15,7 +15,7 @@ func TestClassDumpAdapter(t *testing.T) {
 		assert.NoError(t, err)
 		binPath := filepath.Join(appPath, "iVim")
 		var (
-			command = utils.Command{Path: binPath}
+			command = entities.Command{Path: binPath}
 			entity  = entities.BinaryAnalysis{}
 		)
 		assert.NoError(t, ClassDumpAdapter(command, &entity))

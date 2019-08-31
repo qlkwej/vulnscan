@@ -16,7 +16,7 @@ func TestJtoolAdapters(t *testing.T) {
 		binPath := filepath.Join(appPath, "iVim")
 
 		var (
-			command = utils.Command{Path: binPath}
+			command = entities.Command{Path: binPath}
 			entity  = entities.BinaryAnalysis{}
 		)
 

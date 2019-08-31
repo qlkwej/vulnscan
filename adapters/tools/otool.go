@@ -7,10 +7,9 @@ import (
 	"strings"
 
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 )
 
-func OtoolLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func OtoolLibsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	out, e := performOtoolAnalysis(command.Path, "-L")
 	if e != nil {
 		return e
@@ -19,7 +18,7 @@ func OtoolLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) er
 	return nil
 }
 
-func OtoolHeaderAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func OtoolHeaderAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	out, e := performOtoolAnalysis(command.Path, "-hv")
 	if e != nil {
 		return e
@@ -27,7 +26,7 @@ func OtoolHeaderAdapter(command utils.Command, entity *entities.BinaryAnalysis) 
 	return headerExtractor(out, entity)
 }
 
-func OtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func OtoolSymbolsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	out, e := performOtoolAnalysis(command.Path, "-Iv")
 	if e != nil {
 		return e

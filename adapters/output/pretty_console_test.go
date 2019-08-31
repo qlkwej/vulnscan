@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 )
 
 var (
@@ -232,7 +231,7 @@ var (
 func TestPrettyConsoleAdapter(t *testing.T) {
 	var (
 		buffer  bytes.Buffer
-		command = utils.Command{
+		command = entities.Command{
 			Output: &buffer,
 		}
 	)

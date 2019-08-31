@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func storeTestAdapter(command utils.Command, entity entities.Entity) error {
+func storeTestAdapter(command entities.Command, entity entities.Entity) error {
 	ent := entity.(*entities.StoreAnalysis)
 	sampleStoreResultPath, _ := utils.FindTest("sample-store-lookup.json")
 	sampleLookupFile, _ := ioutil.ReadFile(sampleStoreResultPath)
@@ -31,7 +31,7 @@ func storeTestAdapter(command utils.Command, entity entities.Entity) error {
 
 func TestAnalysis(t *testing.T) {
 	Analysis(
-		utils.Command{
+		entities.Command{
 			AppId:   "com.easilydo.mail",
 			Country: "us",
 			T:       t,

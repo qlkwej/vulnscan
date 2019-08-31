@@ -16,7 +16,7 @@ func TestVirusTotalAdapter(t *testing.T) {
 	assert.NotEmpty(t, apiKey)
 	path, _ := utils.FindTest("apps", "binary.ipa")
 	var (
-		command = utils.Command{VirusTotalKey: apiKey, Path: path}
+		command = entities.Command{VirusTotalKey: apiKey, Path: path}
 		entity  entities.VirusAnalysis
 	)
 	assert.NoError(t, VirusTotalAdapter(command, &entity))

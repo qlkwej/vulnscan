@@ -16,7 +16,7 @@ func TestOtoolAdapters(t *testing.T) {
 		binPath := filepath.Join(appPath, "iVim")
 
 		var (
-			command = utils.Command{Path: binPath}
+			command = entities.Command{Path: binPath}
 			entity  = entities.BinaryAnalysis{}
 		)
 		assert.NoError(t, OtoolHeaderAdapter(command, &entity))

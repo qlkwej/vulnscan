@@ -14,7 +14,7 @@ import (
 	"sync"
 )
 
-func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter adapters.AdapterMap) {
+func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter adapters.AdapterMap) {
 	output.CheckNil(adapter)
 	var (
 		wg           sync.WaitGroup
@@ -25,12 +25,12 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if err := utils.Normalize(command.Path, command.Source, func(p string) error {
 		command.Path = p
-		if command.Analysis[utils.DoPList] {
+		if command.Analysis[entities.DoPList] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
 				plist.Analysis(command, &entity.Plist, adapter)
-				if command.Analysis[utils.DoStore] {
+				if command.Analysis[entities.DoStore] {
 					command.AppId = entity.Plist.Id
 					wg.Add(1)
 					go func() {
@@ -42,7 +42,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 		} else {
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping plist and store analysis"))
 		}
-		if command.Analysis[utils.DoFiles] {
+		if command.Analysis[entities.DoFiles] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
@@ -52,7 +52,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping files analysis"))
 		}
 
-		if command.Analysis[utils.DoCode] {
+		if command.Analysis[entities.DoCode] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
@@ -62,7 +62,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping code analysis"))
 		}
 
-		if !command.Source && command.Analysis[utils.DoBinary] {
+		if !command.Source && command.Analysis[entities.DoBinary] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()

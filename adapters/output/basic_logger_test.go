@@ -3,7 +3,6 @@ package output
 import (
 	"bytes"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -11,7 +10,7 @@ import (
 func TestBasicLoggerAdapter(t *testing.T) {
 	var (
 		buffer      = bytes.Buffer{}
-		command     = utils.Command{}
+		command     = entities.Command{}
 		infoMessage = entities.LogMessage{
 			Level:    entities.Inf,
 			Analysis: entities.Code,

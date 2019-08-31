@@ -22,7 +22,7 @@ type VirusTotalClient struct {
 	c      *http.Client
 }
 
-func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) error {
+func VirusTotalAdapter(command entities.Command, entity *entities.VirusAnalysis) error {
 	client, e := newVirusTotalClient(command.VirusTotalKey)
 	if e != nil {
 		return e
