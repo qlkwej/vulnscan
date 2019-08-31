@@ -65,7 +65,7 @@ type NSAppTransportSecurityObject struct {
 	NSExceptionDomains     NSExceptionDomains
 }
 
-// PListObject
+// ParsedPList
 
 type PListObject struct {
 	CFBundleDisplayName                      string
@@ -147,7 +147,7 @@ func findPListFile(src string, isSrc bool) (string, string, error) {
 }
 
 // Performs the plist analysis. Extracts information from the plist file found in the binary/source. This function
-// is extracted from the main PListAnalysis function in order to ease testing.
+// is extracted from the main Analysis function in order to ease testing.
 func makePListAnalysis(pListFile, appName string, isSrc bool) (map[string]interface{}, error) {
 	var plistObject PListObject
 	plist := map[string]interface{}{}

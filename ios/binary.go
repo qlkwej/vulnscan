@@ -3,7 +3,7 @@ package ios
 import (
 	"flag"
 	"fmt"
-	"github.com/simplycubed/vulnscan/macho"
+	"github.com/simplycubed/vulnscan/ios/macho"
 	"github.com/simplycubed/vulnscan/utils"
 	"os"
 	"os/exec"
@@ -15,7 +15,7 @@ import (
 	"github.com/kardianos/osext"
 )
 
-// Command type determines the otool command flags.
+// AnalysisCommand type determines the otool command flags.
 type CommandType int
 
 const (

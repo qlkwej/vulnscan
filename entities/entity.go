@@ -25,6 +25,7 @@ func getValidator() *validator.Validate {
 		_ = validate.RegisterValidation("valid_cpu", cpuValidator)
 		_ = validate.RegisterValidation("valid_sub_cpu", subCpuValidator)
 		_ = validate.RegisterValidation("valid_levels", levelValidator)
+		_ = validate.RegisterValidation("valid_bin_types", binTypeValidator)
 	}
 	return validate
 }

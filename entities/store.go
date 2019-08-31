@@ -26,7 +26,7 @@ type (
 	}
 
 	StoreAnalysis struct {
-		Count   int           `json:"count" validate:"len=1"`
+		Count   int           `json:"resultCount" validate:"len=1"`
 		Results []StoreResult `json:"results" validate:"min=1"`
 	}
 )

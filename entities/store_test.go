@@ -75,7 +75,6 @@ func TestStoreResultTransformation(t *testing.T) {
 func TestStoreResultValidation(t *testing.T) {
 	p, err := (&StoreResult{}).FromMap(storeResultTestMap)
 	assert.NoError(t, err)
-	t.Logf("%#v", p)
 	assert.Len(t, p.Validate(), 0)
 	p, err = (&StoreResult{}).FromMap(wrongStoreResultMap)
 	assert.NoError(t, err)
@@ -93,7 +92,6 @@ func TestStoreAnalysisValidation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 0)
 	p, err = (&StoreAnalysis{}).FromMap(wrongStoreAnalysisTestMap)
-	t.Logf("%#v", p)
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 2)
 }

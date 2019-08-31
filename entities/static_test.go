@@ -13,6 +13,7 @@ var (
 			"results": []map[string]interface{}{
 				binaryAnalysisResultMap,
 			},
+			"bin_type": "Swift",
 		},
 		"code": map[string]interface{}{
 			"codes": []map[string]interface{}{
@@ -208,6 +209,7 @@ var (
 			"results": []map[string]interface{}{
 				wrongBinaryAnalysisResultMap,
 			},
+			"bin_type": "Swift",
 		},
 		"code": map[string]interface{}{
 			"codes": []map[string]interface{}{
@@ -333,7 +335,6 @@ func TestStaticAnalysisTransformation(t *testing.T) {
 func TestStaticAnalysisValidation(t *testing.T) {
 	p, err := (&StaticAnalysis{}).FromMap(staticAnalysisTestMap)
 	assert.NoError(t, err)
-	t.Logf("%#v", p)
 	assert.Len(t, p.Validate(), 0)
 	p, err = (&StaticAnalysis{}).FromMap(wrongStaticAnalysisTestMap)
 	assert.NoError(t, err)

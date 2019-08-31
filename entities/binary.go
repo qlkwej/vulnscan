@@ -11,6 +11,7 @@ type (
 	CpuType    string
 	SubCpuType string
 	Status     string
+	BinType    string
 
 	MachoInfo struct {
 		Bits       Bits       `json:"bits" validate:"required,valid_bits"`
@@ -28,6 +29,7 @@ type (
 	}
 
 	BinaryAnalysis struct {
+		BinType   BinType                `json:"bin_type" validate:"valid_bin_types"`
 		Libraries []string               `json:"libraries"`
 		Macho     MachoInfo              `json:"macho"`
 		Results   []BinaryAnalysisResult `json:"results"`
@@ -35,6 +37,9 @@ type (
 )
 
 const (
+	Swift BinType = "Swift"
+	ObjC  BinType = "ObjC"
+
 	Bits32 Bits = 32
 	Bits64 Bits = 64
 
@@ -337,6 +342,14 @@ var (
 	}
 )
 
+func binTypeValidator(fl validator.FieldLevel) bool {
+	repr := BinType(fl.Field().String())
+	if repr == Swift || repr == ObjC {
+		return true
+	}
+	return false
+}
+
 func bitsValidator(fl validator.FieldLevel) bool {
 	return validBitsValues[Bits(fl.Field().Uint())]
 }
@@ -509,6 +522,14 @@ func (e *BinaryAnalysis) FromMap(m map[string]interface{}) (ent Entity, err erro
 			e.Results = append(e.Results, *(resultInt.(*BinaryAnalysisResult)))
 		}
 	}
+	if v, ok := m["bin_type"]; ok {
+		switch v.(type) {
+		case string:
+			e.BinType = BinType(v.(string))
+		default:
+			return ent, fmt.Errorf("erroneus bin_type type, expected string, found: %T", v)
+		}
+	}
 	return e, nil
 }
 
@@ -517,6 +538,7 @@ func (e *BinaryAnalysis) ToMap() map[string]interface{} {
 		"libraries": e.Libraries,
 		"macho":     e.Macho.ToMap(),
 		"results":   []map[string]interface{}{},
+		"bin_type":  string(e.BinType),
 	}
 	for _, r := range e.Results {
 		m["results"] = append(m["results"].([]map[string]interface{}), r.ToMap())

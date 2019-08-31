@@ -65,8 +65,6 @@ func TestPListBinaryAnalysis(t *testing.T) {
 	if err := utils.WithUnzip(zipFile, path, func(p string) error {
 		if result, err := PListAnalysis(p, false); err != nil || len(result["plist_XML"].(string)) == 0 {
 			t.Errorf("Plist source analysis failed with error %s", err)
-		} else {
-			t.Logf("%#v", result)
 		}
 		return nil
 	}); err != nil {

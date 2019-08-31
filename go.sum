@@ -9,6 +9,8 @@ github.com/go-playground/locales v0.12.1 h1:2FITxuFt/xuCNP1Acdhv62OzaCiviiE4kotf
 github.com/go-playground/locales v0.12.1/go.mod h1:IUMDtCfWo/w/mtMfIE/IG2K+Ey3ygWanZIBtBW0W2TM=
 github.com/go-playground/universal-translator v0.16.0 h1:X++omBR/4cE2MNg91AoC3rmGrCjJ8eAeUP/K/EKx4DM=
 github.com/go-playground/universal-translator v0.16.0/go.mod h1:1AnU7NaIRDWWzGEKwgtJRd2xk99HeFyHw3yid4rvQIY=
+github.com/gookit/color v1.1.10 h1:VdHboj7tNReSSIMdFTrLanp7NMYi7apKKn8OZmzNJGs=
+github.com/gookit/color v1.1.10/go.mod h1:AhIE+pS6D4Ql0SQWbBeXPHw7gY0/sjHoA4s/n1KB7xg=
 github.com/groob/plist v0.0.0-20190114192801-a99fbe489d03 h1:z4Na/Ihs7LelUWfkSkr3sixCMwF3Ln1a/3K4eXynhBg=
 github.com/groob/plist v0.0.0-20190114192801-a99fbe489d03/go.mod h1:qg2Nek0ND/hIr+nY8H1oVqEW2cLzVVNaAQ0QexOyjyc=
 github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=

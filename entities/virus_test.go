@@ -66,7 +66,6 @@ var (
 func TestVirusAnalysisTransformation(t *testing.T) {
 	p, err := (&VirusAnalysis{}).FromMap(virusAnalysisWithReportTestMap)
 	assert.NoError(t, err)
-	t.Logf("%#v", p)
 	assert.Equal(t, virusAnalysisWithReportTestMap, p.ToMap())
 	p, err = (&VirusAnalysis{}).FromMap(virusAnalysisWithoutReportTestMap)
 	assert.NoError(t, err)
@@ -81,7 +80,6 @@ func TestVirusAnalysisWithReportValidation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 0)
 	p, err = (&VirusAnalysis{}).FromMap(wrongVirusAnalysisTestMap)
-	t.Logf("%#v", p)
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 4)
 }
