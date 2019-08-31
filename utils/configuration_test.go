@@ -10,20 +10,20 @@ import (
 
 func TestResetConfiguration(t *testing.T) {
 	Configuration.SourcePath = "somepath"
-	resetConfiguration()
+	ResetConfiguration()
 	if Configuration.SourcePath != "" {
 		t.Errorf("Error reseting configuration")
 	}
 }
 
 func TestCheckConfigurationScans(t *testing.T) {
-	if err := checkConfigurationScans([]string{"someBadScan", "plist", "binary"}); err == nil {
+	if err := CheckConfigurationScans([]string{"someBadScan", "plist", "binary"}); err == nil {
 		t.Errorf("Error detecting bad scans")
 	}
-	if err := checkConfigurationScans([]string{"plist", "plist", "binary"}); err == nil {
+	if err := CheckConfigurationScans([]string{"plist", "plist", "binary"}); err == nil {
 		t.Errorf("Error detecting repeating scans")
 	}
-	if err := checkConfigurationScans([]string{"binary", "code", "plist", "lookup"}); err != nil {
+	if err := CheckConfigurationScans([]string{"binary", "code", "plist", "lookup"}); err != nil {
 		t.Errorf("Error parsing good scans: %s", err)
 	}
 }
@@ -84,7 +84,7 @@ func TestLoadConfigurationFromPath(t *testing.T) {
 			t.Errorf("wrong Configuration found: %v", Configuration)
 		}
 		// We reset the Configuration for the next loop
-		resetConfiguration()
+		ResetConfiguration()
 	}
 }
 

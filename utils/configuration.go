@@ -58,14 +58,14 @@ func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
 	}); err != nil {
 		return err
 	}
-	if err := checkConfigurationScans(Configuration.Scans); err != nil {
-		resetConfiguration()
+	if err := CheckConfigurationScans(Configuration.Scans); err != nil {
+		ResetConfiguration()
 		return err
 	}
 	for _, p := range []*string{&Configuration.BinaryPath, &Configuration.SourcePath} {
 		*p, _ = filepath.Abs(*p)
 		if _, err := os.Stat(*p); os.IsNotExist(err) {
-			resetConfiguration()
+			ResetConfiguration()
 			return err
 		}
 	}
@@ -75,7 +75,7 @@ func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
 // Checks that the scans in the array are valid names, case insensitive, and that there is not repetition
 // in the list. This is crucial, because we use it to measure the goroutines loop, so if a repeated scan
 // name is included, the application may hang forever (or we would need to pass a context with a timeout)
-func checkConfigurationScans(scans []string) error {
+func CheckConfigurationScans(scans []string) error {
 	plist, store := false, false
 	pattern := "binary|code|plist|lookup|files"
 	for _, scan := range scans {
@@ -105,7 +105,7 @@ func checkConfigurationScans(scans []string) error {
 }
 
 // Resets the configuration to the original one
-func resetConfiguration() {
+func ResetConfiguration() {
 	if e := gonfig.LoadMap(&Configuration, map[string]interface{}{
 		"scans":   []string{"binary", "code", "plist", "lookup"},
 		"json":    false,

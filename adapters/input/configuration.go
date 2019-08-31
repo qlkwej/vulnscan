@@ -6,6 +6,7 @@ import (
 	"github.com/kardianos/osext"
 	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/entities"
+	"github.com/simplycubed/vulnscan/utils"
 	"github.com/stevenroose/gonfig"
 	"os"
 	"path/filepath"
@@ -64,7 +65,7 @@ func ConfigurationAdapter(command entities.Command, entity *entities.Command, ad
 			// Not testing
 			currentDir, _ = os.Getwd()
 		} else {
-			currentDir, _ = FindMainFolder()
+			currentDir, _ = utils.FindMainFolder()
 		}
 		for p, d := range map[string]gonfig.FileDecoderFn{
 			filepath.Join(currentDir, "vulnscan.toml"): gonfig.DecoderTOML,
@@ -97,7 +98,7 @@ func ConfigurationAdapter(command entities.Command, entity *entities.Command, ad
 	}(); err != nil {
 		sb.WriteString(err.Error())
 	} else {
-		return sb.String()
+		return nil
 	}
 	// Finally, we check the folder where the vulnscan binary is located
 	if binaryPath, err := osext.ExecutableFolder(); err == nil {
@@ -109,17 +110,17 @@ func ConfigurationAdapter(command entities.Command, entity *entities.Command, ad
 			if _, err := os.Stat(p); !os.IsNotExist(err) {
 				if err := loadConfigurationFile(p, d); err == nil {
 					sb.WriteString(fmt.Sprintf(", but it was loaded from the binary path %s", p))
-					return sb.String()
+					return nil
 				}
 				sb.WriteString(fmt.Sprintf(" and error loading the file from binary path %s: %s", p, err))
-				return sb.String()
+				return nil
 			}
 		}
 		sb.WriteString(fmt.Sprintf(" and not found in the binary path %s", binaryPath))
-		return sb.String()
+		return nil
 	}
 	// This should not happen
-	return fmt.Sprintf("unable to find a valid Configuration file")
+	return nil
 }
 
 
@@ -127,7 +128,7 @@ func ConfigurationAdapter(command entities.Command, entity *entities.Command, ad
 // - The activated scan names are all valid
 // - The source/binary paths exists
 func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
-	if err := gonfig.Load(&Configuration, gonfig.Conf{
+	if err := gonfig.Load(&utils.Configuration, gonfig.Conf{
 		FileDefaultFilename: path,
 		FileDecoder:         decoder,
 		FlagDisable:         true, // does not work, so we have to do it manually
@@ -135,14 +136,14 @@ func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
 	}); err != nil {
 		return err
 	}
-	if err := checkConfigurationScans(Configuration.Scans); err != nil {
-		resetConfiguration()
+	if err := utils.CheckConfigurationScans(utils.Configuration.Scans); err != nil {
+		utils.ResetConfiguration()
 		return err
 	}
-	for _, p := range []*string{&Configuration.BinaryPath, &Configuration.SourcePath} {
+	for _, p := range []*string{&utils.Configuration.BinaryPath, &utils.Configuration.SourcePath} {
 		*p, _ = filepath.Abs(*p)
 		if _, err := os.Stat(*p); os.IsNotExist(err) {
-			resetConfiguration()
+			utils.ResetConfiguration()
 			return err
 		}
 	}
