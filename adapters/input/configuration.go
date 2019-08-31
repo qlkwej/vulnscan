@@ -20,7 +20,7 @@ import (
 // tries the next location in the list. If everything fails, the default Configuration would be used.
 // As we really don't care about where we get the Configuration, it doesn't make a lot of sense to return an error, so
 // the function just returns a string to tell the user what happened
-func ConfigurationAdapter(command entities.Command, entity *entities.Command, adapter adapters.AdapterMap) error {
+func ConfigurationAdapter(command entities.Command, entity *entities.Command, adapter *adapters.AdapterMap) error {
 	var sb strings.Builder
 	// First, we try the provided path, if it is not empty
 	if command.Path != "" {

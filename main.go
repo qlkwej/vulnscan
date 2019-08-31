@@ -1,20 +1,24 @@
 package main
 
 import (
-	"errors"
-	"fmt"
-	"github.com/simplycubed/vulnscan/entities"
 	"log"
 	"os"
 	"sort"
 
-	"github.com/simplycubed/vulnscan/utils"
-
 	"gopkg.in/urfave/cli.v1"
 
-	"github.com/simplycubed/vulnscan/ios"
-	"github.com/simplycubed/vulnscan/printer"
-	"github.com/simplycubed/vulnscan/printer/logrus"
+	"github.com/simplycubed/vulnscan/adapters"
+	"github.com/simplycubed/vulnscan/adapters/input"
+	"github.com/simplycubed/vulnscan/adapters/output"
+	"github.com/simplycubed/vulnscan/adapters/services"
+	"github.com/simplycubed/vulnscan/adapters/tools"
+	"github.com/simplycubed/vulnscan/entities"
+	"github.com/simplycubed/vulnscan/usecases/binary"
+	"github.com/simplycubed/vulnscan/usecases/code"
+	"github.com/simplycubed/vulnscan/usecases/files"
+	"github.com/simplycubed/vulnscan/usecases/plist"
+	"github.com/simplycubed/vulnscan/usecases/static"
+	"github.com/simplycubed/vulnscan/usecases/store"
 )
 
 // Flags
@@ -43,7 +47,10 @@ var (
 	binaryFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
 			Name:        "binary, b",
-			Value:       utils.DefaultPath(),
+			Value: 		 func() string {
+				dir, _ := os.Getwd()
+				return dir
+			}(),
 			Usage:       "Full path to binary (ipa) file",
 			Destination: p,
 		}
@@ -84,29 +91,6 @@ var (
 )
 
 
-
-// Loads the configuration and use that information to select a printer, print the message and return the printer
-// to the caller. This is a quick and dirty function to avoid repetition, so we keep it in main.
-func loadConfigurationAndSelectPrinter(path string, useJSON bool, out logrus.Output) printer.Printer {
-	confMessage := utils.LoadConfiguration(path)
-	var pr printer.Printer
-	// We adapt the printer to the configuration file in case output is colored.
-	if out == logrus.Text || out == logrus.ColoredText {
-		if utils.Configuration.ColoredLog {
-			out = logrus.ColoredText
-		} else {
-			out = logrus.Text
-		}
-	}
-	if useJSON || utils.Configuration.JSONFormat {
-		pr = logrus.NewPrinter(logrus.Json, out, logrus.DefaultFormat)
-	} else {
-		pr = logrus.NewPrinter(logrus.Log, out, logrus.DefaultFormat)
-	}
-	pr.Log(map[string]interface{}{"Message": confMessage}, nil, printer.Message)
-	return pr
-}
-
 func getApp() *cli.App {
 	var (
 		configurationPath string
@@ -122,13 +106,54 @@ func getApp() *cli.App {
 
 		applicationFlags = []cli.Flag{jsonFlag(&useJSON), configurationFlag(&configurationPath)}
 
-		parseFlags = func() entities.Command {
-			command := entities.Command{
-				Country:       "us",
-				VirusTotalKey: virusKey,
-				Source:        false,
-				CheckDomains:  makeDomainCheck,
-				Output:        os.Stdout,
+		command = entities.Command{
+			Country:       "us",
+			Source:        false,
+			Output:        os.Stdout,
+		}
+
+		adapter = adapters.AdapterMap{
+			Services: adapters.ServiceAdapters{
+				MalwareDomains: nil,
+				VirusScan:      nil,
+			},
+			Tools: adapters.ToolAdapters{
+				ClassDump: tools.JtoolClassDumpAdapter,
+				Libs:      tools.JtoolLibsAdapter,
+				Headers:   tools.JtoolHeadersAdapter,
+				Symbols:   tools.JtoolSymbolsAdapter,
+			},
+			Output: adapters.OutputAdapters{
+				Logger: output.BasicLoggerAdapter,
+				Result: output.PrettyConsoleAdapter,
+				Error:  output.BasicErrorAdapter,
+			},
+		}
+
+		parseConfiguration = func() {
+			_ = adapter.Output.Error(output.ParseError(entities.Command{}, entities.None,
+				input.ConfigurationAdapter(entities.Command{Path: configurationPath}, &command, &adapter)))
+			command.AppId = appID
+			if len(country) > 0 {
+				command.Country = country
+			}
+			// For now all we have is binary analysis. When we have a mix of binary and source analysis,
+			// we will just include two paths in the command entity.
+			if len(binaryPath) > 0 {
+				command.Path = binaryPath
+			} else {
+				command.Path = sourcePath
+				command.Source = true
+			}
+			if makeDomainCheck {
+				adapter.Services.MalwareDomains = services.MalwareDomainsAdapter
+			}
+			if len(virusKey) > 0 {
+				command.VirusTotalKey = virusKey
+				adapter.Services.VirusScan = services.VirusTotalAdapter
+			}
+			if useJSON {
+				adapter.Output.Result = output.JsonAdapter
 			}
 		}
 	)
@@ -146,15 +171,8 @@ func getApp() *cli.App {
 			Usage:   "store app lookup",
 			Flags:   append(applicationFlags, []cli.Flag{appIdFlag(&appID), countryFlag(&country)}...),
 			Action: func(c *cli.Context) error {
-				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.StdOut)
-				if appID != "" {
-					if country == "" {
-						country = utils.Configuration.DefaultCountry
-					}
-					pr.Log(ios.Search(appID, country), nil, printer.Store)
-				} else {
-					return errors.New("appID is required: `--app appID`")
-				}
+				parseConfiguration()
+				store.Analysis(command, &entities.StoreAnalysis{}, adapter)
 				return nil
 			},
 		},
@@ -164,9 +182,8 @@ func getApp() *cli.App {
 			Usage:   "plists scan",
 			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
 			Action: func(c *cli.Context) error {
-				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.StdOut)
-				res, err := ios.PListAnalysis(utils.CheckPathIsSrc(binaryPath, sourcePath))
-				pr.Log(res, err, printer.PList)
+				parseConfiguration()
+				plist.Analysis(command, &entities.PListAnalysis{}, adapter)
 				return nil
 			},
 		},
@@ -176,10 +193,8 @@ func getApp() *cli.App {
 			Usage:   "search code vulnerabilities",
 			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
 			Action: func(c *cli.Context) error {
-				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.StdOut)
-				p, _ := utils.CheckPathIsSrc(binaryPath, sourcePath)
-				res, err := ios.CodeAnalysis(p)
-				pr.Log(res, err, printer.Code)
+				parseConfiguration()
+				code.Analysis(command, &entities.CodeAnalysis{}, adapter)
 				return nil
 			},
 		},
@@ -189,13 +204,19 @@ func getApp() *cli.App {
 			Usage:   "search binary vulnerabilities",
 			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
 			Action: func(c *cli.Context) error {
-				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.StdOut)
-				p, s := utils.CheckPathIsSrc(binaryPath, sourcePath)
-				if s {
-					log.Fatal("Cannot make binary analysis on source code")
-				}
-				res, err := ios.BinaryAnalysis(p, s, "")
-				pr.Log(res, err, printer.Binary)
+				parseConfiguration()
+				binary.Analysis(command, &entities.BinaryAnalysis{}, adapter)
+				return nil
+			},
+		},
+		{
+			Name: "files",
+			Aliases: []string{"f"},
+			Usage: "lookup and clasify files",
+			Flags: append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Action: func(c *cli.Context) error {
+				parseConfiguration()
+				files.Analysis(command, &entities.FileAnalysis{}, adapter)
 				return nil
 			},
 		},
@@ -210,28 +231,8 @@ func getApp() *cli.App {
 				domainCheckFlag(&makeDomainCheck)}...
 			),
 			Action: func(c *cli.Context) error {
-				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.Text)
-				// Overwrite the flags passed by the user
-				if virusKey != "" {
-					utils.Configuration.VirusScanKey = virusKey
-				}
-				if makeDomainCheck {
-					utils.Configuration.PerformDomainCheck = true
-				}
-				// Check the kind of path passed by the user
-				path, isSrc := utils.CheckPathIsSrc(binaryPath, sourcePath)
-				// Normalize the path and call static analyzer
-				if e := utils.Normalize(path, isSrc, func(p string) error {
-					if e := ios.StaticAnalyzer(p, isSrc, pr); e != nil {
-						return e
-					}
-					if e := pr.Generate(os.Stdout); e != nil {
-						return e
-					}
-					return nil
-				}); e != nil {
-					fmt.Println(e)
-				}
+				parseConfiguration()
+				static.Analysis(command, &entities.StaticAnalysis{}, adapter)
 				return nil
 			},
 		},
@@ -243,7 +244,6 @@ func getApp() *cli.App {
 
 func main() {
 	app := getApp()
-
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)

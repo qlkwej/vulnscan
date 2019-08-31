@@ -16,7 +16,6 @@ var commandTestMap = map[string]interface{}{
 		"DoPList": true,
 		"DoFiles": false,
 	},
-	"check_domains": true,
 }
 
 func TestCommandMapTransformation(t *testing.T) {

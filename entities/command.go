@@ -13,13 +13,13 @@ type (
 
 	Command struct {
 		Path          string 				 `json:"path" validate:"min=1"`
+		SourcePath	  string				 `json:"source_path"`
 		AppName       string 				 `json:"app_name"`
 		AppId         string 				 `json:"app_id"`
 		Country       string 				 `json:"country" validate:"valid_country_codes"`
 		VirusTotalKey string 				 `json:"virus_total_key"`
 		Source        bool 					 `json:"source"`
 		Analysis      map[AnalysisCheck]bool `json:"analysis" validate:"valid_analysis"`
-		CheckDomains  bool 					 `json:"check_domains"`
 		Output        io.Writer 			 `json:"output"`
 		T             *testing.T 			 `json:"t"`
 	}
@@ -228,7 +228,6 @@ func (c Command) ToMap() map[string]interface{} {
 		"virus_total_key": c.VirusTotalKey,
 		"source": c.Source,
 		"analysis": map[string]bool{},
-		"check_domains": c.CheckDomains,
 		"output": c.Output,
 		"t": c.T,
 	}
@@ -296,14 +295,6 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			}
 		default:
 			return ent, fmt.Errorf("erroneus analysis type, expected map[string]bool (set), found: %T", v)
-		}
-	}
-	if v, ok := m["check_domains"]; ok {
-		switch v.(type) {
-		case bool:
-			c.CheckDomains = v.(bool)
-		default:
-			return ent, fmt.Errorf("erroneus check domains type, expected bool, found: %T", v)
 		}
 	}
 	if v, ok := m["output"]; ok {

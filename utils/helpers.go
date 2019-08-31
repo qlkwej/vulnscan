@@ -2,11 +2,7 @@ package utils
 
 import "os"
 
-// DefaultPath returns the default path
-func DefaultPath() string {
-	dir, _ := os.Getwd()
-	return dir
-}
+
 
 // PathExists checks if the path exists and is accessible
 func PathExists(path string) (bool, error) {
