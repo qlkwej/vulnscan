@@ -82,6 +82,8 @@ var (
 	}
 )
 
+
+
 // Loads the configuration and use that information to select a printer, print the message and return the printer
 // to the caller. This is a quick and dirty function to avoid repetition, so we keep it in main.
 func loadConfigurationAndSelectPrinter(path string, useJSON bool, out logrus.Output) printer.Printer {
@@ -116,6 +118,8 @@ func getApp() *cli.App {
 
 		useJSON         bool
 		makeDomainCheck bool
+
+		applicationFlags = []cli.Flag{jsonFlag(&useJSON), configurationFlag(&configurationPath)}
 	)
 
 	app := cli.NewApp()
@@ -124,14 +128,12 @@ func getApp() *cli.App {
 	app.Usage = "iOS and MacOS vulnerability scanner"
 	app.Authors = []cli.Author{{Name: "Vulnscan Team", Email: "vulnscan@simplycubed.com"}}
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
-	app.Flags = []cli.Flag{jsonFlag(&useJSON), configurationFlag(&configurationPath)}
 	app.Commands = []cli.Command{
-
 		{
 			Name:    "lookup",
 			Aliases: []string{"l"},
 			Usage:   "store app lookup",
-			Flags:   []cli.Flag{appIdFlag(&appID), countryFlag(&country)},
+			Flags:   append(applicationFlags, []cli.Flag{appIdFlag(&appID), countryFlag(&country)}...),
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.StdOut)
 				if appID != "" {
@@ -145,12 +147,11 @@ func getApp() *cli.App {
 				return nil
 			},
 		},
-
 		{
 			Name:    "plist",
 			Aliases: []string{"p"},
 			Usage:   "plists scan",
-			Flags:   []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)},
+			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.StdOut)
 				res, err := ios.PListAnalysis(utils.CheckPathIsSrc(binaryPath, sourcePath))
@@ -158,12 +159,11 @@ func getApp() *cli.App {
 				return nil
 			},
 		},
-
 		{
 			Name:    "code",
 			Aliases: []string{"c"},
 			Usage:   "search code vulnerabilities",
-			Flags:   []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)},
+			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.StdOut)
 				p, _ := utils.CheckPathIsSrc(binaryPath, sourcePath)
@@ -172,12 +172,11 @@ func getApp() *cli.App {
 				return nil
 			},
 		},
-
 		{
 			Name:    "binary",
 			Aliases: []string{"b"},
 			Usage:   "search binary vulnerabilities",
-			Flags:   []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)},
+			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.StdOut)
 				p, s := utils.CheckPathIsSrc(binaryPath, sourcePath)
@@ -189,17 +188,18 @@ func getApp() *cli.App {
 				return nil
 			},
 		},
-
 		{
 			Name:    "scan",
 			Aliases: []string{"s"},
 			Usage:   "source directory and binary file security scan",
-			Flags: []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath), virusFlag(&virusKey),
-				domainCheckFlag(&makeDomainCheck),
-			},
+			Flags: append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				sourceFlag(&sourcePath),
+				virusFlag(&virusKey),
+				domainCheckFlag(&makeDomainCheck)}...
+			),
 			Action: func(c *cli.Context) error {
 				pr := loadConfigurationAndSelectPrinter(configurationPath, useJSON, logrus.Text)
-
 				// Overwrite the flags passed by the user
 				if virusKey != "" {
 					utils.Configuration.VirusScanKey = virusKey
@@ -225,10 +225,8 @@ func getApp() *cli.App {
 			},
 		},
 	}
-
 	sort.Sort(cli.FlagsByName(app.Flags))
 	sort.Sort(cli.CommandsByName(app.Commands))
-
 	return app
 }
 

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/kardianos/osext"
+	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/stevenroose/gonfig"
 	"os"
@@ -19,39 +20,39 @@ import (
 // tries the next location in the list. If everything fails, the default Configuration would be used.
 // As we really don't care about where we get the Configuration, it doesn't make a lot of sense to return an error, so
 // the function just returns a string to tell the user what happened
-func LoadConfiguration(command entities.Command) string {
-	// We use returnString to build the returned message. As we
+func ConfigurationAdapter(command entities.Command, entity *entities.Command, adapter adapters.AdapterMap) error {
 	var sb strings.Builder
 	// First, we try the provided path, if it is not empty
 	if command.Path != "" {
 		// As we need to exit and continue if the extension of the file is not one of the supported ones, we encapsulate
 		// the checks in a function (similar effect to a do {} while false in C++).
 		if err := func() error {
-			if _, err := os.Stat(path); os.IsNotExist(err) {
+			if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 				return err
 			}
+
 			// We check the format of the Configuration file to load the decoder
 			var decoder gonfig.FileDecoderFn
-			if ext := strings.ToLower(filepath.Ext(path)); ext == ".toml" {
+			if ext := strings.ToLower(filepath.Ext(command.Path)); ext == ".toml" {
 				decoder = gonfig.DecoderTOML
 			} else if ext == ".json" {
 				decoder = gonfig.DecoderJSON
 			} else if ext == ".yaml" {
 				decoder = gonfig.DecoderYAML
 			} else {
-				return fmt.Errorf("configuration file %s doesn't have one of the required formats (TOML, YAML, JSON)", path)
+				return fmt.Errorf("configuration file %s doesn't have one of the required formats (TOML, YAML, JSON)", command.Path)
 			}
-			if err := loadConfigurationFile(path, decoder); err != nil {
-				return fmt.Errorf("error loading the Configuration file found in %s: %s", path, err)
+			if err := loadConfigurationFile(command.Path, decoder); err != nil {
+				return fmt.Errorf("error loading the Configuration file found in %s: %s", command.Path, err)
 			}
 			// If we get here, we have loaded the Configuration file successfully...
 			return nil
 		}(); err == nil {
 			// ... so we return a success string
-			return fmt.Sprintf("Configuration file loaded from %s", path)
+			return nil
 			// In any other case, we pass the error to the returning string and keep searching in other locations.
 		} else if os.IsNotExist(err) {
-			sb.WriteString(fmt.Sprintf("Configuration file not found in %s", path))
+			sb.WriteString(fmt.Sprintf("Configuration file not found in %s", command.Path))
 		} else {
 			sb.WriteString(err.Error())
 		}
@@ -121,3 +122,29 @@ func LoadConfiguration(command entities.Command) string {
 	return fmt.Sprintf("unable to find a valid Configuration file")
 }
 
+
+// Loads the configuration file and checks that:
+// - The activated scan names are all valid
+// - The source/binary paths exists
+func loadConfigurationFile(path string, decoder gonfig.FileDecoderFn) error {
+	if err := gonfig.Load(&Configuration, gonfig.Conf{
+		FileDefaultFilename: path,
+		FileDecoder:         decoder,
+		FlagDisable:         true, // does not work, so we have to do it manually
+		EnvPrefix:           "VULNSCAN_",
+	}); err != nil {
+		return err
+	}
+	if err := checkConfigurationScans(Configuration.Scans); err != nil {
+		resetConfiguration()
+		return err
+	}
+	for _, p := range []*string{&Configuration.BinaryPath, &Configuration.SourcePath} {
+		*p, _ = filepath.Abs(*p)
+		if _, err := os.Stat(*p); os.IsNotExist(err) {
+			resetConfiguration()
+			return err
+		}
+	}
+	return nil
+}
