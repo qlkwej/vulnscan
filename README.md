@@ -105,9 +105,9 @@ Vulnscan is build using the concepts of Clean Architecture as defined by [Uncle 
 This translates into the following layers within Vulnscan:
 
 1. Entities: Structs implementing the results of different types of analysis.
-2. Usecases: These would be the methods needed to fulfill the entities (i.e. the analysis themselves).
-3. Adapters: functions to interact with the external world (external tools and services).
-4. Frameworks: basically, the interaction with the CLI.
+1. Usecases: These would be the methods needed to fulfill the entities (i.e. the analysis themselves).
+1. Adapters: functions to interact with the external world (external tools and services).
+1. Frameworks: basically, the interaction with the CLI.
 
 ## Dependencies
 
