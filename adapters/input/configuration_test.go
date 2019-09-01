@@ -6,7 +6,7 @@ import (
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/adapters/tools"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
@@ -43,7 +43,7 @@ var (
 	}
 
 	json = func() string {
-		f, _ := utils.FindMainFolder()
+		f, _ := test.FindMainFolder()
 		return fmt.Sprintf(`{
 "scans":  ["binary", "code", "plist"],
 "json": true,
@@ -55,7 +55,7 @@ var (
 	}()
 
 	toml = func() string {
-		f, _ := utils.FindMainFolder()
+		f, _ := test.FindMainFolder()
 		return fmt.Sprintf(` 
 scans = ["binary", "code", "plist"]
 json = true
@@ -66,7 +66,7 @@ country = "us"`, f, f)
 	}()
 
 	yaml = func() string {
-		f, _ := utils.FindMainFolder()
+		f, _ := test.FindMainFolder()
 		return fmt.Sprintf(`
 scans: [binary, code, plist]
 json: true
@@ -79,7 +79,7 @@ country: us`, f, f)
 
 func TestConfigurationAdapterFromPath(t *testing.T) {
 	for ext, content := range map[string]string{"toml": toml, "json": json, "yaml": yaml} {
-		p, e := utils.FindTest("configuration", "vulnscan."+ext)
+		p, e := test.FindTest("configuration", "vulnscan."+ext)
 		assert.NoError(t, e)
 		assert.NoError(t, ioutil.WriteFile(p, []byte(content), 0644))
 		ConfigurationAdapter(entities.Command{Path: p}, &command, &adapter)
@@ -92,7 +92,7 @@ func TestConfigurationAdapterFromPath(t *testing.T) {
 }
 
 func TestConfigurationAdapterFromCwd(t *testing.T) {
-	fr, e := utils.FindMainFolder()
+	fr, e := test.FindMainFolder()
 	assert.NoError(t, e)
 	for ext, content := range map[string]string{"toml": toml, "json": json, "yaml": yaml} {
 		p := fr + "/vulnscan." + ext

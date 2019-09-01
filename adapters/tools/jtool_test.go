@@ -2,24 +2,21 @@ package tools
 
 import (
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/framework"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"testing"
 )
 
 func TestJtoolAdapters(t *testing.T) {
-	path, _ := utils.FindTest("apps", "binary.ipa")
-	assert.NoError(t, utils.Normalize(path, false, func(p string) error {
-		appPath, err := utils.GetApp(p)
-		assert.NoError(t, err)
-		binPath := filepath.Join(appPath, "iVim")
-
-		var (
-			command = entities.Command{Path: binPath}
-			entity  = entities.BinaryAnalysis{}
-		)
-
+	path, _ := test.FindTest("adapters", "tools", "jtool", "binary.ipa")
+	assert.NoError(t, framework.Normalize(entities.Command{Path: path, Source:false}, func(p string) error {
+		command := entities.Command{ Path: p, AppName: "iVim"}
+		assert.NoError(t, framework.ExtractBinPath(&command))
+		mainFolder, _ := test.FindMainFolder()
+		command.Tools = filepath.Join(mainFolder, "tools")
+		entity := entities.BinaryAnalysis{}
 		assert.NoError(t, JtoolHeadersAdapter(command, &entity))
 		assert.NoError(t, JtoolLibsAdapter(command, &entity))
 		assert.NoError(t, JtoolSymbolsAdapter(command, &entity))

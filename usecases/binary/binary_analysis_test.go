@@ -3,7 +3,7 @@ package binary
 import (
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,7 +20,7 @@ func binaryTestAdapter(command entities.Command, entity entities.Entity) error {
 }
 
 func TestAnalysis(t *testing.T) {
-	ipaPath, _ := utils.FindTest("apps", "binary.ipa")
+	ipaPath, _ := test.FindTest("usecases", "binary", "binary.ipa")
 	var (
 		command = entities.Command{
 			Path: ipaPath,

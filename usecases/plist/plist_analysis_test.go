@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/test"
+	"github.com/simplycubed/vulnscan/framework"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -19,9 +20,8 @@ func codeTestAdapter(command entities.Command, entity entities.Entity) error {
 
 func TestPlistSearch(t *testing.T) {
 	// Source
-	zipFile, _ := utils.FindTest("apps", "source.zip")
-	path, _ := utils.FindTest("apps", "source")
-	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
+	zipFile, _ := test.FindTest("usecases", "plist", "source.zip")
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
 		command := entities.Command{
 			Path:   p,
 			Source: true,
@@ -34,9 +34,8 @@ func TestPlistSearch(t *testing.T) {
 		return nil
 	}))
 	// Binary
-	zipFile, _ = utils.FindTest("apps", "binary.ipa")
-	path, _ = utils.FindTest("apps", "binary")
-	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
+	zipFile, _ = test.FindTest("usecases", "plist", "binary.ipa")
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
 		command := entities.Command{
 			Path:   p,
 			Source: false,
@@ -53,7 +52,7 @@ func TestPlistSearch(t *testing.T) {
 func TestMakeAnalysis(t *testing.T) {
 	var adapter = mocks.GetTestMap(codeTestAdapter)
 	for i := 1; i <= 5; i++ {
-		path, _ := utils.FindTest("plist", fmt.Sprintf("plist%d.plist", i))
+		path, _ := test.FindTest("usecases", "plist", fmt.Sprintf("plist%d.plist", i))
 		makePListAnalysis(
 			entities.Command{
 				Path: path,
@@ -67,9 +66,8 @@ func TestMakeAnalysis(t *testing.T) {
 func TestAnalysis(t *testing.T) {
 	var adapter = mocks.GetTestMap(codeTestAdapter)
 	// Source
-	zipFile, _ := utils.FindTest("apps", "source.zip")
-	path, _ := utils.FindTest("apps", "source")
-	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
+	zipFile, _ := test.FindTest("usecases", "plist", "source.zip")
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
 		Analysis(
 			entities.Command{
 				Path:   p,
@@ -82,9 +80,8 @@ func TestAnalysis(t *testing.T) {
 		return nil
 	}))
 	// Binary
-	zipFile, _ = utils.FindTest("apps", "binary.ipa")
-	path, _ = utils.FindTest("apps", "binary")
-	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
+	zipFile, _ = test.FindTest("usecases", "plist", "binary.ipa")
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
 		Analysis(
 			entities.Command{
 				Path:   p,

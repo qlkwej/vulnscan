@@ -3,7 +3,8 @@ package files
 import (
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/test"
+	"github.com/simplycubed/vulnscan/framework"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -18,9 +19,8 @@ func codeTestAdapter(command entities.Command, entity entities.Entity) error {
 }
 
 func TestAnalysis(t *testing.T) {
-	zipFile, _ := utils.FindTest("apps", "source.zip")
-	path, _ := utils.FindTest("apps", "source")
-	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
+	zipFile, _ := test.FindTest("usecases", "files", "source.zip")
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
 		Analysis(
 			entities.Command{
 				Path:   p,

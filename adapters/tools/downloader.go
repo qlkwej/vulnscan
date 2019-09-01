@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -19,7 +20,7 @@ func DownloaderAdapter(command entities.Command, entity *entities.ToolUrls) erro
 			continue
 		}
 
-		out, err := os.Create(fmt.Sprintf( "%s/%s", command.Tools, desc))
+		out, err := os.Create(filepath.Join(command.Tools, desc))
 		if err != nil {
 			errors[desc] = err
 			continue

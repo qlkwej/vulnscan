@@ -9,7 +9,7 @@ import (
 	"github.com/simplycubed/vulnscan/usecases/files"
 	"github.com/simplycubed/vulnscan/usecases/plist"
 	"github.com/simplycubed/vulnscan/usecases/store"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/framework"
 	"io/ioutil"
 	"sync"
 )
@@ -23,7 +23,7 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 	// We change the output so we can print the report ordered later
 	command.Output = ioutil.Discard
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
-	if err := utils.Normalize(command.Path, command.Source, func(p string) error {
+	if err := framework.Normalize(command, func(p string) error {
 		command.Path = p
 		if command.Analysis[entities.DoPList] {
 			wg.Add(1)

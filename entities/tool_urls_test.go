@@ -29,7 +29,6 @@ func TestToolUrlsValidation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 0)
 	p, err = (&ToolUrls{}).FromMap(wrongToolUrlsTestMap)
-	t.Logf("%#v", p)
 	assert.NoError(t, err)
 	assert.Len(t, p.Validate(), 3)
 }

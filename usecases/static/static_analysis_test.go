@@ -4,7 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -25,9 +25,9 @@ func staticTestAdapter(command entities.Command, entity entities.Entity) error {
 }
 
 func TestAnalysis(t *testing.T) {
-	mainFolder, _ := utils.FindMainFolder()
+	mainFolder, _ := test.FindMainFolder()
 	assert.NoError(t, godotenv.Load(mainFolder+string(os.PathSeparator)+".env"))
-	testPath, _ := utils.FindTest("apps", "binary.ipa")
+	testPath, _ := test.FindTest("usecases", "static", "binary.ipa")
 	Analysis(
 		entities.Command{
 			Path:          testPath,
@@ -41,7 +41,6 @@ func TestAnalysis(t *testing.T) {
 				entities.DoFiles:  true,
 				entities.DoPList:  true,
 			},
-			CheckDomains: true,
 			Output:       nil,
 			T:            t,
 		},

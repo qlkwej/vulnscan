@@ -35,5 +35,5 @@ func TestCommandMapValidation(t *testing.T) {
 		Path:     "",
 		Analysis: map[AnalysisCheck]bool{AnalysisCheck("Something"): false},
 	}
-	assert.Len(t, invalidCommand.Validate(), 2)
+	assert.Len(t, invalidCommand.Validate(), 3)
 }

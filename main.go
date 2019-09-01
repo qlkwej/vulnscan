@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/kardianos/osext"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/framework"
 	"log"
 	"os"
 	"sort"
@@ -270,9 +270,9 @@ func getApp() *cli.App {
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				return tools.DownloaderAdapter(command, &entities.ToolUrls{
-					JTool:          utils.JtoolUrl,
-					ClassDumpZ:     utils.ClassDumpZUrl,
-					ClassDumpSwift: utils.ClassDumpSwiftUrl,
+					JTool:          framework.JtoolUrl,
+					ClassDumpZ:     framework.ClassDumpZUrl,
+					ClassDumpSwift: framework.ClassDumpSwiftUrl,
 				})
 			},
 		},

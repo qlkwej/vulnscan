@@ -8,7 +8,7 @@ import (
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/adapters/services"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stevenroose/gonfig"
 	"os"
 	"path/filepath"
@@ -44,7 +44,7 @@ func getToolsFolder() string {
 	if flag.Lookup("test.v") == nil {
 		parentFolder, _ = osext.ExecutableFolder()
 	} else {
-		parentFolder, _ = utils.FindMainFolder()
+		parentFolder, _ = test.FindMainFolder()
 	}
 	return parentFolder + string(os.PathSeparator) + "tools" + string(os.PathSeparator)
 }
@@ -61,7 +61,7 @@ func getPaths(command entities.Command) []string {
 		// Not testing
 		currentDir, _ = os.Getwd()
 	} else {
-		currentDir, _ = utils.FindMainFolder()
+		currentDir, _ = test.FindMainFolder()
 	}
 	for _, ex := range []string{".toml", ".yaml", ".json"} {
 		paths = append(paths, filepath.Join(currentDir, "vulnscan" + ex))
@@ -116,6 +116,7 @@ func loadConfiguration(configuration *entities.Configuration, command *entities.
 	if len(configuration.ToolsFolder) > 0 {
 
 	}
+	command.Analysis = map[entities.AnalysisCheck]bool{}
 	for _, a := range configuration.Analysis {
 		command.Analysis[entities.AnalysisCheck(a)] = true
 	}

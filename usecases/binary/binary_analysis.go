@@ -4,34 +4,25 @@ import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/framework"
 )
 
 func Analysis(command entities.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Binary
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
-	if e := utils.Normalize(command.Path, false, func(p string) error {
-
-		appPath, err := utils.GetApp(p)
-		if err != nil {
+	if e := framework.Normalize(command, func(p string) error {
+		command.Path = p
+		if err := framework.ExtractBinPath(&command); err != nil {
 			return err
 		}
-		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("application found on route %s", appPath)))
-
-		if len(command.AppName) == 0 {
-			command.AppName = strings.Replace(path.Base(appPath), path.Ext(appPath), "", 1)
+		if _, err := os.Stat(command.Path); os.IsNotExist(err) {
+			return fmt.Errorf("unable to find the binary at %s", command.Path)
 		}
-
-		binPath := path.Join(appPath, command.AppName)
-		if _, err := os.Stat(binPath); os.IsNotExist(err) {
-			return fmt.Errorf("unable to find the binary at %s", binPath)
-		}
-		command.Path = binPath
+		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("application binary found on route %s", command.Path)))
 		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "performing macho information extraction"))
 		if err := GetMachoInfo(command, entity); err != nil {
 			return err

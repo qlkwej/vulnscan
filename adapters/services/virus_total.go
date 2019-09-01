@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -29,7 +28,7 @@ func VirusTotalAdapter(command entities.Command, entity *entities.VirusAnalysis)
 	if e != nil {
 		return e
 	}
-	hash, e := utils.HashMD5(command.Path)
+	hash, e := hashMD5(command.Path)
 	if e != nil {
 		return e
 	}
