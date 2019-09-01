@@ -68,7 +68,6 @@ VIRUS_TOTAL_API_KEY=<API key from VirusTotal Profile>
 
 ```
 
-
 ### Country Codes
 
 - A complete list of [iTunes supported country codes](https://github.com/simplycubed/vulnscan/blob/master/ITUNES_COUNTRY_CODES)
@@ -122,8 +121,7 @@ If you're adding a dependency, you'll need to add it in the same Pull Request as
 Assuming your work is on a branch called my-feature-branch, the steps look like this:
 
 1. Add an import statement to a suitable package in the Vulnerability Scanner code.
-
-2. Review the changes in git and commit them.
+1. Review the changes in git and commit them.
 
 ## Acceptance Tests
 
