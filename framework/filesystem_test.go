@@ -13,8 +13,8 @@ import (
 )
 
 func TestWithUnzip(t *testing.T) {
-	zipFile, e := test.FindTest("framework", "filesystem", "source.zip")
-	path, e := test.FindTest("framework", "filesystem", "source")
+	zipFile, e := test.FindTest("framework", "filesystem", "unzip", "source.zip")
+	path, e := test.FindTest("framework", "filesystem", "unzip", "source")
 	assert.NoError(t, e)
 	assert.NoError(t, withUnzip(zipFile, path, func(p string) error {
 		if _, err := os.Stat(p); os.IsNotExist(err) {
@@ -53,10 +53,10 @@ func TestNormalize(t *testing.T) {
 		return nil
 	}
 	for i, p := range [][]string{
-		{"apps", "binary.ipa"},     // .ipa file
-		{"unzip", "iVim.app"},      // .app file
-		{"apps", "binary_zip.zip"}, // .zip file
-		{"unzip"},                  // find the .zip file
+		{"framework", "filesystem", "binary.ipa"},      // .ipa file
+		{"framework", "filesystem", "iVim.app"},        // .app file
+		{"framework", "filesystem", "binary_zip.zip"},  // .zip file
+		{"framework", "filesystem"},                    // find the .zip file
 	} {
 		path, _ := test.FindTest(p...)
 		if e := Normalize(entities.Command{Path: path, Source:false}, getPath); e != nil {
@@ -66,7 +66,7 @@ func TestNormalize(t *testing.T) {
 }
 
 func TestExtractBinPath(t *testing.T) {
-	path, _ := test.FindTest("unzip")
+	path, _ := test.FindTest("framework", "filesystem")
 	command := entities.Command{Path: path}
 	assert.NoError(t, ExtractBinPath(&command))
 	assert.Equal(t, filepath.Join(path, "iVim.app", "iVim"), command.Path)
