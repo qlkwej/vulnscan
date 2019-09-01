@@ -37,7 +37,7 @@ issues of each type.
    along with any logs, with secrets removed, so we can try to
    reproduce it. Without this, it makes it much harder to fix the issue.
 
-- [ ] __For panics, include `vulnscan.log`__: If you experienced a panic, please
+- [ ] __For panics, include logs__: If you experienced a panic, please
    create a [gist](https://gist.github.com) of the *entire* generated crash log
    for us to look at. Double check no sensitive items were in the log.
 
@@ -227,21 +227,21 @@ core to help out! Here's what we look for in smaller Core PRs.
 If you're interested in taking on a larger core feature, it's a good idea to
 get feedback early and often on the effort.
 
-- [ ] __Early validation of idea and implementation plan__: Vulnerability Scanner's core
-   is complicated enough that there are often several ways to implement
+- [ ] __Early validation of idea and implementation plan__: Vulnerability Scanner's
+   core is complicated enough that there are often several ways to implement
    something, each of which has different implications and tradeoffs. Working
    through a plan of attack with the team before you dive into implementation
    will help ensure that you're working in the right direction.
 
-- [ ] __Unit tests__: Vulnerability Scanner's core is covered by hundreds of unit tests at
+- [ ] __Unit tests__: Vulnerability Scanner's core is covered by unit tests at
    several different layers of abstraction. Generally the best place to start
    is with a "Context Test". These are higher level test that interact
-   end-to-end with most of Vulnerability Scanner's core. They are divided into test files
-   for each major action (plan, apply, etc.). Getting a failing test is a great
-   way to prove out a bug report or a new enhancement. With a context test in
-   place, you can work on implementation and lower level unit tests. Lower
-   level tests are largely context dependent, but the Context Tests are almost
-   always part of core work.
+   end-to-end with most of Vulnerability Scanner's core. They are divided into test
+   files for each major action (code scan, virus check, malware check, etc.).
+   Getting a failing test is a great way to prove out a bug report or a new
+   enhancement. With a context test in place, you can work on implementation and
+   lower level unit tests. Lower level tests are largely context dependent, but
+   the Context Tests are almost always part of core work.
 
 - [ ] __Documentation updates__: If the core change involves anything that
    needs to be reflected in our documentation, you can make those changes in
