@@ -27,7 +27,7 @@ func BasicLoggerAdapter(command entities.Command, entity *entities.LogMessage) e
 		message = fmt.Sprintf("%s: %s", entity.Analysis, entity.Message)
 	}
 	switch entity.Level {
-	case entities.Inf:
+	case entities.Info:
 		basicLogger.Info.Println(message)
 	case entities.Warn:
 		basicLogger.Warning.Println(message)
@@ -51,7 +51,7 @@ func SetBasicLogger(out io.Writer, level entities.LogLevel, logTime bool) {
 		}
 	}
 	switch level {
-	case entities.Inf:
+	case entities.Info:
 		initLog(out, out, out)
 	case entities.Warn:
 		initLog(ioutil.Discard, out, out)

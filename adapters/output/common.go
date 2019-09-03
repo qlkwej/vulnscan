@@ -16,7 +16,7 @@ func ParseWarning(c entities.Command, a entities.AnalysisName, m string, args ..
 
 func ParseInfo(c entities.Command, a entities.AnalysisName, m string, args ...interface{}) (entities.Command, *entities.LogMessage) {
 	return c, &entities.LogMessage{
-		Level:    entities.Inf,
+		Level:    entities.Info,
 		Analysis: a,
 		Message:  fmt.Sprintf(m, args...),
 	}

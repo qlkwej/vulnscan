@@ -1,6 +1,7 @@
 package static
 
 import (
+	"fmt"
 	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/entities"
@@ -83,7 +84,16 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "virus analysis completed!"))
 			}()
 		} else {
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping virus analysis"))
+			var reason string
+			if command.Source {
+				reason = "cannot run on source files"
+			} else if len(command.VirusTotalKey) == 0 {
+				reason = "total virus API key not found"
+			} else if adapter.Services.VirusScan == nil {
+				reason = "virus scan adapter not loaded, review your configuration"
+			}
+			_ = adapter.Output.Logger(output.ParseWarning(command, analysisName,
+				fmt.Sprintf("skipping virus analysis: %s", reason)))
 		}
 		wg.Wait()
 		return nil

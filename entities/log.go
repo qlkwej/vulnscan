@@ -17,10 +17,10 @@ type (
 )
 
 const (
-	Und  LogLevel = iota // 0: Logs nothing
-	Inf                  // 1: Logs Info, Warnings and Errors
-	Warn                 // 2: Logs Warning and Errors
-	Err                  // 3: Logs Errors
+	Undefined LogLevel = iota // 0: Logs nothing
+	Info                      // 1: Logs Info, Warnings and Errors
+	Warn                      // 2: Logs Warning and Errors
+	Err                       // 3: Logs Errors
 
 	Binary AnalysisName = "Binary Analysis"
 	Code   AnalysisName = "Code Analysis"
