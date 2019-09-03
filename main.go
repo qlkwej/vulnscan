@@ -121,6 +121,9 @@ func getApp() *cli.App {
 		useJSON         bool
 		makeDomainCheck bool
 
+		// Mark as true to skip command validation on download command
+		download bool
+
 		applicationFlags = []cli.Flag{
 			jsonFlag(&useJSON),
 			configurationFlag(&configurationPath),
@@ -178,9 +181,12 @@ func getApp() *cli.App {
 			if useJSON {
 				adapter.Output.Result = output.JsonAdapter
 			}
-			if ves := command.Validate(); len(ves) > 0 {
-				log.Fatal(fmt.Sprintf("Invalid generated command, validation errors: %s", fmt.Sprintf("%s", ves)))
+			if !download {
+				if ves := command.Validate(); len(ves) > 0 {
+					log.Fatal(fmt.Sprintf("Invalid generated command, validation errors: %s", fmt.Sprintf("%s", ves)))
+				}
 			}
+
 		}
 	)
 
@@ -268,6 +274,7 @@ func getApp() *cli.App {
 			Usage: "downloads the external tools used by vulnscan to work",
 			Flags: []cli.Flag{toolsFlag(&toolsFolder)},
 			Action: func(c *cli.Context) error {
+				download = true
 				parseConfiguration()
 				return tools.DownloaderAdapter(command, &entities.ToolUrls{
 					JTool:          framework.JtoolUrl,

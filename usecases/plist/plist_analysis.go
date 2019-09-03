@@ -187,7 +187,7 @@ func Analysis(command entities.Command, entity *entities.PListAnalysis, adapter 
 	if adapter.Output.Error(output.ParseError(command, analysisName, findPListFile(&command))) != nil {
 		return
 	}
-	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("plist file found at: %s", command.Path)))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "plist file found at: %s", command.Path))
 	makePListAnalysis(command, entity, adapter)
 }
 

@@ -22,7 +22,7 @@ func Analysis(command entities.Command, entity *entities.BinaryAnalysis, adapter
 		if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 			return fmt.Errorf("unable to find the binary at %s", command.Path)
 		}
-		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("application binary found on route %s", command.Path)))
+		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "application binary found on route %s", command.Path))
 		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "performing macho information extraction"))
 		if err := GetMachoInfo(command, entity); err != nil {
 			return err
@@ -68,7 +68,7 @@ func otoolInfo(command entities.Command, entity *entities.BinaryAnalysis, adapte
 		"class dump": adapter.Tools.ClassDump,
 	} {
 		if a != nil {
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("performing %s information extraction", n)))
+			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "performing %s information extraction", n))
 			if err := a(command, entity); err != nil {
 				return err
 			}

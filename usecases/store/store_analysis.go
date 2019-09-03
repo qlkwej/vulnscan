@@ -23,7 +23,7 @@ func Analysis(command entities.Command, entity *entities.StoreAnalysis, adapter 
 	}
 	req.Header.Add("User-Agent",
 		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36")
-	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("calling %s", reqURL)))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "calling %s", reqURL))
 	res, err := client.Do(req)
 	if err != nil {
 		_ = adapter.Output.Error(output.ParseError(command, analysisName, fmt.Errorf("error contacting to the app store: %s", err)))

@@ -2,10 +2,9 @@ package tools
 
 import (
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/test"
 	"github.com/simplycubed/vulnscan/framework"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
-	"path/filepath"
 	"testing"
 )
 
@@ -14,8 +13,7 @@ func TestOtoolAdapters(t *testing.T) {
 	assert.NoError(t, framework.Normalize(entities.Command{Path: path, Source:false}, func(p string) error {
 		command := entities.Command{ Path: p, AppName: "iVim"}
 		assert.NoError(t, framework.ExtractBinPath(&command))
-		mainFolder, _ := test.FindMainFolder()
-		command.Tools = filepath.Join(mainFolder, "tools")
+		command.Tools, _ = test.FindTools()
 		entity := entities.BinaryAnalysis{}
 		assert.NoError(t, OtoolHeaderAdapter(command, &entity))
 		assert.NoError(t, OtoolLibsAdapter(command, &entity))

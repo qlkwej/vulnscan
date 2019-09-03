@@ -6,12 +6,13 @@ import (
 	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestVirusTotalAdapter(t *testing.T) {
 	mainFolder, _ := test.FindMainFolder()
-	assert.NoError(t, godotenv.Load(mainFolder+string(os.PathSeparator)+".env"))
+	assert.NoError(t, godotenv.Load(filepath.Join(mainFolder, ".env")))
 	apiKey := os.Getenv("VIRUS_TOTAL_API_KEY")
 	assert.NotEmpty(t, apiKey)
 	path, _ := test.FindTest("adapters", "services", "binary.ipa")

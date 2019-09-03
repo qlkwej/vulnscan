@@ -58,6 +58,14 @@ func FindTest(testFilePath ...string) (tf string, err error) {
 	return filepath.Join(route...), nil
 }
 
+func FindTools() (string, error) {
+	main, err := FindMainFolder()
+	if err != nil {
+		return "", nil
+	}
+	return filepath.Join(main, "test", "tools"), nil
+}
+
 // WithPipeStdout writes to standard out
 func WithPipeStdout(printerFunc func() error) (string, error) {
 	// Let's hack the stdout to get the help message captured
@@ -84,3 +92,4 @@ func WithPipeStdout(printerFunc func() error) (string, error) {
 
 	return <-outC, nil
 }
+

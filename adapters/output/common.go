@@ -1,23 +1,24 @@
 package output
 
 import (
+	"fmt"
 	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/entities"
 )
 
-func ParseWarning(c entities.Command, a entities.AnalysisName, m string) (entities.Command, *entities.LogMessage) {
+func ParseWarning(c entities.Command, a entities.AnalysisName, m string, args ...interface{}) (entities.Command, *entities.LogMessage) {
 	return c, &entities.LogMessage{
 		Level:    entities.Warn,
 		Analysis: a,
-		Message:  m,
+		Message:  fmt.Sprintf(m, args...),
 	}
 }
 
-func ParseInfo(c entities.Command, a entities.AnalysisName, m string) (entities.Command, *entities.LogMessage) {
+func ParseInfo(c entities.Command, a entities.AnalysisName, m string, args ...interface{}) (entities.Command, *entities.LogMessage) {
 	return c, &entities.LogMessage{
 		Level:    entities.Inf,
 		Analysis: a,
-		Message:  m,
+		Message:  fmt.Sprintf(m, args...),
 	}
 }
 

@@ -78,6 +78,7 @@ func getPaths(command entities.Command) []string {
 func extractConfigurationFile(paths []string, configuration *entities.Configuration, adapter *adapters.AdapterMap) error {
 	var d gonfig.FileDecoderFn
 	for _, p := range paths {
+		_ = adapter.Output.Logger(output.ParseInfo(entities.Command{}, "", "searching for configuration file on %s", ))
 		if _, err := os.Stat(p); !os.IsNotExist(err) {
 			continue
 		}
@@ -93,7 +94,7 @@ func extractConfigurationFile(paths []string, configuration *entities.Configurat
 				"%s is not a valid extension for the configuration file. Only json, yaml and toml are allowed",
 				strings.ToLower(filepath.Ext(p)))
 		}
-		_ = adapter.Output.Logger(output.ParseInfo(entities.Command{}, "", fmt.Sprintf("Configuration file found at %s, loading...", p)))
+		_ = adapter.Output.Logger(output.ParseInfo(entities.Command{}, "", "Configuration file found at %s, loading...", p))
 		// Now we have a valid path and a valid extension, we can return the error
 		return gonfig.Load(configuration, gonfig.Conf{
 			FileDefaultFilename: p,
