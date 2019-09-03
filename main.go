@@ -198,7 +198,7 @@ func getApp() *cli.App {
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
 	app.Commands = []cli.Command{
 		{
-			Name:    "lookup",
+			Name:    "store",
 			Aliases: []string{"l"},
 			Usage:   "store app lookup",
 			Flags:   append(applicationFlags, []cli.Flag{appIdFlag(&appID), countryFlag(&country)}...),

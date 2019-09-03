@@ -15,6 +15,15 @@ import (
 	"strings"
 )
 
+var configurationToCommandAnalysisMap = map[string]entities.AnalysisCheck {
+	"binary": entities.DoBinary,
+	"code": entities.DoCode,
+	"store": entities.DoStore,
+	"files": entities.DoFiles,
+	"plist": entities.DoPList,
+}
+
+
 // LoadConfiguration loads the Configuration file in three locations:
 // - The path provided by the user, if any.
 // - The current working directory
@@ -25,13 +34,16 @@ import (
 // the function just returns a string to tell the user what happened
 func ConfigurationAdapter(command entities.Command, entity *entities.Command, adapter *adapters.AdapterMap) {
 	configuration := entities.Configuration{
-		Analysis:           []string{"binary", "code", "plist", "lookup", "files"},
+		Analysis:           []string{"binary", "code", "plist", "store", "files"},
 		JSONFormat:         false,
 		DefaultCountry:     "us",
 		ToolsFolder:        getToolsFolder(),
 		PerformDomainCheck: false,
 	}
-	_ = adapter.Output.Error(output.ParseError(command, "", extractConfigurationFile(getPaths(command), &configuration, adapter)))
+	if err := adapter.Output.Error(output.ParseError(
+		command, "", extractConfigurationFile(getPaths(command), &configuration, adapter))); err != nil {
+		_ = adapter.Output.Logger(output.ParseWarning(command, "", "configuration file not found, using default configuration"))
+	}
 	loadConfiguration(&configuration, entity, adapter)
 }
 
@@ -107,33 +119,54 @@ func extractConfigurationFile(paths []string, configuration *entities.Configurat
 }
 
 func loadConfiguration(configuration *entities.Configuration, command *entities.Command, adapter *adapters.AdapterMap) {
+	_ = adapter.Output.Logger(output.ParseInfo(*command, "", "loading configuration"))
+
 	// Command configuration
 	if len(configuration.BinaryPath) > 0 {
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured binary path: %s", configuration.BinaryPath))
 		command.Path = configuration.BinaryPath
 	} else if len(configuration.SourcePath) > 0 {
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured source path: %s", configuration.SourcePath))
 		command.Path = configuration.SourcePath
 		command.Source = true
 	}
 	if len(configuration.ToolsFolder) > 0 {
-
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured tools folder: %s", configuration.ToolsFolder))
+		command.Tools = configuration.ToolsFolder
 	}
 	command.Analysis = map[entities.AnalysisCheck]bool{}
+	_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured analysis: %v", configuration.Analysis))
 	for _, a := range configuration.Analysis {
-		command.Analysis[entities.AnalysisCheck(a)] = true
-	}
-	command.Country = configuration.DefaultCountry
+		if v, ok := configurationToCommandAnalysisMap[a]; ok {
+			command.Analysis[v] = true
+		} else {
+			_ = adapter.Output.Logger(output.ParseWarning(
+				entities.Command{}, "", "invalid analysis name found in configuration file: %s, skipping", a))
+		}
 
+	}
+	_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured country for store search: %v", configuration.DefaultCountry))
+	command.Country = configuration.DefaultCountry
 
 	// Adapter configuration
 	if configuration.JSONFormat {
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured outupt: json"))
 		adapter.Output.Result = output.JsonAdapter
+	} else {
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured outupt: console"))
 	}
 	if configuration.PerformDomainCheck {
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured malware domains check: activated"))
 		adapter.Services.MalwareDomains = services.MalwareDomainsAdapter
+	} else {
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured malware domains check: deactivated"))
 	}
 	if len(configuration.VirusScanKey) > 0 {
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured virus total analysis: activated"))
 		command.VirusTotalKey = configuration.VirusScanKey
 		adapter.Services.VirusScan = services.VirusTotalAdapter
+	} else {
+		_ = adapter.Output.Logger(output.ParseInfo(*command, "", "configured virus total analysis: deactivated"))
 	}
 }
 

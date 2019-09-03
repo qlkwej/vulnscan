@@ -24,7 +24,7 @@ func TestCommands(t *testing.T) {
 
 	a.Commands = []cli.Command{
 		{
-			Name: "lookup",
+			Name: "store",
 			Action: func(c *cli.Context) error {
 				counts.Total++
 				counts.SubCommand = counts.Total
@@ -41,7 +41,7 @@ func TestCommands(t *testing.T) {
 		},
 	}
 
-	err := a.Run([]string{"command", "lookup"})
+	err := a.Run([]string{"command", "store"})
 	if err != nil {
 		t.Error(err)
 	}
