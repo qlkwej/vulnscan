@@ -1,14 +1,15 @@
 package input
 
 import (
-	"fmt"
 	"github.com/simplycubed/vulnscan/adapters"
+	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/adapters/tools"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -30,9 +31,9 @@ var (
 				Symbols:   tools.JtoolSymbolsAdapter,
 			},
 			Output: adapters.OutputAdapters {
-				Logger: output.BasicLoggerAdapter,
+				Logger: mocks.LogAdapter,
 				Result: output.PrettyConsoleAdapter,
-				Error:  output.BasicErrorAdapter,
+				Error:  mocks.ErrorAdapter,
 			},
 		}
 	}
@@ -42,52 +43,62 @@ var (
 		adapter = defaultAdapterMap()
 	}
 
-	json = func() string {
-		f, _ := test.FindMainFolder()
-		return fmt.Sprintf(`{
+	json = `{
 "scans":  ["binary", "code", "plist"],
 "json": true,
-"source": "%s/test_files/apps/source.zip",
-"binary": "%s/test_files/apps/binary.ipa",
+"source": "test_files/apps/source.zip",
+"tools": "tools/folder",
 "virus": "virus_scan_password",
-"country": "us"
-}`, f, f)
-	}()
+"country": "es",
+"silent": true,
+"domains": true
+}`
 
-	toml = func() string {
-		f, _ := test.FindMainFolder()
-		return fmt.Sprintf(` 
+	toml = ` 
 scans = ["binary", "code", "plist"]
 json = true
-source = "%s/test_files/apps/source.zip"
-binary = "%s/test_files/apps/binary.ipa"
+source = "test_files/apps/source.zip"
+tools = "tools/folder"	
 virus = "virus_scan_password"
-country = "us"`, f, f)
-	}()
+country = "es"
+silent = true
+domains = true`
 
-	yaml = func() string {
-		f, _ := test.FindMainFolder()
-		return fmt.Sprintf(`
+	yaml = `
 scans: [binary, code, plist]
 json: true
-source: %s/test_files/apps/source.zip
-binary: %s/test_files/apps/binary.ipa
+source: test_files/apps/source.zip
+tools: tools/folder	
 virus: virus_scan_password
-country: us`, f, f)
-	}()
+country: es
+silent: true
+domains: true`
 )
+
+func testConfigurationHelper(p string, t *testing.T) {
+	ConfigurationAdapter(entities.Command{Path: p, T: t}, &command, &adapter)
+	assert.Equal(t, map[entities.AnalysisCheck]bool{
+		entities.DoBinary: true,
+		entities.DoCode: true,
+		entities.DoPList: true,
+	}, command.Analysis)
+	assert.Equal(t, "test_files/apps/source.zip", command.Path)
+	assert.Equal(t,  true, command.Source)
+	assert.Equal(t, "virus_scan_password", command.VirusTotalKey)
+	assert.Equal(t, "es", command.Country)
+	assert.NotNil(t, adapter.Services.MalwareDomains)
+	assert.NotNil(t, adapter.Services.VirusScan)
+}
 
 func TestConfigurationAdapterFromPath(t *testing.T) {
 	for ext, content := range map[string]string{"toml": toml, "json": json, "yaml": yaml} {
 		p, e := test.FindTest("configuration", "vulnscan."+ext)
 		assert.NoError(t, e)
 		assert.NoError(t, ioutil.WriteFile(p, []byte(content), 0644))
-		ConfigurationAdapter(entities.Command{Path: p}, &command, &adapter)
-
-		// TODO: MAKE CHECKS
-
+		testConfigurationHelper(p, t)
 		// Reset the Configuration for the next loop
 		reset()
+		assert.NoError(t, os.Remove(p))
 	}
 }
 
@@ -97,13 +108,24 @@ func TestConfigurationAdapterFromCwd(t *testing.T) {
 	for ext, content := range map[string]string{"toml": toml, "json": json, "yaml": yaml} {
 		p := fr + "/vulnscan." + ext
 		e = ioutil.WriteFile(p, []byte(content), 0644)
-		ConfigurationAdapter(entities.Command{Path: p}, &command, &adapter)
-
-		// TODO: MAKE CHECKS
-
+		testConfigurationHelper(p, t)
 		// Reset the Configuration for the next loop
 		reset()
+		assert.NoError(t, os.Remove(p))
 	}
+}
+
+func TestDefaultConfiguration(t *testing.T) {
+	ConfigurationAdapter(entities.Command{Path: "", T: t}, &command, &adapter)
+	assert.Equal(t, map[entities.AnalysisCheck]bool{
+		entities.DoPList: true,
+		entities.DoBinary: true,
+		entities.DoFiles: true,
+		entities.DoStore: true,
+		entities.DoCode: true,
+	}, command.Analysis)
+	assert.Equal(t, getToolsFolder(), command.Tools)
+	assert.Equal(t, "us", command.Country)
 }
 
 

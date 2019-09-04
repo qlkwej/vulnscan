@@ -16,7 +16,9 @@ func ClassDumpAdapter(command entities.Command, entity *entities.BinaryAnalysis)
 	if _, err := os.Stat(commandBin); os.IsNotExist(err) {
 		return fmt.Errorf("class dump binary not found on %s, probably it's not installed", commandBin)
 	}
-	exec.Command("chmod", "777", commandBin)
+	if err := os.Chmod(commandBin, 0777); err != nil {
+		return fmt.Errorf("unable to change binary %s permissions: %s", commandBin, err)
+	}
 	out, err := exec.Command(commandBin, command.Path).CombinedOutput()
 	if err != nil {
 		return err

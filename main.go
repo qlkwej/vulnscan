@@ -48,6 +48,13 @@ var (
 			Destination: b,
 		}
 	}
+	silentFlag = func(b *bool) cli.BoolFlag {
+		return cli.BoolFlag{
+			Name:        "quiet, q",
+			Usage:       "do not log info messages",
+			Destination: b,
+		}
+	}
 	binaryFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
 			Name:        "binary, b",
@@ -77,7 +84,7 @@ var (
 	}
 	countryFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
-			Name:        "country, c",
+			Name:        "country, ct",
 			Value:       "us",
 			Usage:       "store country ID (i.e. us, jp)",
 			Destination: p,
@@ -86,7 +93,7 @@ var (
 
 	configurationFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
-			Name:        "configuration, conf",
+			Name:        "configuration, c",
 			Value:       "",
 			Usage:       "scan Configuration /path/to/conf(.toml|.yaml|.json)",
 			Destination: p,
@@ -120,14 +127,16 @@ func getApp() *cli.App {
 
 		useJSON         bool
 		makeDomainCheck bool
+		silent		    bool
 
 		// Mark as true to skip command validation on download command
-		download bool
+		notCheckPath bool
 
 		applicationFlags = []cli.Flag{
 			jsonFlag(&useJSON),
 			configurationFlag(&configurationPath),
 			toolsFlag(&toolsFolder),
+			silentFlag(&silent),
 		}
 
 		command = entities.Command{
@@ -153,7 +162,15 @@ func getApp() *cli.App {
 		}
 
 		parseConfiguration = func() {
+			if silent {
+				output.SetBasicLogger(os.Stderr, entities.Warn, false)
+			} else {
+				output.SetBasicLogger(os.Stderr, entities.Info, false)
+			}
 			input.ConfigurationAdapter(entities.Command{Path: configurationPath}, &command, &adapter)
+			if command.Silent && !silent {
+				output.SetBasicLogger(os.Stderr, entities.Warn, false)
+			}
 			if len(appID) > 0 {
 				command.AppId = appID
 			}
@@ -181,12 +198,18 @@ func getApp() *cli.App {
 			if useJSON {
 				adapter.Output.Result = output.JsonAdapter
 			}
-			if !download {
-				if ves := command.Validate(); len(ves) > 0 {
-					log.Fatal(fmt.Sprintf("Invalid generated command, validation errors: %s", fmt.Sprintf("%s", ves)))
+			ves := command.Validate()
+			if notCheckPath {
+				for i, v := range ves {
+					if v.Field() == "Path" {
+						ves[i] = ves[len(ves)-1]
+						ves = ves[:len(ves)-1]
+					}
 				}
 			}
-
+			if len(ves) > 1 {
+				log.Fatal(fmt.Sprintf("Invalid generated command, %d validation errors: %s", len(ves), fmt.Sprintf("%s", ves)))
+			}
 		}
 	)
 
@@ -198,11 +221,12 @@ func getApp() *cli.App {
 	app.Copyright = "(c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0"
 	app.Commands = []cli.Command{
 		{
-			Name:    "store",
+			Name:    "lookup",
 			Aliases: []string{"l"},
 			Usage:   "store app lookup",
 			Flags:   append(applicationFlags, []cli.Flag{appIdFlag(&appID), countryFlag(&country)}...),
 			Action: func(c *cli.Context) error {
+				notCheckPath = true
 				parseConfiguration()
 				store.Analysis(command, &entities.StoreAnalysis{}, adapter)
 				return nil
@@ -274,13 +298,18 @@ func getApp() *cli.App {
 			Usage: "downloads the external tools used by vulnscan to work",
 			Flags: []cli.Flag{toolsFlag(&toolsFolder)},
 			Action: func(c *cli.Context) error {
-				download = true
+				notCheckPath = true
 				parseConfiguration()
-				return tools.DownloaderAdapter(command, &entities.ToolUrls{
+				_ = adapter.Output.Logger(output.ParseInfo(command, "downloading tools", "on %s", command.Tools))
+				if err := tools.DownloaderAdapter(command, &entities.ToolUrls{
 					JTool:          framework.JtoolUrl,
 					ClassDumpZ:     framework.ClassDumpZUrl,
 					ClassDumpSwift: framework.ClassDumpSwiftUrl,
-				})
+				}); err != nil {
+					return err
+				}
+				_ = adapter.Output.Logger(output.ParseInfo(command, "downloading tools", "done!"))
+				return nil
 			},
 		},
 	}

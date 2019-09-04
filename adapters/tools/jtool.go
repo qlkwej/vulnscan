@@ -10,7 +10,12 @@ func JtoolLibsAdapter(command entities.Command, entity *entities.BinaryAnalysis)
 	if err != nil {
 		return err
 	}
-	entity.Libraries = strings.Split(out, "\n")
+	libs := strings.Split(out, "\n")
+	for _, l := range libs {
+		if len(l) > 0 {
+			entity.Libraries = append(entity.Libraries, l)
+		}
+	}
 	return nil
 }
 

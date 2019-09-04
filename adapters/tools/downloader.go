@@ -33,6 +33,7 @@ func DownloaderAdapter(command entities.Command, entity *entities.ToolUrls) erro
 		}
 		_ = out.Close()
 		_ = resp.Body.Close()
+
 	}
 	if len(errors) > 0 {
 		var sb strings.Builder

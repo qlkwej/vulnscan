@@ -6,7 +6,6 @@ import (
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/entities"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -136,7 +135,7 @@ func makePListAnalysis(command entities.Command, entity *entities.PListAnalysis,
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting information..."))
 	xmlBytes, err := plistlib.MarshalIndent(plistObject, "\t")
 	if err != nil {
-		log.Println(err)
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 		entity.Xml = "error"
 	} else {
 		entity.Xml = string(xmlBytes)

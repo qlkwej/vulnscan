@@ -28,6 +28,8 @@ type Configuration struct {
 	JSONFormat bool `id:"json" desc:"Activate the json output"`
 	// Whether or not we look for malware domains in malwaredomainlist.com. Defaults to false.
 	PerformDomainCheck bool `id:"domains" desc:"Activate domain check from www.malwaredomainlist.com"`
+	// Activate silent mode
+	SilentMode bool `id:"silent" desc:"Deactivate info messages logging"`
 }
 
 

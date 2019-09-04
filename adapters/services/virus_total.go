@@ -170,7 +170,6 @@ func (client *VirusTotalClient) makeApiUploadRequest(
 		//noinspection GoUnhandledErrorResult
 		defer file.Close()
 		part, err := writer.CreateFormFile("file", filepath.Base(parameters["file"]))
-		fmt.Print(filepath.Base(parameters["file"]))
 		if err != nil {
 			errChan <- err
 			return
@@ -180,7 +179,6 @@ func (client *VirusTotalClient) makeApiUploadRequest(
 			return
 		}
 		delete(parameters, "file")
-		fmt.Print(parameters)
 		for k, v := range parameters {
 			if err := writer.WriteField(k, v); err != nil {
 				errChan <- err

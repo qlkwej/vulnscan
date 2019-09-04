@@ -12,6 +12,7 @@ import (
 	"github.com/simplycubed/vulnscan/usecases/store"
 	"github.com/simplycubed/vulnscan/framework"
 	"io/ioutil"
+	"os"
 	"sync"
 )
 
@@ -30,12 +31,14 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasPlist = true
 				plist.Analysis(command, &entity.Plist, adapter)
 				if command.Analysis[entities.DoStore] {
 					command.AppId = entity.Plist.Id
 					wg.Add(1)
 					go func() {
 						defer wg.Done()
+						entity.HasStore = true
 						store.Analysis(command, &entity.Store, adapter)
 					}()
 				}
@@ -47,6 +50,7 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasFiles = true
 				files.Analysis(command, &entity.Files, adapter)
 			}()
 		} else {
@@ -57,6 +61,7 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasCode = true
 				code.Analysis(command, &entity.Code, adapter)
 			}()
 		} else {
@@ -67,6 +72,7 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasBinary = true
 				binary.Analysis(command, &entity.Binary, adapter)
 			}()
 		} else {
@@ -77,6 +83,7 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasVirus = true
 				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting virus analysis..."))
 				if adapter.Output.Error(output.ParseError(command, analysisName, adapter.Services.VirusScan(command, &entity.Virus))) != nil {
 					return
@@ -101,6 +108,7 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 		return
 	}
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "finished"))
+	command.Output = os.Stdout
 	if err := adapter.Output.Result(command, entity); err != nil {
 		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 	}

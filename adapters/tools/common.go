@@ -17,6 +17,9 @@ func performJtoolAnalysis(command entities.Command, args [][]string) (out string
 	if _, err := os.Stat(com); os.IsNotExist(err) {
 		return out, fmt.Errorf("jtool not found on %s, probably it's not installed", command.Tools)
 	}
+	if err = os.Chmod(com, 0777); err != nil {
+		return "", fmt.Errorf("unable to change binary %s permissions: %s", com, err)
+	}
 	var sb strings.Builder
 	for _, arg := range args {
 		if out, e := exec.Command(com, arg...).CombinedOutput(); e != nil {

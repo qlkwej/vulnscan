@@ -14,7 +14,6 @@ type (
 	Command struct {
 		Path          string 				 `json:"path" validate:"min=1"`
 		Tools		  string 				 `json:"tools"`
-		SourcePath	  string				 `json:"source_path"`
 		AppName       string 				 `json:"app_name"`
 		AppId         string 				 `json:"app_id"`
 		Country       string 				 `json:"country" validate:"valid_country_codes"`
@@ -23,6 +22,7 @@ type (
 		Analysis      map[AnalysisCheck]bool `json:"analysis" validate:"valid_analysis"`
 		Output        io.Writer 			 `json:"output"`
 		T             *testing.T 			 `json:"t"`
+		Silent        bool					 `json:"silent"`
 	}
 )
 
@@ -232,6 +232,7 @@ func (c Command) ToMap() map[string]interface{} {
 		"analysis": map[string]bool{},
 		"output": c.Output,
 		"t": c.T,
+		"silent": c.Silent,
 	}
 	for k, v := range c.Analysis {
 		m["analysis"].(map[string]bool)[string(k)] = v
@@ -321,6 +322,14 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			c.T = v.(*testing.T)
 		default:
 			return ent, fmt.Errorf("erroneus t type, expected *testing.T, found: %T", v)
+		}
+	}
+	if v, ok := m["silent"]; ok {
+		switch v.(type) {
+		case bool:
+			c.Silent = v.(bool)
+		default:
+			return ent, fmt.Errorf("erroneus silent type, expected bool, found: %T", v)
 		}
 	}
 	return c, nil
