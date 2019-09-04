@@ -23,7 +23,7 @@ var (
 	binaryAnalysisResultMap = map[string]interface{}{
 		"issue":       "There is an issue",
 		"description": "A very bad issue",
-		"status":      "Insecure",
+		"status":      "insecure",
 		"cvss":        10.8,
 		"cwe":         "CWE-144",
 	}
@@ -31,7 +31,7 @@ var (
 	wrongBinaryAnalysisResultMap = map[string]interface{}{
 		"issue":       "There is an issue",
 		"description": "A very bad issue",
-		"status":      "Fantastic",
+		"status":      "fantastic",
 		"cvss":        10.8,
 		"cwe":         "144",
 	}

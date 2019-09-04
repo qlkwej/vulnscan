@@ -1,6 +1,5 @@
 package entities
 
-
 type Configuration struct {
 
 	// Command flags
@@ -18,7 +17,6 @@ type Configuration struct {
 	// Default country to pass to the lookup in the app store command.
 	DefaultCountry string `id:"country" desc:"Country to use in the apple store lookup"`
 
-
 	// Adapters flags
 
 	// Virus scan key. If included, the app will call virus scan api to scan the code
@@ -31,6 +29,3 @@ type Configuration struct {
 	// Activate silent mode
 	SilentMode bool `id:"silent" desc:"Deactivate info messages logging"`
 }
-
-
-

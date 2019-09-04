@@ -2,20 +2,19 @@ package tools
 
 import (
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/test"
 	"github.com/simplycubed/vulnscan/framework"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
-
 func TestDownloaderAdapter(t *testing.T) {
 	var (
-		p, _ = test.FindTest()
+		p, _    = test.FindTest()
 		command = entities.Command{Tools: p}
-		entity = entities.ToolUrls{
+		entity  = entities.ToolUrls{
 			JTool:          framework.JtoolUrl,
 			ClassDumpZ:     framework.ClassDumpZUrl,
 			ClassDumpSwift: framework.ClassDumpSwiftUrl,

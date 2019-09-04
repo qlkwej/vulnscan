@@ -15,7 +15,6 @@ import (
 	"github.com/otiai10/copy"
 )
 
-
 // Normalize tries to adapt the input folder to different cases, so all the analysis can start from a common
 // folder structure, independently of how the user has passed the address to scan.
 // It follows these rules:
@@ -81,7 +80,7 @@ func Normalize(command entities.Command, fn func(p string) error) error {
 func ExtractBinPath(command *entities.Command) error {
 	var (
 		files, err = ioutil.ReadDir(command.Path)
-		found = false
+		found      = false
 	)
 
 	if err != nil {
@@ -130,7 +129,6 @@ func withUnzip(zipFile, path string, fn func(p string) error) error {
 	return fn(filepath.Join(path, files[0].Name()))
 }
 
-
 func unzip(src, dest string) error {
 	_ = os.Chmod(dest, 0777)
 	r, err := zip.OpenReader(src)
@@ -176,5 +174,3 @@ func unzip(src, dest string) error {
 	}
 	return nil
 }
-
-

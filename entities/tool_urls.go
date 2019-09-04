@@ -6,16 +6,15 @@ import (
 )
 
 type ToolUrls struct {
-	JTool string `json:"jtool" validate:"url"`
-	ClassDumpZ string `json:"class-dump-z" validate:"url"`
+	JTool          string `json:"jtool" validate:"url"`
+	ClassDumpZ     string `json:"class-dump-z" validate:"url"`
 	ClassDumpSwift string `json:"class-dump-swift" validate:"url"`
 }
 
-
 func (e *ToolUrls) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"jtool": e.JTool,
-		"class-dump-z": e.ClassDumpZ,
+		"jtool":            e.JTool,
+		"class-dump-z":     e.ClassDumpZ,
 		"class-dump-swift": e.ClassDumpSwift,
 	}
 }

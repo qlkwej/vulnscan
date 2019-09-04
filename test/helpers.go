@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-
 // FindMainFolder finds the main project folder
 func FindMainFolder() (string, error) {
 	dir, err := os.Getwd()
@@ -92,4 +91,3 @@ func WithPipeStdout(printerFunc func() error) (string, error) {
 
 	return <-outC, nil
 }
-

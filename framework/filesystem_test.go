@@ -53,13 +53,13 @@ func TestNormalize(t *testing.T) {
 		return nil
 	}
 	for i, p := range [][]string{
-		{"framework", "filesystem", "binary.ipa"},      // .ipa file
-		{"framework", "filesystem", "iVim.app"},        // .app file
-		{"framework", "filesystem", "binary_zip.zip"},  // .zip file
-		{"framework", "filesystem"},                    // find the .zip file
+		{"framework", "filesystem", "binary.ipa"},     // .ipa file
+		{"framework", "filesystem", "iVim.app"},       // .app file
+		{"framework", "filesystem", "binary_zip.zip"}, // .zip file
+		{"framework", "filesystem"},                   // find the .zip file
 	} {
 		path, _ := test.FindTest(p...)
-		if e := Normalize(entities.Command{Path: path, Source:false}, getPath); e != nil {
+		if e := Normalize(entities.Command{Path: path, Source: false}, getPath); e != nil {
 			t.Errorf("%d: %s", i, e)
 		}
 	}

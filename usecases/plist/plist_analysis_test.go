@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/test"
 	"github.com/simplycubed/vulnscan/framework"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -21,7 +21,7 @@ func codeTestAdapter(command entities.Command, entity entities.Entity) error {
 func TestPlistSearch(t *testing.T) {
 	// Source
 	zipFile, _ := test.FindTest("usecases", "plist", "source.zip")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
 		command := entities.Command{
 			Path:   p,
 			Source: true,
@@ -35,7 +35,7 @@ func TestPlistSearch(t *testing.T) {
 	}))
 	// Binary
 	zipFile, _ = test.FindTest("usecases", "plist", "binary.ipa")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
 		command := entities.Command{
 			Path:   p,
 			Source: false,
@@ -67,7 +67,7 @@ func TestAnalysis(t *testing.T) {
 	var adapter = mocks.GetTestMap(codeTestAdapter)
 	// Source
 	zipFile, _ := test.FindTest("usecases", "plist", "source.zip")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
 		Analysis(
 			entities.Command{
 				Path:   p,
@@ -81,7 +81,7 @@ func TestAnalysis(t *testing.T) {
 	}))
 	// Binary
 	zipFile, _ = test.FindTest("usecases", "plist", "binary.ipa")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source:false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
 		Analysis(
 			entities.Command{
 				Path:   p,

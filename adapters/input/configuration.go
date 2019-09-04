@@ -16,23 +16,20 @@ import (
 	"strings"
 )
 
-var configurationToCommandAnalysisMap = map[string]entities.AnalysisCheck {
+var configurationToCommandAnalysisMap = map[string]entities.AnalysisCheck{
 	"binary": entities.DoBinary,
-	"code": entities.DoCode,
-	"store": entities.DoStore,
-	"files": entities.DoFiles,
-	"plist": entities.DoPList,
+	"code":   entities.DoCode,
+	"store":  entities.DoStore,
+	"files":  entities.DoFiles,
+	"plist":  entities.DoPList,
 }
-
 
 // LoadConfiguration loads the Configuration file in three locations:
 // - The path provided by the user, if any.
 // - The current working directory
-// - The binary path (the path where the executable is right now)
-// If the file is not found in the first path, or if it's found but there is some error loading it, the function
-// tries the next location in the list. If everything fails, the default Configuration would be used.
-// As we really don't care about where we get the Configuration, it doesn't make a lot of sense to return an error, so
-// the function just returns a string to tell the user what happened
+// - The binary path (the path where the executable is)
+// If the file is not found in the first path the function tries the next location in the list. on the cwd and the binary
+// path the file must be called vulnscan to be found. Json, yaml and toml extensions/formats are allowed.
 func ConfigurationAdapter(command entities.Command, entity *entities.Command, adapter *adapters.AdapterMap) {
 	var configuration = entities.Configuration{}
 	if err := extractConfigurationFile(command, &configuration, adapter); err != nil {
@@ -57,6 +54,10 @@ func getToolsFolder() string {
 	return folder
 }
 
+// getPaths returns the paths where the configuration files may be as a []string. This []string follows the following
+// precedence order: first the path passed by the user, second the current execution path, then the folder where the
+// executable is placed. In both the current execution and executable folders, the configuration file is expected to
+// be vulnscan. Json, yaml and toml extensions are allowed.
 func getPaths(command entities.Command) []string {
 	var paths []string
 	// First, we try the provided path, if it is not empty
@@ -72,21 +73,23 @@ func getPaths(command entities.Command) []string {
 		currentDir, _ = test.FindMainFolder()
 	}
 	for _, ex := range []string{".toml", ".yaml", ".json"} {
-		paths = append(paths, filepath.Join(currentDir, "vulnscan" + ex))
+		paths = append(paths, filepath.Join(currentDir, "vulnscan"+ex))
 	}
 	// Finally, we check the folder where the vulnscan binary is located
 	if binaryPath, err := osext.ExecutableFolder(); err == nil {
 		for _, ex := range []string{".toml", ".yaml", ".json"} {
-			paths = append(paths, filepath.Join(binaryPath, "vulnscan" + ex))
+			paths = append(paths, filepath.Join(binaryPath, "vulnscan"+ex))
 		}
 	}
 	return paths
 }
 
+// extractConfigurationFile call get paths to extract the paths where configuration file may be placed and checks in order for their
+// existance. The first is found, is loaded, using the adequate method for its file extension.
 func extractConfigurationFile(command entities.Command, configuration *entities.Configuration, adapter *adapters.AdapterMap) error {
 	var (
 		paths = getPaths(command)
-		d gonfig.FileDecoderFn
+		d     gonfig.FileDecoderFn
 	)
 	_ = adapter.Output.Logger(output.ParseInfo(command, "", "searching for configuration files on %s", strings.Join(paths, ", ")))
 	for _, p := range paths {
@@ -120,6 +123,8 @@ func extractConfigurationFile(command entities.Command, configuration *entities.
 	return fmt.Errorf("configuration file not found")
 }
 
+// loadConfiguration parses the configuration struct into a command struct. It make changes to the adapter too (activating
+// services).
 func loadConfiguration(command entities.Command, configuration *entities.Configuration, entity *entities.Command, adapter *adapters.AdapterMap) {
 	_ = adapter.Output.Logger(output.ParseInfo(command, "", "loading configuration"))
 
@@ -190,14 +195,16 @@ func loadConfiguration(command entities.Command, configuration *entities.Configu
 	_ = adapter.Output.Logger(output.ParseInfo(command, "", "configuration loaded"))
 }
 
+// loadDefaultCommand adds some sane defaults to the command, in case analysis, tools and country are not provided
+// by the user.
 func loadDefaultCommand(entity *entities.Command) {
 	if len(entity.Analysis) == 0 {
 		entity.Analysis = map[entities.AnalysisCheck]bool{
-			entities.DoPList: true,
+			entities.DoPList:  true,
 			entities.DoBinary: true,
-			entities.DoFiles: true,
-			entities.DoStore: true,
-			entities.DoCode: true,
+			entities.DoFiles:  true,
+			entities.DoStore:  true,
+			entities.DoCode:   true,
 		}
 	}
 	if len(entity.Country) == 0 {

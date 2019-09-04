@@ -8,21 +8,20 @@ import (
 )
 
 type (
-
 	AnalysisCheck string
 
 	Command struct {
-		Path          string 				 `json:"path" validate:"min=1"`
-		Tools		  string 				 `json:"tools"`
-		AppName       string 				 `json:"app_name"`
-		AppId         string 				 `json:"app_id"`
-		Country       string 				 `json:"country" validate:"valid_country_codes"`
-		VirusTotalKey string 				 `json:"virus_total_key"`
-		Source        bool 					 `json:"source"`
+		Path          string                 `json:"path" validate:"min=1"`
+		Tools         string                 `json:"tools"`
+		AppName       string                 `json:"app_name"`
+		AppId         string                 `json:"app_id"`
+		Country       string                 `json:"country" validate:"valid_country_codes"`
+		VirusTotalKey string                 `json:"virus_total_key"`
+		Source        bool                   `json:"source"`
 		Analysis      map[AnalysisCheck]bool `json:"analysis" validate:"valid_analysis"`
-		Output        io.Writer 			 `json:"output"`
-		T             *testing.T 			 `json:"t"`
-		Silent        bool					 `json:"silent"`
+		Output        io.Writer              `json:"output"`
+		T             *testing.T             `json:"t"`
+		Silent        bool                   `json:"silent"`
 	}
 )
 
@@ -35,7 +34,7 @@ const (
 )
 
 var (
-	ItunesCountryCodes = map[string]string {
+	ItunesCountryCodes = map[string]string{
 		"al": "Albania",
 		"dz": "Algeria",
 		"ao": "Angola",
@@ -193,12 +192,12 @@ var (
 		"zw": "Zimbabwe",
 	}
 
-	validAnalysisChecks = map[AnalysisCheck]bool {
-		DoPList: true,
-		DoFiles: true,
-		DoCode: true,
+	validAnalysisChecks = map[AnalysisCheck]bool{
+		DoPList:  true,
+		DoFiles:  true,
+		DoCode:   true,
 		DoBinary: true,
-		DoStore: true,
+		DoStore:  true,
 	}
 )
 
@@ -222,17 +221,17 @@ func analysisCheckValidator(fl validator.FieldLevel) bool {
 
 func (c Command) ToMap() map[string]interface{} {
 	m := map[string]interface{}{
-		"path": c.Path,
-		"tools": c.Tools,
-		"app_name": c.AppName,
-		"app_id": c.AppId,
-		"country": c.Country,
+		"path":            c.Path,
+		"tools":           c.Tools,
+		"app_name":        c.AppName,
+		"app_id":          c.AppId,
+		"country":         c.Country,
 		"virus_total_key": c.VirusTotalKey,
-		"source": c.Source,
-		"analysis": map[string]bool{},
-		"output": c.Output,
-		"t": c.T,
-		"silent": c.Silent,
+		"source":          c.Source,
+		"analysis":        map[string]bool{},
+		"output":          c.Output,
+		"t":               c.T,
+		"silent":          c.Silent,
 	}
 	for k, v := range c.Analysis {
 		m["analysis"].(map[string]bool)[string(k)] = v
@@ -334,7 +333,6 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	}
 	return c, nil
 }
-
 
 func (c Command) Validate() []validator.FieldError {
 	return Validate(c)

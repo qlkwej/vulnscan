@@ -10,7 +10,6 @@ import (
 	"strings"
 )
 
-
 func DownloaderAdapter(command entities.Command, entity *entities.ToolUrls) error {
 	var errors = map[string]error{}
 	for desc, url := range entity.ToMap() {

@@ -10,8 +10,6 @@ import (
 	"strings"
 )
 
-
-
 func performJtoolAnalysis(command entities.Command, args [][]string) (out string, err error) {
 	com := filepath.Join(command.Tools, "jtool")
 	if _, err := os.Stat(com); os.IsNotExist(err) {

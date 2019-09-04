@@ -215,7 +215,6 @@ func handleError(resp *http.Response) error {
 	return nil
 }
 
-
 // hashMD5 returns MD5 hash of a file located at filePath
 func hashMD5(filePath string) (string, error) {
 	file, err := os.Open(filePath)
@@ -234,4 +233,3 @@ func hashMD5(filePath string) (string, error) {
 	//Convert the bytes to a string
 	return hex.EncodeToString(hashInBytes), nil
 }
-

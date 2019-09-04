@@ -6,13 +6,13 @@ import (
 )
 
 var commandTestMap = map[string]interface{}{
-	"path": "/usr/app/binary",
-	"tools": "/var/tools/folder",
-	"app_name": "Binary",
-	"app_id": "183948394",
-	"country": "us",
+	"path":            "/usr/app/binary",
+	"tools":           "/var/tools/folder",
+	"app_name":        "Binary",
+	"app_id":          "183948394",
+	"country":         "us",
 	"virus_total_key": "XXXXX-XXXXXX-XXXXXX-XXXXXX",
-	"source": false,
+	"source":          false,
 	"analysis": map[string]bool{
 		"DoPList": true,
 		"DoFiles": false,

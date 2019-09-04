@@ -110,7 +110,7 @@ func createStoreOutput(entity *entities.StoreAnalysis) string {
 	sb.WriteString(value(strconv.Itoa(entity.Count)))
 	for i, r := range entity.Results {
 		mapResult := r.ToMap()
-		sb.WriteString(fmt.Sprintf("\n<bold>RESULT %s</>\n", strconv.Itoa(i + 1)))
+		sb.WriteString(fmt.Sprintf("\n<bold>RESULT %s</>\n", strconv.Itoa(i+1)))
 		sb.WriteString(subTitle("Basic information"))
 		for _, s := range []string{"title", "app_id", "url", "price", "score"} {
 			sb.WriteString(key(s))
@@ -389,7 +389,6 @@ func level(s entities.Level) string {
 	}
 	return value(fmt.Sprintf("<%s>%s</>", col, s))
 }
-
 
 // The xml formatting part below is taken from https://github.com/go-xmlfmt/xmlfmt
 // Created by Antonio Sun based on http://www.perlmonks.org/?node_id=261292

@@ -24,7 +24,6 @@ import (
 	"github.com/simplycubed/vulnscan/usecases/store"
 )
 
-
 // Flags
 var (
 	jsonFlag = func(b *bool) cli.BoolFlag {
@@ -57,8 +56,8 @@ var (
 	}
 	binaryFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
-			Name:        "binary, b",
-			Value: 		 func() string {
+			Name: "binary, b",
+			Value: func() string {
 				dir, _ := os.Getwd()
 				return dir
 			}(),
@@ -102,9 +101,9 @@ var (
 
 	toolsFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
-			Name:        "tools_folder, tools, t",
-			Usage:       "folder where the external tools are / should be downloaded",
-			Value: 		 func() string {
+			Name:  "tools_folder, tools, t",
+			Usage: "folder where the external tools are / should be downloaded",
+			Value: func() string {
 				p, _ := osext.ExecutableFolder()
 				return p
 			}(),
@@ -112,7 +111,6 @@ var (
 		}
 	}
 )
-
 
 func getApp() *cli.App {
 	var (
@@ -127,7 +125,7 @@ func getApp() *cli.App {
 
 		useJSON         bool
 		makeDomainCheck bool
-		silent		    bool
+		silent          bool
 
 		// Mark as true to skip command validation on download command
 		notCheckPath bool
@@ -140,21 +138,21 @@ func getApp() *cli.App {
 		}
 
 		command = entities.Command{
-			Output:        os.Stdout,
+			Output: os.Stdout,
 		}
 
 		adapter = adapters.AdapterMap{
-			Services: adapters.ServiceAdapters {
+			Services: adapters.ServiceAdapters{
 				MalwareDomains: nil,
 				VirusScan:      nil,
 			},
-			Tools: adapters.ToolAdapters {
+			Tools: adapters.ToolAdapters{
 				ClassDump: tools.JtoolClassDumpAdapter,
 				Libs:      tools.JtoolLibsAdapter,
 				Headers:   tools.JtoolHeadersAdapter,
 				Symbols:   tools.JtoolSymbolsAdapter,
 			},
-			Output: adapters.OutputAdapters {
+			Output: adapters.OutputAdapters{
 				Logger: output.BasicLoggerAdapter,
 				Result: output.PrettyConsoleAdapter,
 				Error:  output.BasicErrorAdapter,
@@ -266,10 +264,10 @@ func getApp() *cli.App {
 			},
 		},
 		{
-			Name: "files",
+			Name:    "files",
 			Aliases: []string{"f"},
-			Usage: "lookup and clasify files",
-			Flags: append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Usage:   "lookup and clasify files",
+			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				files.Analysis(command, &entities.FileAnalysis{}, adapter)
@@ -284,7 +282,7 @@ func getApp() *cli.App {
 				binaryFlag(&binaryPath),
 				sourceFlag(&sourcePath),
 				virusFlag(&virusKey),
-				domainCheckFlag(&makeDomainCheck)}...
+				domainCheckFlag(&makeDomainCheck)}...,
 			),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
@@ -293,10 +291,10 @@ func getApp() *cli.App {
 			},
 		},
 		{
-			Name: "download",
+			Name:    "download",
 			Aliases: []string{"d"},
-			Usage: "downloads the external tools used by vulnscan to work",
-			Flags: []cli.Flag{toolsFlag(&toolsFolder)},
+			Usage:   "downloads the external tools used by vulnscan to work",
+			Flags:   []cli.Flag{toolsFlag(&toolsFolder)},
 			Action: func(c *cli.Context) error {
 				notCheckPath = true
 				parseConfiguration()

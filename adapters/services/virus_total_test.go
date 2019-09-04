@@ -26,7 +26,6 @@ func TestVirusTotalAdapter(t *testing.T) {
 		entity.Response.VerboseMsg, "wrong api response")
 }
 
-
 func TestHashMD5(t *testing.T) {
 	file, _ := test.FindTest("adapters", "services", "binary.ipa")
 	if hash, e := hashMD5(file); e != nil {

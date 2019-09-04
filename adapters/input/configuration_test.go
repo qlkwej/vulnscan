@@ -13,24 +13,23 @@ import (
 	"testing"
 )
 
-
 var (
 	command = entities.Command{}
 	adapter = defaultAdapterMap()
 
 	defaultAdapterMap = func() adapters.AdapterMap {
 		return adapters.AdapterMap{
-			Services: adapters.ServiceAdapters {
+			Services: adapters.ServiceAdapters{
 				MalwareDomains: nil,
 				VirusScan:      nil,
 			},
-			Tools: adapters.ToolAdapters {
+			Tools: adapters.ToolAdapters{
 				ClassDump: tools.JtoolClassDumpAdapter,
 				Libs:      tools.JtoolLibsAdapter,
 				Headers:   tools.JtoolHeadersAdapter,
 				Symbols:   tools.JtoolSymbolsAdapter,
 			},
-			Output: adapters.OutputAdapters {
+			Output: adapters.OutputAdapters{
 				Logger: mocks.LogAdapter,
 				Result: output.PrettyConsoleAdapter,
 				Error:  mocks.ErrorAdapter,
@@ -79,11 +78,11 @@ func testConfigurationHelper(p string, t *testing.T) {
 	ConfigurationAdapter(entities.Command{Path: p, T: t}, &command, &adapter)
 	assert.Equal(t, map[entities.AnalysisCheck]bool{
 		entities.DoBinary: true,
-		entities.DoCode: true,
-		entities.DoPList: true,
+		entities.DoCode:   true,
+		entities.DoPList:  true,
 	}, command.Analysis)
 	assert.Equal(t, "test_files/apps/source.zip", command.Path)
-	assert.Equal(t,  true, command.Source)
+	assert.Equal(t, true, command.Source)
 	assert.Equal(t, "virus_scan_password", command.VirusTotalKey)
 	assert.Equal(t, "es", command.Country)
 	assert.NotNil(t, adapter.Services.MalwareDomains)
@@ -118,14 +117,12 @@ func TestConfigurationAdapterFromCwd(t *testing.T) {
 func TestDefaultConfiguration(t *testing.T) {
 	ConfigurationAdapter(entities.Command{Path: "", T: t}, &command, &adapter)
 	assert.Equal(t, map[entities.AnalysisCheck]bool{
-		entities.DoPList: true,
+		entities.DoPList:  true,
 		entities.DoBinary: true,
-		entities.DoFiles: true,
-		entities.DoStore: true,
-		entities.DoCode: true,
+		entities.DoFiles:  true,
+		entities.DoStore:  true,
+		entities.DoCode:   true,
 	}, command.Analysis)
 	assert.Equal(t, getToolsFolder(), command.Tools)
 	assert.Equal(t, "us", command.Country)
 }
-
-
