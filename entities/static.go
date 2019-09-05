@@ -33,7 +33,7 @@ func (e *StaticAnalysis) ToMap() map[string]interface{} {
 		"files":      e.Files.ToMap(),
 		"plist":      e.Plist.ToMap(),
 		"virus":      e.Virus.ToMap(),
-		"lookup":      e.Store.ToMap(),
+		"lookup":     e.Store.ToMap(),
 	}
 }
 

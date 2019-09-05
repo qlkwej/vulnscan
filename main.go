@@ -245,7 +245,7 @@ func getApp() *cli.App {
 			Name:    "code",
 			Aliases: []string{"c"},
 			Usage:   "search code vulnerabilities",
-			Flags:   append(applicationFlags, []cli.Flag{
+			Flags: append(applicationFlags, []cli.Flag{
 				binaryFlag(&binaryPath),
 				sourceFlag(&sourcePath),
 				domainCheckFlag(&makeDomainCheck),
@@ -295,9 +295,9 @@ func getApp() *cli.App {
 			},
 		},
 		{
-			Name: "virus",
+			Name:    "virus",
 			Aliases: []string{"v"},
-			Usage: "performs a virus analysis using the VirusTotal API",
+			Usage:   "performs a virus analysis using the VirusTotal API",
 			Flags: append(applicationFlags, []cli.Flag{
 				binaryFlag(&binaryPath),
 				virusFlag(&virusKey),

@@ -21,6 +21,9 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 	var (
 		wg           sync.WaitGroup
 		analysisName = entities.Static
+		// Virus Analysis is the only analysis that needs the uncompressed binary. So, we have to store
+		// it in a variable, as to the rest of analysis we are going to pass a
+		virusPath = command.Path
 	)
 	// We change the output so we can print the report ordered later
 	command.Output = ioutil.Discard
@@ -84,11 +87,14 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 			go func() {
 				defer wg.Done()
 				entity.HasVirus = true
-				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting virus analysis..."))
-				if adapter.Output.Error(output.ParseError(command, analysisName, adapter.Services.VirusScan(command, &entity.Virus))) != nil {
+				virusCommand := command
+				virusCommand.Path = virusPath
+				_ = adapter.Output.Logger(output.ParseInfo(virusCommand, "Virus Analysis", "starting virus analysis..."))
+				if adapter.Output.Error(output.ParseError(virusCommand, "Virus Analysis",
+					adapter.Services.VirusScan(virusCommand, &entity.Virus))) != nil {
 					return
 				}
-				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "virus analysis completed!"))
+				_ = adapter.Output.Logger(output.ParseInfo(virusCommand, "Virus Analysis", "virus analysis completed!"))
 			}()
 		} else {
 			var reason string

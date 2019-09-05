@@ -19,7 +19,7 @@ import (
 var configurationToCommandAnalysisMap = map[string]entities.AnalysisCheck{
 	"binary": entities.DoBinary,
 	"code":   entities.DoCode,
-	"lookup":  entities.DoStore,
+	"lookup": entities.DoStore,
 	"files":  entities.DoFiles,
 	"plist":  entities.DoPList,
 }
