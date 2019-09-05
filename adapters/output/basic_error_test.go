@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -12,7 +11,7 @@ import (
 func TestBasicErrorAdapter(t *testing.T) {
 	var (
 		buffer   = bytes.Buffer{}
-		command  = utils.Command{}
+		command  = entities.Command{}
 		errorEnt = entities.Error{
 			Analysis: entities.Code,
 			E:        fmt.Errorf("this is the way the word ends, not with a bang but a whimper"),

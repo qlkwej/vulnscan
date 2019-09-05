@@ -2,18 +2,17 @@ package mocks
 
 import (
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"github.com/stretchr/testify/assert"
 )
 
-func ErrorAdapter(command utils.Command, entity *entities.Error) error {
+func ErrorAdapter(command entities.Command, entity *entities.Error) error {
 	if !assert.NoError(command.T, entity.E) {
 		return entity.E
 	}
 	return nil
 }
 
-func LogAdapter(command utils.Command, entity *entities.LogMessage) error {
+func LogAdapter(command entities.Command, entity *entities.LogMessage) error {
 	var level string
 	switch entity.Level {
 	case entities.Info:

@@ -3,12 +3,13 @@ package code
 import (
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/framework"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func codeTestAdapter(command utils.Command, entity entities.Entity) error {
+func codeTestAdapter(command entities.Command, entity entities.Entity) error {
 	ent := entity.(*entities.CodeAnalysis)
 	assert.NotEmpty(command.T, ent.Codes)
 	assert.NotEmpty(command.T, ent.Apis)
@@ -19,14 +20,12 @@ func codeTestAdapter(command utils.Command, entity entities.Entity) error {
 }
 
 func TestAnalysis(t *testing.T) {
-	zipFile, _ := utils.FindTest("apps", "vulnerable_app.zip")
-	path, _ := utils.FindTest("apps", "vulnerable_app")
-	assert.NoError(t, utils.WithUnzip(zipFile, path, func(p string) error {
-		Analysis(utils.Command{
-			Path:         p,
-			Source:       false,
-			CheckDomains: true,
-			T:            t,
+	zipFile, _ := test.FindTest("usecases", "code", "vulnerable_app.zip")
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
+		Analysis(entities.Command{
+			Path:   p,
+			Source: false,
+			T:      t,
 		},
 			&entities.CodeAnalysis{},
 			mocks.GetTestMap(codeTestAdapter))

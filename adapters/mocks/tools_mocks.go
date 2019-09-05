@@ -3,11 +3,10 @@ package mocks
 import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"os"
 )
 
-func LibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func LibsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 		return fmt.Errorf("command.path doesn't exists")
 	}
@@ -20,7 +19,7 @@ func LibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
 	return nil
 }
 
-func HeadersAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func HeadersAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 		return fmt.Errorf("command.path doesn't exists")
 	}
@@ -35,7 +34,7 @@ func HeadersAdapter(command utils.Command, entity *entities.BinaryAnalysis) erro
 	return nil
 }
 
-func SymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func SymbolsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 		return fmt.Errorf("command.path doesn't exists")
 	}
@@ -134,7 +133,7 @@ func SymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) erro
 	return nil
 }
 
-func MockClassDumpAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
+func MockClassDumpAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	if _, err := os.Stat(command.Path); os.IsNotExist(err) {
 		return fmt.Errorf("command.path doesn't exists")
 	}

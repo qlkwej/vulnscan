@@ -46,10 +46,10 @@ const (
 	BigEndian    Endianness = "BigEndian"
 	LittleEndian Endianness = "LittleEndian"
 
-	SecureStatus   Status = "Secure"
-	InsecureStatus Status = "Insecure"
-	InfoStatus     Status = "Info"
-	WarningStatus  Status = "Warning"
+	SecureStatus   Status = "secure"
+	InsecureStatus Status = "insecure"
+	InfoStatus     Status = "info"
+	WarningStatus  Status = "warning"
 
 	VAX       CpuType = "VAX"
 	MC680X0   CpuType = "MC680x0"

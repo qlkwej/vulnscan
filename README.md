@@ -19,6 +19,224 @@ Vulnerability Scanner is an opinionated static source code, binary, configuratio
 
 Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
 
+## Available commands
+
+Each of the commands can be called using its full name or its abreviation letter.
+
+### lookup (l)
+
+__Description:__
+
+Search information about the application in the appstore. 
+
+__Specific flags__:
+
+- --app/-a: string flag, itunes app/bundle ID. Required to make the search using this 
+command. Usage example: -a com.easilydo.mail
+
+- --country, --ct: the country code to make the lookup. It defaults to "us". You can check [here
+a complete list of iTunes supported country codes](https://github.com/simplycubed/vulnscan/blob/master/ITUNES_COUNTRY_CODES). 
+Usage example: --ct fr
+
+### plist (p)
+
+__Description__: 
+
+Extracts information from the application plist file, like permissions or insecure connections.
+
+__Specific flags__:
+
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
+not provided. Usage example: -b /path/to/binary.ipa
+
+- --source/-s: full path to the application source code folder. Required if binary flag is not 
+provided. Usage example: -s /path/to/source_code
+
+Note: if both binary and source paths are defined, the binary path would take preference.
+
+### files (f)
+
+__Description__: 
+
+General review of the files found on the application. Looks for databases, plist files or
+certification files.
+
+__Specific flags__:
+
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
+not provided. Usage example: -b /path/to/binary.ipa
+
+- --source/-s: full path to the application source code folder. Required if binary flag is not 
+provided. Usage example: -s /path/to/source_code
+
+Note: if both binary and source paths are defined, the binary path would take preference.
+
+### binary (b)
+
+__Description__: 
+
+Extracts binary information like libraries used, macho files information or vulnerabilities.
+
+__Important__: this command requires the use of external tools. See the download command for
+instructions on how to get them.
+
+__Specific flags__:
+
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
+not provided. Usage example: -b /path/to/binary.ipa
+
+- --source/-s: full path to the application source code folder. Required if binary flag is not 
+provided. Usage example: -s /path/to/source_code
+
+Note: if both binary and source paths are defined, the binary path would take preference.
+
+### code (c)
+
+__Description__: 
+
+Search for static code vulnerabilities, apis used and embedded urls or emails. Optionally, it can
+check if the urls embedded belong to malware domains (see domains flag.)
+
+__Specific flags__:
+
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
+not provided. Usage example: -b /path/to/binary.ipa
+
+- --source/-s: full path to the application source code folder. Required if binary flag is not 
+provided. Usage example: -s /path/to/source_code
+
+- --domains/d: whether or not check malware domains. Usage example: -d
+
+Note: if both binary and source paths are defined, the binary path would take preference.
+
+### virus (v)
+
+__Description__: 
+
+Search the binary for virus using the virus total API. 
+
+__Notes on usage__:
+
+- This is an optional vulnerability scan which requires registering a free account on [VirusTotal.com](https://www.virustotal.com/gui/join-us) and agreeing to their Terms of Service and Privacy Policy. Once your account is created you will receive an API key which is required when running the scan.
+
+- __Important__: using this scan will send VirusTotal.com a copy of your binary file for analysis.
+
+__Specific flags__:
+
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
+not provided. Usage example: -b /path/to/binary.ipa
+
+- --virus/-v: API key required by the VirusTotal service. 
+
+### scan (s)
+
+__Description__: 
+
+Performs all the analysis. VirusTotal API use and malware domain check services are optional
+using the provided flags (if the VirusTotal API key is not passed, the analysis is just skipped). 
+Those analysis that can be performed only on binary input (VirusTotal service and binary 
+analysis)  won't run if only a source path is provided.
+
+__Specific flags__:
+
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
+not provided. Usage example: -b /path/to/binary.ipa
+
+- --source/-s: full path to the application source code folder. Required if binary flag is not 
+provided. Usage example: -s /path/to/source_code
+
+- --virus/-v: API key required by the VirusTotal service. Usage example: -v xxdad0adadadslkadasdadadsasdade9ad09f
+
+- --domains/d: whether or not check malware domains. Usage example: -d
+
+### download (d)
+
+__Description__: 
+
+Downloads the external tools required to run the binary analysis. By default, these tools
+are downloaded on the same folder where the application binary is located, and will be loaded
+from there when the analysis is run. The user may pass an alternative location to download/use
+these tools.
+
+## Global flags
+
+- --json/-j: By default, the application will output to stdout a printable and human readable
+report of the analysis results. The user may use this flag to output a machine readable json
+instead, specially useful for CI solutions ingestion. Usage example: -j
+
+- --tools_folder/--tools/-t: Optional flag containing the folder where the external tools 
+needed to perform the binary analysis are located. When used with the download command, 
+this flag is used to determine where the tools are downloaded. Usage example: -t /path/to/tools
+
+- --configuration/-c: Path to an optional configuration file to change the default behaviour of the
+program. See the configuration section for more information.
+
+- --quiet/-q: By default, the program logs information about execution to stderr. Passing this
+flag, only warnings and error will be logged.
+
+## Configuration
+
+Almost every vulnscan behaviour can be adapted passing command line flags. But other times, it's
+more convenient to use a configuration file to alter the behaviour in a more permanent way. Vulnscan
+provides this ability, using three common formats: TOML, YAML and JSON. 
+
+The configuration file location may be passed as a flag. But the program can identify it automatically
+two, if it's located either in the current working directory or in the folder where the vulnscan
+binary is. For this to happen, the file shall have the name "vulnscan" and one of the accepted file
+extensions (.json, .yaml or .toml).
+
+Here is an example of each one of this formats using every option available:
+
+```json
+{
+  "scans":  ["binary", "code", "plist"],
+  "json": true,
+  "binary": "route/to/binary.ipa",
+  "source": "route/to/source",
+  "tools": "tools/folder",
+  "virus": "virus_scan_password",
+  "country": "es",
+  "silent": true,
+  "domains": true
+}
+```
+
+```yaml
+scans: [binary, code, plist]
+json: true
+binary: route/to/binary.ipa
+source: route/to/source
+tools: tools/folder	
+virus: virus_scan_password
+country: es
+silent: true
+domains: true
+```
+
+```toml
+scans = ["binary", "code", "plist"]
+json = true
+binary = "route/to/binary.ipa"
+source = "route/to/source"
+tools = "tools/folder"	
+virus = "virus_scan_password"
+country = "es"
+silent = true
+domains = true
+```
+
+### Available options
+
+- __scans__: array[string], scans to do in case of running a complete scan
+- __json__: boolean, whether or not output using json format 
+- __binary__: string, route to the binary to analyze
+- __source__: string, route to the source code to analyze
+- __tools__: string, path to the tools folder
+- __virus__: string, VirusTotal key
+- __country__: string, country to use for appstore app lookup
+- __silent__: boolean, whether or not run using silent mode
+- __domains__: booean, whether or not run malware domains check (for code and scan commands)
+
 ## Help
 
 ```bash
@@ -28,7 +246,7 @@ NAME:
    vulnscan - iOS and MacOS vulnerability scanner
 
 USAGE:
-   vulnscan [global options] command [command options] [arguments...]
+   app [global options] command [command options] [arguments...]
 
 VERSION:
    0.0.1
@@ -37,40 +255,26 @@ AUTHOR:
    Vulnscan Team <vulnscan@simplycubed.com>
 
 COMMANDS:
-     code, c    search code vulnerabilities
-     lookup, l  itunes app lookup
-     plist, p   plists scan
-     scan, s    source directory and binary file security scan
-     help, h    Shows a list of commands or help for one command
+     binary, b    search binary vulnerabilities
+     code, c      search code vulnerabilities
+     download, d  downloads the external tools used by vulnscan to work
+     files, f     lookup and clasify files
+     lookup, l    store app lookup
+     plist, p     plists scan
+     scan, s      source directory and binary file security scan
+     virus, v     performs a virus analysis using the VirusTotal API
+     help, h      Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --json, -j
    --help, -h     show help
    --version, -v  print the version
 
 COPYRIGHT:
    (c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0
 
-```
-
-## VirusTotal scan
-
-- VirusToal is an optional vulnerability scan which requires registering a free account on [VirusTotal.com](https://www.virustotal.com/gui/join-us) and agreeing to their Terms of Service and Privacy Policy. Once your account is created you will receive an API key which is required when running the scan.
-- **Important** using this scan will send VirusTotal.com a copy of your binary file for analysis.
-
-One you receive your API key please create a `.env` file within the same directory as Vulnscan is installed.
-
-```bash
-
-# .env file
-
-VIRUS_TOTAL_API_KEY=<API key from VirusTotal Profile>
 
 ```
 
-### Country Codes
-
-- A complete list of [iTunes supported country codes](https://github.com/simplycubed/vulnscan/blob/master/ITUNES_COUNTRY_CODES)
 
 ## Developing Vulnerability Scanner
 

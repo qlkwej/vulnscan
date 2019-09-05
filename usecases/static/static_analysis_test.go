@@ -4,13 +4,13 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
-func staticTestAdapter(command utils.Command, entity entities.Entity) error {
+func staticTestAdapter(command entities.Command, entity entities.Entity) error {
 	if ent, ok := entity.(*entities.StaticAnalysis); ok {
 		assert.NotEmpty(command.T, ent.Files.Files)
 		assert.NotEmpty(command.T, ent.Plist.Xml)
@@ -25,25 +25,24 @@ func staticTestAdapter(command utils.Command, entity entities.Entity) error {
 }
 
 func TestAnalysis(t *testing.T) {
-	mainFolder, _ := utils.FindMainFolder()
+	mainFolder, _ := test.FindMainFolder()
 	assert.NoError(t, godotenv.Load(mainFolder+string(os.PathSeparator)+".env"))
-	testPath, _ := utils.FindTest("apps", "binary.ipa")
+	testPath, _ := test.FindTest("usecases", "static", "binary.ipa")
 	Analysis(
-		utils.Command{
+		entities.Command{
 			Path:          testPath,
 			Country:       "us",
 			VirusTotalKey: os.Getenv("VIRUS_TOTAL_API_KEY"),
 			Source:        false,
-			Analysis: map[utils.AnalysisCheck]bool{
-				utils.DoBinary: true,
-				utils.DoCode:   true,
-				utils.DoStore:  true,
-				utils.DoFiles:  true,
-				utils.DoPList:  true,
+			Analysis: map[entities.AnalysisCheck]bool{
+				entities.DoBinary: true,
+				entities.DoCode:   true,
+				entities.DoStore:  true,
+				entities.DoFiles:  true,
+				entities.DoPList:  true,
 			},
-			CheckDomains: true,
-			Output:       nil,
-			T:            t,
+			Output: nil,
+			T:      t,
 		},
 		&entities.StaticAnalysis{},
 		mocks.GetTestMap(staticTestAdapter),

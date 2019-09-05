@@ -2,11 +2,10 @@ package mocks
 
 import (
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"github.com/stretchr/testify/assert"
 )
 
-func MalwareDomainsAdapter(command utils.Command, entity *entities.CodeAnalysis) error {
+func MalwareDomainsAdapter(command entities.Command, entity *entities.CodeAnalysis) error {
 	entity.BadDomains = []string{
 		"ru.theswiftones.com",
 		"www.litra.com.mk/wp-sts.php",
@@ -19,7 +18,7 @@ func MalwareDomainsAdapter(command utils.Command, entity *entities.CodeAnalysis)
 	return nil
 }
 
-func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) error {
+func VirusTotalAdapter(command entities.Command, entity *entities.VirusAnalysis) error {
 	assert.NotEmpty(command.T, command.VirusTotalKey)
 	*entity = entities.VirusAnalysis{
 		HasReport: true,

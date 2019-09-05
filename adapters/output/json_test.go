@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -12,7 +11,7 @@ import (
 func TestJsonAdapter(t *testing.T) {
 	var (
 		buffer  bytes.Buffer
-		command = utils.Command{
+		command = entities.Command{
 			Output: &buffer,
 		}
 	)

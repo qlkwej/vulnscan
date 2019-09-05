@@ -5,37 +5,43 @@ import (
 	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/entities"
+	"github.com/simplycubed/vulnscan/framework"
 	"github.com/simplycubed/vulnscan/usecases/binary"
 	"github.com/simplycubed/vulnscan/usecases/code"
 	"github.com/simplycubed/vulnscan/usecases/files"
 	"github.com/simplycubed/vulnscan/usecases/plist"
 	"github.com/simplycubed/vulnscan/usecases/store"
-	"github.com/simplycubed/vulnscan/utils"
 	"io/ioutil"
+	"os"
 	"sync"
 )
 
-func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter adapters.AdapterMap) {
+func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter adapters.AdapterMap) {
 	output.CheckNil(adapter)
 	var (
 		wg           sync.WaitGroup
 		analysisName = entities.Static
+		// Virus Analysis is the only analysis that needs the uncompressed binary. So, we have to store
+		// it in a variable, as to the rest of analysis we are going to pass a
+		virusPath = command.Path
 	)
 	// We change the output so we can print the report ordered later
 	command.Output = ioutil.Discard
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
-	if err := utils.Normalize(command.Path, command.Source, func(p string) error {
+	if err := framework.Normalize(command, func(p string) error {
 		command.Path = p
-		if command.Analysis[utils.DoPList] {
+		if command.Analysis[entities.DoPList] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasPlist = true
 				plist.Analysis(command, &entity.Plist, adapter)
-				if command.Analysis[utils.DoStore] {
+				if command.Analysis[entities.DoStore] {
 					command.AppId = entity.Plist.Id
 					wg.Add(1)
 					go func() {
 						defer wg.Done()
+						entity.HasStore = true
 						store.Analysis(command, &entity.Store, adapter)
 					}()
 				}
@@ -43,30 +49,33 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 		} else {
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping plist and store analysis"))
 		}
-		if command.Analysis[utils.DoFiles] {
+		if command.Analysis[entities.DoFiles] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasFiles = true
 				files.Analysis(command, &entity.Files, adapter)
 			}()
 		} else {
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping files analysis"))
 		}
 
-		if command.Analysis[utils.DoCode] {
+		if command.Analysis[entities.DoCode] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasCode = true
 				code.Analysis(command, &entity.Code, adapter)
 			}()
 		} else {
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping code analysis"))
 		}
 
-		if !command.Source && command.Analysis[utils.DoBinary] {
+		if !command.Source && command.Analysis[entities.DoBinary] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				entity.HasBinary = true
 				binary.Analysis(command, &entity.Binary, adapter)
 			}()
 		} else {
@@ -77,11 +86,15 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting virus analysis..."))
-				if adapter.Output.Error(output.ParseError(command, analysisName, adapter.Services.VirusScan(command, &entity.Virus))) != nil {
+				entity.HasVirus = true
+				virusCommand := command
+				virusCommand.Path = virusPath
+				_ = adapter.Output.Logger(output.ParseInfo(virusCommand, "Virus Analysis", "starting virus analysis..."))
+				if adapter.Output.Error(output.ParseError(virusCommand, "Virus Analysis",
+					adapter.Services.VirusScan(virusCommand, &entity.Virus))) != nil {
 					return
 				}
-				_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "virus analysis completed!"))
+				_ = adapter.Output.Logger(output.ParseInfo(virusCommand, "Virus Analysis", "virus analysis completed!"))
 			}()
 		} else {
 			var reason string
@@ -101,6 +114,7 @@ func Analysis(command utils.Command, entity *entities.StaticAnalysis, adapter ad
 		return
 	}
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "finished"))
+	command.Output = os.Stdout
 	if err := adapter.Output.Result(command, entity); err != nil {
 		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 	}

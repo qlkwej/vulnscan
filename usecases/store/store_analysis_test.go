@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
+	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
 )
 
-func storeTestAdapter(command utils.Command, entity entities.Entity) error {
+func storeTestAdapter(command entities.Command, entity entities.Entity) error {
 	ent := entity.(*entities.StoreAnalysis)
-	sampleStoreResultPath, _ := utils.FindTest("sample-store-lookup.json")
+	sampleStoreResultPath, _ := test.FindTest("usecases", "store", "sample-store-lookup.json")
 	sampleLookupFile, _ := ioutil.ReadFile(sampleStoreResultPath)
 	comparisonEntity := entities.StoreAnalysis{}
 	assert.NoError(command.T, json.Unmarshal(sampleLookupFile, &comparisonEntity))
@@ -31,7 +31,7 @@ func storeTestAdapter(command utils.Command, entity entities.Entity) error {
 
 func TestAnalysis(t *testing.T) {
 	Analysis(
-		utils.Command{
+		entities.Command{
 			AppId:   "com.easilydo.mail",
 			Country: "us",
 			T:       t,

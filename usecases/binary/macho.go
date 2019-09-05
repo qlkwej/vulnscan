@@ -5,12 +5,11 @@ import (
 	"fmt"
 
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 )
 
 // Analyzes the macho headers to extract the cpu information. We use the standard macho library with some
 // maps to extract the data.
-func GetMachoInfo(command utils.Command, entity *entities.BinaryAnalysis) error {
+func GetMachoInfo(command entities.Command, entity *entities.BinaryAnalysis) error {
 	file, err := macho.Open(command.Path)
 	if err != nil {
 		return err

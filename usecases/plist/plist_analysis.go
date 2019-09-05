@@ -5,9 +5,7 @@ import (
 	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -72,7 +70,7 @@ type ParsedPList struct {
 }
 
 // Looks for the plist file in the folder. Depending on the isSrc flag, parses the folder differently.
-func findPListFile(command *utils.Command) error {
+func findPListFile(command *entities.Command) error {
 	var plistPath string
 	files, err := ioutil.ReadDir(command.Path)
 	if err != nil {
@@ -116,7 +114,7 @@ func findPListFile(command *utils.Command) error {
 
 // Performs the plist analysis. Extracts information from the plist file found in the binary/source. This function
 // is extracted from the main Analysis function in order to ease testing.
-func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
+func makePListAnalysis(command entities.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
 	output.CheckNil(adapter)
 	var (
 		plistObject  ParsedPList
@@ -137,7 +135,7 @@ func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, ad
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "extracting information..."))
 	xmlBytes, err := plistlib.MarshalIndent(plistObject, "\t")
 	if err != nil {
-		log.Println(err)
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, err))
 		entity.Xml = "error"
 	} else {
 		entity.Xml = string(xmlBytes)
@@ -182,13 +180,13 @@ func makePListAnalysis(command utils.Command, entity *entities.PListAnalysis, ad
 }
 
 // Search for the plist file calling findPListFile function and performs the PList analysis.
-func Analysis(command utils.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
+func Analysis(command entities.Command, entity *entities.PListAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Plist
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if adapter.Output.Error(output.ParseError(command, analysisName, findPListFile(&command))) != nil {
 		return
 	}
-	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("plist file found at: %s", command.Path)))
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "plist file found at: %s", command.Path))
 	makePListAnalysis(command, entity, adapter)
 }
 

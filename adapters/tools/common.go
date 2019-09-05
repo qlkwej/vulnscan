@@ -1,42 +1,26 @@
 package tools
 
 import (
-	"flag"
 	"fmt"
-	"github.com/kardianos/osext"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
 
-// Returns the folder where the program external binary tools (jtool, class-dump) is present. By default, depending on
-// the environment where the program is executing (testing/not testing) the tools will be in vulnscan/tools/tools
-// (testing) or in a sibling folder of the vulnscan binary. The function also looks for a folder configured using the
-// configuration file.
-func getToolsFolder() string {
-	if tf := utils.Configuration.ToolsFolder; tf != "" {
-		return tf
+func performJtoolAnalysis(command entities.Command, args [][]string) (out string, err error) {
+	com := filepath.Join(command.Tools, "jtool")
+	if _, err := os.Stat(com); os.IsNotExist(err) {
+		return out, fmt.Errorf("jtool not found on %s, probably it's not installed", command.Tools)
 	}
-	var parentFolder string
-	if flag.Lookup("test.v") == nil {
-		parentFolder, _ = osext.ExecutableFolder()
-	} else {
-		parentFolder, _ = utils.FindMainFolder()
-	}
-	return parentFolder + string(os.PathSeparator) + "tools" + string(os.PathSeparator)
-}
-
-func performJtoolAnalysis(args [][]string) (out string, err error) {
-	command := getToolsFolder() + "jtool"
-	if _, err := os.Stat(command); os.IsNotExist(err) {
-		return out, fmt.Errorf("jtool not found on %s, probably it's not installed", command)
+	if err = os.Chmod(com, 0777); err != nil {
+		return "", fmt.Errorf("unable to change binary %s permissions: %s", com, err)
 	}
 	var sb strings.Builder
 	for _, arg := range args {
-		if out, e := exec.Command(command, arg...).CombinedOutput(); e != nil {
+		if out, e := exec.Command(com, arg...).CombinedOutput(); e != nil {
 			return string(out), e
 		} else {
 			sb.WriteString(string(out))

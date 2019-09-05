@@ -1,10 +1,11 @@
 package services
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -22,12 +23,12 @@ type VirusTotalClient struct {
 	c      *http.Client
 }
 
-func VirusTotalAdapter(command utils.Command, entity *entities.VirusAnalysis) error {
+func VirusTotalAdapter(command entities.Command, entity *entities.VirusAnalysis) error {
 	client, e := newVirusTotalClient(command.VirusTotalKey)
 	if e != nil {
 		return e
 	}
-	hash, e := utils.HashMD5(command.Path)
+	hash, e := hashMD5(command.Path)
 	if e != nil {
 		return e
 	}
@@ -169,7 +170,6 @@ func (client *VirusTotalClient) makeApiUploadRequest(
 		//noinspection GoUnhandledErrorResult
 		defer file.Close()
 		part, err := writer.CreateFormFile("file", filepath.Base(parameters["file"]))
-		fmt.Print(filepath.Base(parameters["file"]))
 		if err != nil {
 			errChan <- err
 			return
@@ -179,7 +179,6 @@ func (client *VirusTotalClient) makeApiUploadRequest(
 			return
 		}
 		delete(parameters, "file")
-		fmt.Print(parameters)
 		for k, v := range parameters {
 			if err := writer.WriteField(k, v); err != nil {
 				errChan <- err
@@ -205,6 +204,7 @@ func (client *VirusTotalClient) makeApiUploadRequest(
 	return resp, nil
 }
 
+// handleError check the status code of the response and generates an error if it's not ok
 func handleError(resp *http.Response) error {
 	if resp.StatusCode != http.StatusOK {
 		if resp.Body != nil {
@@ -213,4 +213,23 @@ func handleError(resp *http.Response) error {
 		return fmt.Errorf("unexpected status code: %d (%s)", resp.StatusCode, http.StatusText(resp.StatusCode))
 	}
 	return nil
+}
+
+// hashMD5 returns MD5 hash of a file located at filePath
+func hashMD5(filePath string) (string, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return "", err
+	}
+	//noinspection GoUnhandledErrorResult
+	defer file.Close()
+
+	hash := md5.New()
+	//Copy the file in the hash interface
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", err
+	}
+	hashInBytes := hash.Sum(nil)[:16]
+	//Convert the bytes to a string
+	return hex.EncodeToString(hashInBytes), nil
 }

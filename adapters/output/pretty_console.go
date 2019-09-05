@@ -3,14 +3,14 @@ package output
 import (
 	"fmt"
 	"github.com/gookit/color"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 )
 
-func PrettyConsoleAdapter(command utils.Command, entity entities.Entity) error {
+func PrettyConsoleAdapter(command entities.Command, entity entities.Entity) error {
 	var e error
 	switch entity.(type) {
 	case *entities.BinaryAnalysis:
@@ -110,7 +110,7 @@ func createStoreOutput(entity *entities.StoreAnalysis) string {
 	sb.WriteString(value(strconv.Itoa(entity.Count)))
 	for i, r := range entity.Results {
 		mapResult := r.ToMap()
-		sb.WriteString(fmt.Sprintf("\n<bold>RESULT %s</>\n", strconv.Itoa(i)))
+		sb.WriteString(fmt.Sprintf("\n<bold>RESULT %s</>\n", strconv.Itoa(i+1)))
 		sb.WriteString(subTitle("Basic information"))
 		for _, s := range []string{"title", "app_id", "url", "price", "score"} {
 			sb.WriteString(key(s))
@@ -166,12 +166,16 @@ func createPlistOutput(entity *entities.PListAnalysis) string {
 		sb.WriteString(list(u.Schemas))
 	}
 	sb.WriteString(subTitle("Declared permissions"))
-	for _, p := range entity.Permissions {
-		for k, v := range p.ToMap() {
-			sb.WriteString(pretifyKey(k))
-			sb.WriteString(value(v.(string)))
+	if len(entity.Permissions) > 0 {
+		for _, p := range entity.Permissions {
+			for k, v := range p.ToMap() {
+				sb.WriteString(pretifyKey(k))
+				sb.WriteString(value(v.(string)))
+			}
+			sb.WriteString("\n")
 		}
-		sb.WriteString("\n")
+	} else {
+		sb.WriteString("<green>NONE</>\n")
 	}
 	sb.WriteString(subTitle("Insecure connections information"))
 	if entity.InsecureConnections.AllowArbitraryLoads {
@@ -187,7 +191,7 @@ func createPlistOutput(entity *entities.PListAnalysis) string {
 		sb.WriteString(value("None"))
 	}
 	sb.WriteString(subTitle("Complete XML output"))
-	sb.WriteString(utils.FormatXML(entity.Xml, "", "  "))
+	sb.WriteString(formatXML(entity.Xml, "", "  "))
 	// Without this line (or something similar with open and close tags), the next element is interpreted on screen
 	// as xml.
 	// TODO: better solution?
@@ -208,16 +212,16 @@ func createFilesOutput(entity *entities.FileAnalysis) string {
 	if len(entity.Databases) > 0 {
 		sb.WriteString(list(entity.Databases))
 	} else {
-		sb.WriteString("<red>No databases found</>")
+		sb.WriteString("<red>No databases found</>\n")
 	}
 	sb.WriteString(subTitle("Plists"))
 	if len(entity.PLists) > 0 {
 		sb.WriteString(list(entity.PLists))
 	} else {
-		sb.WriteString("<red>No plist files found</>")
+		sb.WriteString("<red>No plist files found</>\n")
 	}
-	sb.WriteString(subTitle("Complete list of files"))
-	sb.WriteString(list(entity.Files))
+	// sb.WriteString(subTitle("Complete list of files"))
+	// sb.WriteString(list(entity.Files))
 	return sb.String()
 }
 
@@ -225,48 +229,65 @@ func createCodeOutput(entity *entities.CodeAnalysis) string {
 	var sb strings.Builder
 	sb.WriteString(title("Code Analysis"))
 	sb.WriteString(subTitle("Traits found analyzing the code"))
-	for _, c := range entity.Codes {
-		for k, v := range c.CodeRule.ToMap() {
-			sb.WriteString(pretifyKey(k))
-			if k == "level" {
-				sb.WriteString(level(entities.Level(v.(string))))
-			} else if k == "cvss" {
-				sb.WriteString(value(fmt.Sprintf("%0.2f", v.(float64))))
-			} else {
-				sb.WriteString(value(v.(string)))
+	if len(entity.Codes) > 0 {
+		for _, c := range entity.Codes {
+			for k, v := range c.CodeRule.ToMap() {
+				sb.WriteString(pretifyKey(k))
+				if k == "level" {
+					sb.WriteString(level(entities.Level(v.(string))))
+				} else if k == "cvss" {
+					sb.WriteString(value(fmt.Sprintf("%0.2f", v.(float64))))
+				} else {
+					sb.WriteString(value(v.(string)))
+				}
 			}
+			sb.WriteString(key("Paths where trait was found"))
+			sb.WriteString(value(""))
+			sb.WriteString(list(c.Paths))
+			sb.WriteString("\n")
 		}
-		sb.WriteString(key("Paths where trait was found"))
-		sb.WriteString(value(""))
-		sb.WriteString(list(c.Paths))
-		sb.WriteString("\n")
+	} else {
+		sb.WriteString("<green>NONE</>\n")
 	}
 	sb.WriteString(subTitle("Apis detected in code"))
-	for _, a := range entity.Apis {
-		sb.WriteString(key("Description"))
-		sb.WriteString(value(a.Description))
-		sb.WriteString(key("Paths where api was found"))
-		sb.WriteString(value(""))
-		sb.WriteString(list(a.Paths))
-		sb.WriteString("\n")
+	if len(entity.Apis) > 0 {
+		for _, a := range entity.Apis {
+			sb.WriteString(key("Description"))
+			sb.WriteString(value(a.Description))
+			sb.WriteString(key("Paths where api was found"))
+			sb.WriteString(value(""))
+			sb.WriteString(list(a.Paths))
+			sb.WriteString("\n")
+		}
+	} else {
+		sb.WriteString("<green>NONE</>\n")
 	}
+
 	sb.WriteString(subTitle("Urls referenced by the code"))
-	for _, a := range entity.Urls {
-		sb.WriteString(key("Url"))
-		sb.WriteString(value(a.Url))
-		sb.WriteString(key("Paths where it was found"))
-		sb.WriteString(value(""))
-		sb.WriteString(list(a.Paths))
-		sb.WriteString("\n")
+	if len(entity.Urls) > 0 {
+		for _, a := range entity.Urls {
+			sb.WriteString(key("Url"))
+			sb.WriteString(value(a.Url))
+			sb.WriteString(key("Paths where it was found"))
+			sb.WriteString(value(""))
+			sb.WriteString(list(a.Paths))
+			sb.WriteString("\n")
+		}
+	} else {
+		sb.WriteString("<green>NONE</>\n")
 	}
 	sb.WriteString(subTitle("Emails referenced by the code"))
-	for _, a := range entity.Emails {
-		sb.WriteString(key("Email"))
-		sb.WriteString(value(a.Email))
-		sb.WriteString(key("Paths where it was found"))
-		sb.WriteString(value(""))
-		sb.WriteString(list(a.Paths))
-		sb.WriteString("\n")
+	if len(entity.Emails) > 0 {
+		for _, a := range entity.Emails {
+			sb.WriteString(key("Email"))
+			sb.WriteString(value(a.Email))
+			sb.WriteString(key("Paths where it was found"))
+			sb.WriteString(value(""))
+			sb.WriteString(list(a.Paths))
+			sb.WriteString("\n")
+		}
+	} else {
+		sb.WriteString("<green>NONE</>\n")
 	}
 	return sb.String()
 }
@@ -284,19 +305,28 @@ func createBinaryOutput(entity *entities.BinaryAnalysis) string {
 		sb.WriteString(value(v.(string)))
 	}
 	sb.WriteString(subTitle("Libraries found in the binary"))
-	sb.WriteString(list(entity.Libraries))
+	if len(entity.Libraries) > 0 {
+		sb.WriteString(list(entity.Libraries))
+	} else {
+		sb.WriteString("<green>NONE</>\n")
+	}
 	sb.WriteString(subTitle("Binary report results"))
 	for _, r := range entity.Results {
-		for k, v := range r.ToMap() {
-			sb.WriteString(key(k))
-			if k == "status" {
-				sb.WriteString(status(entities.Status(v.(string))))
-			} else if k == "cvss" {
-				sb.WriteString(value(fmt.Sprintf("%0.2f", v.(float64))))
-			} else {
-				sb.WriteString(value(v.(string)))
-			}
+		// We have to do it manually so we can print it in order
+		sb.WriteString(key("issue"))
+		sb.WriteString(value(r.Issue))
+		sb.WriteString(key("description"))
+		sb.WriteString(value(r.Description))
+		sb.WriteString(key("status"))
+		sb.WriteString(status(r.Status))
+		sb.WriteString(key("CWE"))
+		if len(r.CWE) > 0 {
+			sb.WriteString(value(r.CWE))
+		} else {
+			sb.WriteString(value("-"))
 		}
+		sb.WriteString(key("cvss"))
+		sb.WriteString(value(fmt.Sprintf("%0.2f", r.Cvss)))
 		sb.WriteString("\n")
 	}
 	return sb.String()
@@ -336,7 +366,7 @@ func status(s entities.Status) string {
 	case entities.InsecureStatus:
 		col = "danger"
 	case entities.SecureStatus:
-		col = "suc"
+		col = "green"
 	case entities.WarningStatus:
 		col = "warn"
 	default:
@@ -358,4 +388,41 @@ func level(s entities.Level) string {
 		col = "suc"
 	}
 	return value(fmt.Sprintf("<%s>%s</>", col, s))
+}
+
+// The xml formatting part below is taken from https://github.com/go-xmlfmt/xmlfmt
+// Created by Antonio Sun based on http://www.perlmonks.org/?node_id=261292
+// MIT license
+// The project doesn't seem to be active and doesn't seem reasonable to add an extra dependency
+// for this, so we include it directly on our code
+
+var reg = regexp.MustCompile(`<([/!]?)([^>]+?)(/?)>`)
+
+// FormatXML will reformat the XML string in a readable way, without any rewriting/altering the structure
+func formatXML(xmls, prefix, indent string) string {
+	src := regexp.MustCompile(`>\s+<`).ReplaceAllString(xmls, "><")
+	rf := replaceTag(prefix, indent)
+	return prefix + reg.ReplaceAllStringFunc(src, rf)
+}
+
+// replaceTag returns a closure function to do
+// 's/(?<=>)\s+(?=<)//g; s(<(/?)([^>]+?)(/?)>)($indent+=$3?0:$1?-1:1;"<$1$2$3>"."\n".("  "x$indent))ge' as in Perl
+// and deal with comments as well
+func replaceTag(prefix, indent string) func(string) string {
+	indentLevel := 0
+	return func(m string) string {
+		parts := reg.FindStringSubmatch(m)
+		// $3: A <foo/> tag. No alteration to indentation.
+		// $1: A closing </foo> tag. Drop one indentation level
+		// else: An opening <foo> tag. Increase one indentation level
+		if len(parts[3]) == 0 {
+			if parts[1] == `/` {
+				indentLevel -= 1
+			} else if parts[1] != `!` {
+				indentLevel += 1
+			}
+		}
+		return "<" + parts[1] + parts[2] + parts[3] + ">" +
+			"\r\n" + prefix + strings.Repeat(indent, indentLevel)
+	}
 }

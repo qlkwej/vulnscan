@@ -2,29 +2,33 @@ package tools
 
 import (
 	"github.com/simplycubed/vulnscan/entities"
-	"github.com/simplycubed/vulnscan/utils"
 	"strings"
 )
 
-func JtoolLibsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
-	out, err := performJtoolAnalysis([][]string{{"-arch", "arm", "-L", "-v", command.Path}})
+func JtoolLibsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
+	out, err := performJtoolAnalysis(command, [][]string{{"-arch", "arm", "-L", "-v", command.Path}})
 	if err != nil {
 		return err
 	}
-	entity.Libraries = strings.Split(out, "\n")
+	libs := strings.Split(out, "\n")
+	for _, l := range libs {
+		if len(l) > 0 {
+			entity.Libraries = append(entity.Libraries, l)
+		}
+	}
 	return nil
 }
 
-func JtoolHeadersAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
-	out, err := performJtoolAnalysis([][]string{{"-arch", "arm", "-h", "-v", command.Path}})
+func JtoolHeadersAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
+	out, err := performJtoolAnalysis(command, [][]string{{"-arch", "arm", "-h", "-v", command.Path}})
 	if err != nil {
 		return err
 	}
 	return headerExtractor(out, entity)
 }
 
-func JtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
-	out, err := performJtoolAnalysis([][]string{
+func JtoolSymbolsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
+	out, err := performJtoolAnalysis(command, [][]string{
 		{"-arch", "arm", "-h", "-v", command.Path},
 		{"-arch", "arm", "-lazy_bind", "-v", command.Path},
 	})
@@ -34,8 +38,8 @@ func JtoolSymbolsAdapter(command utils.Command, entity *entities.BinaryAnalysis)
 	return symbolExtractor(out, entity)
 }
 
-func JtoolClassDumpAdapter(command utils.Command, entity *entities.BinaryAnalysis) error {
-	out, err := performJtoolAnalysis([][]string{
+func JtoolClassDumpAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
+	out, err := performJtoolAnalysis(command, [][]string{
 		{"-arch", "arm", "-d", "objc", "-v", command.Path},
 	})
 	if err != nil {
