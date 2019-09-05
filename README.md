@@ -246,7 +246,7 @@ NAME:
    vulnscan - iOS and MacOS vulnerability scanner
 
 USAGE:
-   vulnscan [global options] command [command options] [arguments...]
+   app [global options] command [command options] [arguments...]
 
 VERSION:
    0.0.1
@@ -255,11 +255,15 @@ AUTHOR:
    Vulnscan Team <vulnscan@simplycubed.com>
 
 COMMANDS:
-     code, c    search code vulnerabilities
-     lookup, l  itunes app lookup
-     plist, p   plists scan
-     scan, s    source directory and binary file security scan
-     help, h    Shows a list of commands or help for one command
+     binary, b    search binary vulnerabilities
+     code, c      search code vulnerabilities
+     download, d  downloads the external tools used by vulnscan to work
+     files, f     lookup and clasify files
+     lookup, l    store app lookup
+     plist, p     plists scan
+     scan, s      source directory and binary file security scan
+     virus, v     performs a virus analysis using the VirusTotal API
+     help, h      Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
@@ -267,6 +271,7 @@ GLOBAL OPTIONS:
 
 COPYRIGHT:
    (c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0
+
 
 ```
 
