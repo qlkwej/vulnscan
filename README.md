@@ -52,7 +52,7 @@ not provided. Usage example: -b /path/to/binary.ipa
 - --source/-s: full path to the application source code folder. Required if binary flag is not 
 provided. Usage example: -s /path/to/source_code
 
-Note: if both binary and source paths are defined, the binary path wouldtake preference.
+Note: if both binary and source paths are defined, the binary path would take preference.
 
 ### files (f)
 
@@ -69,7 +69,7 @@ not provided. Usage example: -b /path/to/binary.ipa
 - --source/-s: full path to the application source code folder. Required if binary flag is not 
 provided. Usage example: -s /path/to/source_code
 
-Note: if both binary and source paths are defined, the binary path wouldtake preference.
+Note: if both binary and source paths are defined, the binary path would take preference.
 
 ### binary (b)
 
@@ -88,7 +88,7 @@ not provided. Usage example: -b /path/to/binary.ipa
 - --source/-s: full path to the application source code folder. Required if binary flag is not 
 provided. Usage example: -s /path/to/source_code
 
-Note: if both binary and source paths are defined, the binary path wouldtake preference.
+Note: if both binary and source paths are defined, the binary path would take preference.
 
 ### code (c)
 
@@ -107,7 +107,7 @@ provided. Usage example: -s /path/to/source_code
 
 - --domains/d: whether or not check malware domains. Usage example: -d
 
-Note: if both binary and source paths are defined, the binary path wouldtake preference.
+Note: if both binary and source paths are defined, the binary path would take preference.
 
 ### virus (v)
 
@@ -232,7 +232,7 @@ domains = true
 - __binary__: string, route to the binary to analyze
 - __source__: string, route to the source code to analyze
 - __tools__: string, path to the tools folder
-- __virus__: string, TotalVirus key
+- __virus__: string, VirusTotal key
 - __country__: string, country to use for appstore app lookup
 - __silent__: boolean, whether or not run using silent mode
 - __domains__: booean, whether or not run malware domains check (for code and scan commands)
