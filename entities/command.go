@@ -211,7 +211,7 @@ func analysisCheckValidator(fl validator.FieldLevel) bool {
 	if len(repr) == 0 {
 		return false
 	}
-	for k, _ := range repr {
+	for k := range repr {
 		if !validAnalysisChecks[k] {
 			return false
 		}

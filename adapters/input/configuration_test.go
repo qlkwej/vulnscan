@@ -106,7 +106,7 @@ func TestConfigurationAdapterFromCwd(t *testing.T) {
 	assert.NoError(t, e)
 	for ext, content := range map[string]string{"toml": toml, "json": json, "yaml": yaml} {
 		p := fr + "/vulnscan." + ext
-		e = ioutil.WriteFile(p, []byte(content), 0644)
+		_ = ioutil.WriteFile(p, []byte(content), 0644)
 		testConfigurationHelper(p, t)
 		// Reset the Configuration for the next loop
 		reset()

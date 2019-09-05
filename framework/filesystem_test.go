@@ -14,6 +14,7 @@ import (
 
 func TestWithUnzip(t *testing.T) {
 	zipFile, e := test.FindTest("framework", "filesystem", "unzip", "source.zip")
+	assert.NoError(t, e)
 	path, e := test.FindTest("framework", "filesystem", "unzip", "source")
 	assert.NoError(t, e)
 	assert.NoError(t, withUnzip(zipFile, path, func(p string) error {

@@ -21,7 +21,7 @@ func TestDownloaderAdapter(t *testing.T) {
 		}
 	)
 	assert.NoError(t, DownloaderAdapter(command, &entity))
-	for k, _ := range entity.ToMap() {
+	for k := range entity.ToMap() {
 		tPath := filepath.Join(p, k)
 		_, err := os.Stat(tPath)
 		assert.False(t, os.IsNotExist(err))
