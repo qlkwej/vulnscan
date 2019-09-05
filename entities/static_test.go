@@ -177,7 +177,7 @@ var (
 				},
 			},
 		},
-		"store": map[string]interface{}{
+		"lookup": map[string]interface{}{
 			"count": 1,
 			"results": []map[string]interface{}{
 				{
@@ -312,7 +312,7 @@ var (
 				},
 			},
 		},
-		"store": map[string]interface{}{
+		"lookup": map[string]interface{}{
 			"count":   0,
 			"results": []map[string]interface{}{},
 		},

@@ -17,7 +17,7 @@ type StaticAnalysis struct {
 	Files     FileAnalysis   `json:"files"`
 	Plist     PListAnalysis  `json:"plist"`
 	Virus     VirusAnalysis  `json:"virus"`
-	Store     StoreAnalysis  `json:"store"`
+	Store     StoreAnalysis  `json:"lookup"`
 }
 
 func (e *StaticAnalysis) ToMap() map[string]interface{} {
@@ -33,7 +33,7 @@ func (e *StaticAnalysis) ToMap() map[string]interface{} {
 		"files":      e.Files.ToMap(),
 		"plist":      e.Plist.ToMap(),
 		"virus":      e.Virus.ToMap(),
-		"store":      e.Store.ToMap(),
+		"lookup":      e.Store.ToMap(),
 	}
 }
 
@@ -103,7 +103,7 @@ func (e *StaticAnalysis) FromMap(m map[string]interface{}) (ent Entity, err erro
 			return ent, fmt.Errorf("erroneus virus type, expected map[string]interface{}, found: %T", v)
 		}
 	}
-	if v, ok := m["store"]; ok {
+	if v, ok := m["lookup"]; ok {
 		switch v.(type) {
 		case map[string]interface{}:
 			r, err := (&StoreAnalysis{}).FromMap(v.(map[string]interface{}))

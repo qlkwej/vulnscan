@@ -245,7 +245,11 @@ func getApp() *cli.App {
 			Name:    "code",
 			Aliases: []string{"c"},
 			Usage:   "search code vulnerabilities",
-			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Flags:   append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				sourceFlag(&sourcePath),
+				domainCheckFlag(&makeDomainCheck),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				code.Analysis(command, &entities.CodeAnalysis{}, adapter)
@@ -288,6 +292,28 @@ func getApp() *cli.App {
 				parseConfiguration()
 				static.Analysis(command, &entities.StaticAnalysis{}, adapter)
 				return nil
+			},
+		},
+		{
+			Name: "virus",
+			Aliases: []string{"v"},
+			Usage: "performs a virus analysis using the VirusTotal API",
+			Flags: append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				virusFlag(&virusKey),
+			}...),
+			Action: func(c *cli.Context) error {
+				parseConfiguration()
+				if len(command.VirusTotalKey) == 0 {
+					log.Fatal("VirusTotal API key is required")
+				}
+				entity := entities.VirusAnalysis{}
+				_ = adapter.Output.Logger(output.ParseInfo(command, "virus scan", "calling API..."))
+				if err := adapter.Services.VirusScan(command, &entity); err != nil {
+					log.Fatal(err)
+				}
+				_ = adapter.Output.Logger(output.ParseInfo(command, "virus scan", "response received!"))
+				return adapter.Output.Result(command, &entity)
 			},
 		},
 		{
