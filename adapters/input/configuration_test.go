@@ -90,6 +90,9 @@ func testConfigurationHelper(p string, t *testing.T) {
 }
 
 func TestConfigurationAdapterFromPath(t *testing.T) {
+	f, e := test.FindTest("configuration")
+	assert.NoError(t, e)
+	assert.NoError(t, os.MkdirAll(f, os.ModePerm))
 	for ext, content := range map[string]string{"toml": toml, "json": json, "yaml": yaml} {
 		p, e := test.FindTest("configuration", "vulnscan."+ext)
 		assert.NoError(t, e)
