@@ -39,6 +39,9 @@ func TestWithUnzip(t *testing.T) {
 }
 
 func TestNormalize(t *testing.T) {
+	f, e := test.FindTest("framework", "filesystem", "iVim.app")
+	assert.NoError(t, e)
+	assert.NoError(t, os.MkdirAll(f, os.ModePerm))
 	getPath := func(p string) error {
 		if _, err := os.Stat(filepath.Join(p, "iVim.app")); os.IsNotExist(err) {
 			files, e := ioutil.ReadDir(p)
