@@ -57,10 +57,7 @@ var (
 	binaryFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
 			Name: "binary, b",
-			Value: func() string {
-				dir, _ := os.Getwd()
-				return dir
-			}(),
+
 			Usage:       "full path to binary (ipa) file",
 			Destination: p,
 		}
@@ -179,9 +176,14 @@ func getApp() *cli.App {
 			// we will just include two paths in the command entity.
 			if len(binaryPath) > 0 {
 				command.Path = binaryPath
-			} else {
+			} else if len(sourcePath) > 0 {
 				command.Path = sourcePath
 				command.Source = true
+			} else if len(command.Path) == 0 {
+				command.Path = func() string {
+					dir, _ := os.Getwd()
+					return dir
+				}()
 			}
 			if len(toolsFolder) > 0 {
 				command.Tools = toolsFolder
