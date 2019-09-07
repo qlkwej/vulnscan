@@ -33,7 +33,8 @@ var configurationToCommandAnalysisMap = map[string]entities.AnalysisCheck{
 func ConfigurationAdapter(command entities.Command, entity *entities.Command, adapter *adapters.AdapterMap) {
 	var configuration = entities.Configuration{}
 	if err := extractConfigurationFile(command, &configuration, adapter); err != nil {
-		_ = adapter.Output.Logger(output.ParseWarning(command, "", "configuration file not found, using default configuration"))
+		_ = adapter.Output.Logger(output.ParseWarning(command, "",
+			"unable to load configuration file: %s, using default configuration", err))
 	} else {
 		loadConfiguration(command, &configuration, entity, adapter)
 	}
