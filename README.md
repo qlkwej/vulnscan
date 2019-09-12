@@ -27,20 +27,20 @@ Each of the commands can be called using its full name or its abreviation letter
 
 __Description:__
 
-Search information about the application in the appstore. 
+Search information about the application in the appstore.
 
 __Specific flags__:
 
-- --app/-a: string flag, itunes app/bundle ID. Required to make the search using this 
-command. Usage example: -a com.easilydo.mail
+- --app/-a: string flag, itunes app/bundle ID. Required to make the search using this command.
+Usage example: -a com.easilydo.mail
 
-- --country, --ct: the country code to make the lookup. It defaults to "us". You can check [here
-a complete list of iTunes supported country codes](https://github.com/simplycubed/vulnscan/blob/master/ITUNES_COUNTRY_CODES). 
+- --country, --ct: the country code to make the lookup. It defaults to "us".
+You can check [here a complete list of iTunes supported country codes](https://github.com/simplycubed/vulnscan/blob/master/ITUNES_COUNTRY_CODES).
 Usage example: --ct fr
 
 ### plist (p)
 
-__Description__: 
+__Description__:
 
 Extracts information from the application plist file, like permissions or insecure connections.
 
@@ -49,31 +49,30 @@ __Specific flags__:
 - --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
 not provided. Usage example: -b /path/to/binary.ipa
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not 
-provided. Usage example: -s /path/to/source_code
+- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+- Usage example: -s /path/to/source_code
 
 Note: if both binary and source paths are defined, the binary path would take preference.
 
 ### files (f)
 
-__Description__: 
+__Description__:
 
-General review of the files found on the application. Looks for databases, plist files or
-certification files.
+General review of the files found on the application. Looks for databases, plist files or certification files.
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
-not provided. Usage example: -b /path/to/binary.ipa
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
+Usage example: -b /path/to/binary.ipa
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not 
-provided. Usage example: -s /path/to/source_code
+- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+Usage example: -s /path/to/source_code
 
 Note: if both binary and source paths are defined, the binary path would take preference.
 
 ### binary (b)
 
-__Description__: 
+__Description__:
 
 Extracts binary information like libraries used, macho files information or vulnerabilities.
 
@@ -82,17 +81,17 @@ instructions on how to get them.
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
-not provided. Usage example: -b /path/to/binary.ipa
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
+Usage example: -b /path/to/binary.ipa
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not 
-provided. Usage example: -s /path/to/source_code
+- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+Usage example: -s /path/to/source_code
 
 Note: if both binary and source paths are defined, the binary path would take preference.
 
 ### code (c)
 
-__Description__: 
+__Description__:
 
 Search for static code vulnerabilities, apis used and embedded urls or emails. Optionally, it can
 check if the urls embedded belong to malware domains (see domains flag.)
@@ -102,8 +101,8 @@ __Specific flags__:
 - --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
 not provided. Usage example: -b /path/to/binary.ipa
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not 
-provided. Usage example: -s /path/to/source_code
+- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+Usage example: -s /path/to/source_code
 
 - --domains/d: whether or not check malware domains. Usage example: -d
 
@@ -111,9 +110,9 @@ Note: if both binary and source paths are defined, the binary path would take pr
 
 ### virus (v)
 
-__Description__: 
+__Description__:
 
-Search the binary for virus using the virus total API. 
+Search the binary for virus using the virus total API.
 
 __Notes on usage__:
 
@@ -123,27 +122,27 @@ __Notes on usage__:
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
-not provided. Usage example: -b /path/to/binary.ipa
+- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
+Usage example: -b /path/to/binary.ipa
 
-- --virus/-v: API key required by the VirusTotal service. 
+- --virus/-v: API key required by the VirusTotal service.
 
 ### scan (s)
 
-__Description__: 
+__Description__:
 
 Performs all the analysis. VirusTotal API use and malware domain check services are optional
-using the provided flags (if the VirusTotal API key is not passed, the analysis is just skipped). 
-Those analysis that can be performed only on binary input (VirusTotal service and binary 
-analysis)  won't run if only a source path is provided.
+using the provided flags (if the VirusTotal API key is not passed, the analysis is just skipped).
+Those analysis that can be performed only on binary input (VirusTotal service and binary analysis)
+won't run if only a source path is provided.
 
 __Specific flags__:
 
 - --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
 not provided. Usage example: -b /path/to/binary.ipa
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not 
-provided. Usage example: -s /path/to/source_code
+- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+Usage example: -s /path/to/source_code
 
 - --virus/-v: API key required by the VirusTotal service. Usage example: -v xxdad0adadadslkadasdadadsasdade9ad09f
 
@@ -151,7 +150,7 @@ provided. Usage example: -s /path/to/source_code
 
 ### download (d)
 
-__Description__: 
+__Description__:
 
 Downloads the external tools required to run the binary analysis. By default, these tools
 are downloaded on the same folder where the application binary is located, and will be loaded
@@ -164,9 +163,9 @@ these tools.
 report of the analysis results. The user may use this flag to output a machine readable json
 instead, specially useful for CI solutions ingestion. Usage example: -j
 
-- --tools_folder/--tools/-t: Optional flag containing the folder where the external tools 
-needed to perform the binary analysis are located. When used with the download command, 
-this flag is used to determine where the tools are downloaded. Usage example: -t /path/to/tools
+- --tools_folder/--tools/-t: Optional flag containing the folder where the external tools needed
+to perform the binary analysis are located. When used with the download command, this flag is
+used to determine where the tools are downloaded. Usage example: -t /path/to/tools
 
 - --configuration/-c: Path to an optional configuration file to change the default behaviour of the
 program. See the configuration section for more information.
@@ -178,7 +177,7 @@ flag, only warnings and error will be logged.
 
 Almost every vulnscan behaviour can be adapted passing command line flags. But other times, it's
 more convenient to use a configuration file to alter the behaviour in a more permanent way. Vulnscan
-provides this ability, using three common formats: TOML, YAML and JSON. 
+provides this ability, using three common formats: TOML, YAML and JSON.
 
 The configuration file location may be passed as a flag. But the program can identify it automatically
 two, if it's located either in the current working directory or in the folder where the vulnscan
@@ -218,7 +217,7 @@ scans = ["binary", "code", "plist"]
 json = true
 binary = "route/to/binary.ipa"
 source = "route/to/source"
-tools = "tools/folder"	
+tools = "tools/folder"
 virus = "virus_scan_password"
 country = "es"
 silent = true
@@ -308,9 +307,9 @@ Vulnscan is build using the concepts of Clean Architecture as defined by [Uncle 
 This translates into the following layers within Vulnscan:
 
 1. Entities: Structs implementing the results of different types of analysis.
-1. Usecases: These would be the methods needed to fulfill the entities (i.e. the analysis themselves).
-1. Adapters: functions to interact with the external world (external tools and services).
-1. Frameworks: basically, the interaction with the CLI.
+2. Usecases: These would be the methods needed to fulfill the entities (i.e. the analysis themselves).
+3. Adapters: functions to interact with the external world (external tools and services).
+4. Frameworks: basically, the interaction with the CLI.
 
 ## Dependencies
 
