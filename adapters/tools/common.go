@@ -129,7 +129,7 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 				"kCCOptionECBMode|kCCOptionCBCMode",
 			func(s string) entities.BinaryAnalysisResult {
 				return entities.BinaryAnalysisResult{
-					Issue:       "Binary make use of some Weak Crypto API(s)",
+					Issue:       "Binary make use of some weak crypto API(s)",
 					Status:      "insecure",
 					Description: "The binary may contain the following weak crypto API(s) " + s,
 					Cvss:        6.,
@@ -137,9 +137,9 @@ func symbolExtractor(out string, entity *entities.BinaryAnalysis) error {
 				}
 			},
 			entities.BinaryAnalysisResult{
-				Issue:       "Binary use of banned APIs not found",
+				Issue:       "Binary use of weak crypto APIs not found",
 				Status:      "secure",
-				Description: "The binary has not detectable banned APIs",
+				Description: "The binary has not detectable weak crypto APIs",
 				Cvss:        0.,
 				CWE:         "",
 			},
