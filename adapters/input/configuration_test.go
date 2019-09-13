@@ -81,8 +81,7 @@ func testConfigurationHelper(p string, t *testing.T) {
 		entities.DoCode:   true,
 		entities.DoPList:  true,
 	}, command.Analysis)
-	assert.Equal(t, "test_files/apps/source.zip", command.Path)
-	assert.Equal(t, true, command.Source)
+	assert.Equal(t, "test_files/apps/source.zip", command.SourcePath)
 	assert.Equal(t, "virus_scan_password", command.VirusTotalKey)
 	assert.Equal(t, "es", command.Country)
 	assert.NotNil(t, adapter.Services.MalwareDomains)

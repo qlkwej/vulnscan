@@ -10,7 +10,7 @@ import (
 
 func TestJtoolAdapters(t *testing.T) {
 	path, _ := test.FindTest("adapters", "tools", "jtool", "binary.ipa")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: path, Source: false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{Path: path, Source: false}, func(p, sp string) error {
 		command := entities.Command{Path: p, AppName: "iVim"}
 		assert.NoError(t, framework.ExtractBinPath(&command))
 		command.Tools, _ = test.FindTools()

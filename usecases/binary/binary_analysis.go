@@ -14,7 +14,7 @@ import (
 func Analysis(command entities.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) {
 	var analysisName = entities.Binary
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
-	if e := framework.Normalize(command, func(p string) error {
+	if e := framework.Normalize(command, func(p, sp string) error {
 		command.Path = p
 		if err := framework.ExtractBinPath(&command); err != nil {
 			return err

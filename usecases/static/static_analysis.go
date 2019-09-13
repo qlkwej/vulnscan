@@ -28,13 +28,16 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 	// We change the output so we can print the report ordered later
 	command.Output = ioutil.Discard
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
-	if err := framework.Normalize(command, func(p string) error {
+	if err := framework.Normalize(command, func(p, sp string) error {
 		command.Path = p
-		if command.Analysis[entities.DoPList] {
+		command.SourcePath = sp
+		if command.Analysis[entities.DoPList] || command.Analysis[entities.DoStore] {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				entity.HasPlist = true
+				if command.Analysis[entities.DoPList] {
+					entity.HasPlist = true
+				}
 				plist.Analysis(command, &entity.Plist, adapter)
 				if command.Analysis[entities.DoStore] {
 					command.AppId = entity.Plist.Id
@@ -60,15 +63,19 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping files analysis"))
 		}
 
-		if command.Analysis[entities.DoCode] {
+		if command.Analysis[entities.DoCode] && len(command.SourcePath) > 0 {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
 				entity.HasCode = true
 				code.Analysis(command, &entity.Code, adapter)
 			}()
+		} else if len(command.SourcePath) == 0 {
+			_ = adapter.Output.Logger(output.ParseWarning(
+				command, analysisName, "skipping code analysis, only available to source inputs"))
 		} else {
-			_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "skipping code analysis"))
+			_ = adapter.Output.Logger(output.ParseWarning(
+				command, analysisName, "skipping code analysis, not configured"))
 		}
 
 		if !command.Source && command.Analysis[entities.DoBinary] {

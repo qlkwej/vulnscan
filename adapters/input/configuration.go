@@ -135,8 +135,7 @@ func loadConfiguration(command entities.Command, configuration *entities.Configu
 		entity.Path = configuration.BinaryPath
 	} else if len(configuration.SourcePath) > 0 {
 		_ = adapter.Output.Logger(output.ParseInfo(command, "", "configured source path: %s", configuration.SourcePath))
-		entity.Path = configuration.SourcePath
-		entity.Source = true
+		entity.SourcePath = configuration.SourcePath
 	} else {
 		_ = adapter.Output.Logger(output.ParseWarning(command, "", "no path found in configuration file"))
 	}

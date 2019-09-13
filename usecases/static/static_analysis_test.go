@@ -16,7 +16,7 @@ func staticTestAdapter(command entities.Command, entity entities.Entity) error {
 		command.T.Log(ent)
 		assert.NotEmpty(command.T, ent.Files.Files)
 		assert.NotEmpty(command.T, ent.Plist.Xml)
-		assert.NotEmpty(command.T, ent.Code.BadDomains)
+		// assert.NotEmpty(command.T, ent.Code.BadDomains)
 		assert.NotEmpty(command.T, ent.Binary.Results)
 		assert.NotEmpty(command.T, ent.Binary.Libraries)
 		if !strings.Contains(command.Path, "Payload") {

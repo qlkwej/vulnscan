@@ -10,7 +10,7 @@ import (
 
 func TestOtoolAdapters(t *testing.T) {
 	path, _ := test.FindTest("adapters", "tools", "otool", "binary.ipa")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: path, Source: false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{Path: path}, func(p, sp string) error {
 		command := entities.Command{Path: p, AppName: "iVim"}
 		assert.NoError(t, framework.ExtractBinPath(&command))
 		command.Tools, _ = test.FindTools()

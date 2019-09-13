@@ -42,7 +42,7 @@ func TestNormalize(t *testing.T) {
 	f, e := test.FindTest("framework", "filesystem", "iVim.app")
 	assert.NoError(t, e)
 	assert.NoError(t, os.MkdirAll(f, os.ModePerm))
-	getPath := func(p string) error {
+	getPath := func(p, sp string) error {
 		if _, err := os.Stat(filepath.Join(p, "iVim.app")); os.IsNotExist(err) {
 			files, e := ioutil.ReadDir(p)
 			if e != nil {
@@ -69,6 +69,7 @@ func TestNormalize(t *testing.T) {
 	}
 }
 
+
 func TestExtractBinPath(t *testing.T) {
 	path, _ := test.FindTest("framework", "filesystem")
 	command := entities.Command{Path: path}
@@ -76,3 +77,4 @@ func TestExtractBinPath(t *testing.T) {
 	assert.Equal(t, filepath.Join(path, "iVim.app", "iVim"), command.Path)
 	assert.Equal(t, "iVim", command.AppName)
 }
+

@@ -21,10 +21,10 @@ func codeTestAdapter(command entities.Command, entity entities.Entity) error {
 
 func TestAnalysis(t *testing.T) {
 	zipFile, _ := test.FindTest("usecases", "code", "vulnerable_app.zip")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{SourcePath: zipFile}, func(p, sp string) error {
 		Analysis(entities.Command{
-			Path:   p,
-			Source: false,
+			SourcePath:   sp,
+			Source: true,
 			T:      t,
 		},
 			&entities.CodeAnalysis{},

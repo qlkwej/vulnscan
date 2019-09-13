@@ -174,11 +174,15 @@ func getApp() *cli.App {
 			}
 			// For now all we have is binary analysis. When we have a mix of binary and source analysis,
 			// we will just include two paths in the command entity.
-			if len(binaryPath) > 0 {
-				command.Path = binaryPath
-			} else if len(sourcePath) > 0 {
-				command.Path = sourcePath
-				command.Source = true
+			if len(binaryPath) > 0 || len(sourcePath) > 0 {
+				if len(binaryPath) > 0 {
+					command.Path = binaryPath
+				} else {
+					command.Source = true
+				}
+				if len(sourcePath) > 0 {
+					command.SourcePath = sourcePath
+				}
 			} else if len(command.Path) == 0 {
 				command.Path = func() string {
 					dir, _ := os.Getwd()

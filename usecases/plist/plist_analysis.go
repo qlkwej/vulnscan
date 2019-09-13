@@ -71,8 +71,16 @@ type ParsedPList struct {
 
 // Looks for the plist file in the folder. Depending on the isSrc flag, parses the folder differently.
 func findPListFile(command *entities.Command) error {
-	var plistPath string
-	files, err := ioutil.ReadDir(command.Path)
+	var (
+		plistPath string
+		path string
+	)
+	if command.Source {
+		path = command.SourcePath
+	} else {
+		path = command.Path
+	}
+	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		return fmt.Errorf("error reading the directory %s: %s", command.Path, err)
 	}
@@ -83,7 +91,7 @@ func findPListFile(command *entities.Command) error {
 				command.AppName = strings.Replace(appname, ".xcodeproj", "", 1)
 			}
 		}
-		walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
+		walkErr := filepath.Walk(command.SourcePath, func(path string, info os.FileInfo, err error) error {
 			if !strings.Contains(path, "__MACOSX") && strings.HasSuffix(info.Name(), "Info.plist") {
 				plistPath = path
 			}
@@ -93,7 +101,7 @@ func findPListFile(command *entities.Command) error {
 			return nil
 		})
 		if walkErr != nil {
-			return fmt.Errorf("error walking directory %s: %s", command.Path, walkErr)
+			return fmt.Errorf("error walking directory %s: %s", command.SourcePath, walkErr)
 		}
 
 	} else {
