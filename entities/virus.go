@@ -150,6 +150,8 @@ func (e *VirusScan) FromMap(m map[string]interface{}) (ent Entity, err error) {
 		switch v.(type) {
 		case string:
 			e.Version = v.(string)
+		case nil:
+			e.Version = ""
 		default:
 			return ent, fmt.Errorf("erroneus version type, expected string, found: %T", v)
 		}

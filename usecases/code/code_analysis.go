@@ -15,11 +15,12 @@ import (
 func Analysis(command entities.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) {
 	output.CheckNil(adapter)
 	var analysisName = entities.Code
-	if !command.Source || len(command.SourcePath) == 0 {
+	if len(command.SourcePath) == 0 {
 		_ = adapter.Output.Error(output.ParseError(command, analysisName,
 			fmt.Errorf("code analysis cannot be run on binary input")))
 		return
 	}
+
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	var files int
 	if walkErr := filepath.Walk(command.SourcePath, func(path string, info os.FileInfo, err error) error {

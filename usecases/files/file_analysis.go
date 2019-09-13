@@ -13,9 +13,16 @@ import (
 
 func Analysis(command entities.Command, entity *entities.FileAnalysis, adapter adapters.AdapterMap) {
 	output.CheckNil(adapter)
-	var analysisName = entities.Files
+	var (
+		analysisName = entities.Files
+		path = command.Path
+	)
+	if command.Source {
+		path = command.SourcePath
+	}
+
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
-	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
+	if walkErr := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		filePath := path
 		dirName, fileName := filepath.Split(path)
 		if !strings.HasSuffix(fileName, ".DS_Store") {

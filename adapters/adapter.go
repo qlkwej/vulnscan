@@ -12,6 +12,7 @@ import (
 	"github.com/simplycubed/vulnscan/entities"
 )
 
+
 type (
 	// GenericAdapter is an adapter that accepts a generic entity. It's the type used to output the usecases
 	// results (AdapterMap.Output.Result).
@@ -62,3 +63,4 @@ type (
 		Error  ErrorAdapter
 	}
 )
+

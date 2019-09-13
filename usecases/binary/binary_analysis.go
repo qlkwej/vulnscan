@@ -11,8 +11,16 @@ import (
 	"github.com/simplycubed/vulnscan/framework"
 )
 
+// BinaryAnalysis works only on binary inputs.
 func Analysis(command entities.Command, entity *entities.BinaryAnalysis, adapter adapters.AdapterMap) {
+	output.CheckNil(adapter)
 	var analysisName = entities.Binary
+	if command.Source {
+		_ = adapter.Output.Error(output.ParseError(command, analysisName,
+			fmt.Errorf("binary analysis can only be run on binary input")))
+		return
+	}
+
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
 	if e := framework.Normalize(command, func(p, sp string) error {
 		command.Path = p
