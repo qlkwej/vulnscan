@@ -98,7 +98,7 @@ var (
 
 	toolsFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
-			Name:  "tools_folder, tools, t",
+			Name:  "tools, t",
 			Usage: "folder where the external tools are / should be downloaded",
 			Value: func() string {
 				p, _ := osext.ExecutableFolder()
@@ -216,7 +216,7 @@ func getApp() *cli.App {
 			}
 		}
 	)
-
+	cli.AppHelpTemplate = appHelp
 	app := cli.NewApp()
 	app.Version = "0.0.1"
 	app.Name = "vulnscan"
