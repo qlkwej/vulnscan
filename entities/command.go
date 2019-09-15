@@ -23,7 +23,7 @@ type (
 		Output        io.Writer              `json:"output"`
 		T             *testing.T             `json:"t"`
 		Quiet         bool                   `json:"quiet"`
-		Summary       bool					 `json:"summary"`
+		Summary       bool                   `json:"summary"`
 	}
 )
 

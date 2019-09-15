@@ -9,14 +9,14 @@ import (
 )
 
 var colorMap = map[string]string{
-	"off": "\033[0m",
-	"red": "\033[0;31m",
-	"green": "\033[0;32m",
+	"off":    "\033[0m",
+	"red":    "\033[0;31m",
+	"green":  "\033[0;32m",
 	"orange": "\033[0;33m",
-	"blue": "\033[0;34m",
+	"blue":   "\033[0;34m",
 	"purple": "\033[0;35m",
-	"cyan": "\033[0;36m",
-	"gray": "\033[0;37m",
+	"cyan":   "\033[0;36m",
+	"gray":   "\033[0;37m",
 }
 
 func SetColorLogger(out io.Writer, level entities.LogLevel, logTime bool) {
@@ -26,9 +26,9 @@ func SetColorLogger(out io.Writer, level entities.LogLevel, logTime bool) {
 			flag = log.Ltime
 		}
 		basicLogger = &BasicLogger{
-			Info:    log.New(infoOut, fmt.Sprintf( "%sINFO| %s", colorMap["blue"], colorMap["off"]), flag),
-			Warning: log.New(warningOut, fmt.Sprintf( "%sWARNING| %s", colorMap["orange"], colorMap["off"]), flag),
-			Error:   log.New(errorOut, fmt.Sprintf( "%sERROR| %s", colorMap["red"], colorMap["off"]), flag),
+			Info:    log.New(infoOut, fmt.Sprintf("%sINFO| %s", colorMap["blue"], colorMap["off"]), flag),
+			Warning: log.New(warningOut, fmt.Sprintf("%sWARNING| %s", colorMap["orange"], colorMap["off"]), flag),
+			Error:   log.New(errorOut, fmt.Sprintf("%sERROR| %s", colorMap["red"], colorMap["off"]), flag),
 		}
 	}
 	switch level {

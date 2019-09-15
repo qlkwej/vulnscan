@@ -14,7 +14,7 @@ type (
 	BinType    string
 
 	MachoInfo struct {
-		Err       bool        `json:"err"`
+		Err        bool       `json:"err"`
 		Bits       Bits       `json:"bits" validate:"required,valid_bits"`
 		Endianness Endianness `json:"endianness" validate:"required,valid_endianness"`
 		Cpu        CpuType    `json:"cpu" validate:"required,valid_cpu"`

@@ -132,7 +132,7 @@ func getApp() *cli.App {
 		useJSON         bool
 		makeDomainCheck bool
 		quiet           bool
-		summary 		bool
+		summary         bool
 
 		// Mark as true to skip command validation on download command
 		notCheckPath bool
