@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"github.com/kardianos/osext"
 	"github.com/simplycubed/vulnscan/framework"
+	"io"
 	"log"
 	"os"
 	"sort"
 
+	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/urfave/cli.v1"
 
 	"github.com/simplycubed/vulnscan/adapters"
@@ -166,14 +168,20 @@ func getApp() *cli.App {
 		}
 
 		parseConfiguration = func() {
-			if quiet {
-				output.SetBasicLogger(os.Stderr, entities.Warn, false)
+			var setLogger func(io.Writer, entities.LogLevel, bool)
+			if terminal.IsTerminal(int(os.Stderr.Fd())) {
+				setLogger = output.SetColorLogger
 			} else {
-				output.SetBasicLogger(os.Stderr, entities.Info, false)
+				setLogger = output.SetBasicLogger
+			}
+			if quiet {
+				setLogger(os.Stderr, entities.Warn, false)
+			} else {
+				setLogger(os.Stderr, entities.Info, false)
 			}
 			input.ConfigurationAdapter(entities.Command{Path: configurationPath}, &command, &adapter)
 			if command.Quiet && !quiet {
-				output.SetBasicLogger(os.Stderr, entities.Warn, false)
+				setLogger(os.Stderr, entities.Warn, false)
 			}
 			if len(appID) > 0 {
 				command.AppId = appID
