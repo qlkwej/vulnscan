@@ -8,7 +8,7 @@ import (
 func JtoolLibsAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	out, err := performJtoolAnalysis(command, [][]string{{"-arch", "arm", "-L", "-v", command.Path}})
 	if err != nil {
-		return err
+		return err // already formated in performJtoolAnalysis, so just return
 	}
 	libs := strings.Split(out, "\n")
 	for _, l := range libs {
@@ -22,7 +22,7 @@ func JtoolLibsAdapter(command entities.Command, entity *entities.BinaryAnalysis)
 func JtoolHeadersAdapter(command entities.Command, entity *entities.BinaryAnalysis) error {
 	out, err := performJtoolAnalysis(command, [][]string{{"-arch", "arm", "-h", "-v", command.Path}})
 	if err != nil {
-		return err
+		return err // already formated in performJtoolAnalysis
 	}
 	return headerExtractor(out, entity)
 }
@@ -33,7 +33,7 @@ func JtoolSymbolsAdapter(command entities.Command, entity *entities.BinaryAnalys
 		{"-arch", "arm", "-lazy_bind", "-v", command.Path},
 	})
 	if err != nil {
-		return err
+		return err // already formated in performJtoolAnalysis
 	}
 	return symbolExtractor(out, entity)
 }
@@ -43,7 +43,7 @@ func JtoolClassDumpAdapter(command entities.Command, entity *entities.BinaryAnal
 		{"-arch", "arm", "-d", "objc", "-v", command.Path},
 	})
 	if err != nil {
-		return err
+		return err // already formated in performJtoolAnalysis
 	}
 	return classDumpExtractor(out, entity)
 }

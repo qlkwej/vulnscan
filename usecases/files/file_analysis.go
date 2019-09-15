@@ -15,7 +15,7 @@ func Analysis(command entities.Command, entity *entities.FileAnalysis, adapter a
 	output.CheckNil(adapter)
 	var (
 		analysisName = entities.Files
-		path = command.Path
+		path         = command.Path
 	)
 	if command.Source {
 		path = command.SourcePath

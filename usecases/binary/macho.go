@@ -12,7 +12,7 @@ import (
 func GetMachoInfo(command entities.Command, entity *entities.BinaryAnalysis) error {
 	file, err := macho.Open(command.Path)
 	if err != nil {
-		return err
+		return fmt.Errorf("error opening macho file at %s: %s", command.Path, err)
 	}
 	header := file.FileHeader
 	switch header.Magic {

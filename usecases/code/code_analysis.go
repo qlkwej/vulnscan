@@ -25,9 +25,8 @@ func Analysis(command entities.Command, entity *entities.CodeAnalysis, adapter a
 	var files int
 	if walkErr := filepath.Walk(command.SourcePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return err
+			return fmt.Errorf("walk error: %s", err)
 		}
-		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("walking path %s\n", path)))
 		if filepath.Ext(path) == ".m" || filepath.Ext(path) == ".swift" {
 			var jfilePath string
 			// TODO: why are we doing this?
@@ -36,7 +35,6 @@ func Analysis(command entities.Command, entity *entities.CodeAnalysis, adapter a
 					strings.Replace(filepath.Base(path), "+", "x", -1))
 				err := os.Rename(path, jfilePath)
 				if err != nil {
-					fmt.Printf("ERROR ! %s\n", err)
 					return fmt.Errorf("error moving file %s to %s: %s", path, jfilePath, err)
 				}
 			} else {

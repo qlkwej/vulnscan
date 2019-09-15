@@ -12,8 +12,8 @@ type (
 
 	Command struct {
 		Path          string                 `json:"path" validate:"required_without=SourcePath"`
-		SourcePath	  string 				 `json:"source_path" validate:"required_without=Path"`
-		Source 		  bool					 `json:"source"`
+		SourcePath    string                 `json:"source_path" validate:"required_without=Path"`
+		Source        bool                   `json:"source"`
 		Tools         string                 `json:"tools"`
 		AppName       string                 `json:"app_name"`
 		AppId         string                 `json:"app_id"`
@@ -224,7 +224,7 @@ func (c Command) ToMap() map[string]interface{} {
 	m := map[string]interface{}{
 		"path":            c.Path,
 		"source_path":     c.SourcePath,
-		"source": 		   c.Source,
+		"source":          c.Source,
 		"tools":           c.Tools,
 		"app_name":        c.AppName,
 		"app_id":          c.AppId,

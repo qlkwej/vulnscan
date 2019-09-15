@@ -23,9 +23,9 @@ func TestPlistSearch(t *testing.T) {
 	zipFile, _ := test.FindTest("usecases", "plist", "source.zip")
 	assert.NoError(t, framework.Normalize(entities.Command{SourcePath: zipFile}, func(p, sp string) error {
 		command := entities.Command{
-			SourcePath:   sp,
-			Source: true,
-			T:      t,
+			SourcePath: sp,
+			Source:     true,
+			T:          t,
 		}
 		assert.NoError(t, findPListFile(&command))
 		_, err := os.Stat(command.Path)
@@ -71,9 +71,9 @@ func TestAnalysis(t *testing.T) {
 		t.Logf("Source path: %s\n", sp)
 		Analysis(
 			entities.Command{
-				SourcePath:   sp,
-				Source: true,
-				T:      t,
+				SourcePath: sp,
+				Source:     true,
+				T:          t,
 			},
 			&entities.PListAnalysis{},
 			adapter,

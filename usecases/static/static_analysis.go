@@ -115,11 +115,11 @@ func Analysis(command entities.Command, entity *entities.StaticAnalysis, adapter
 				virusCommand.Path = virusPath
 				_ = adapter.Output.Logger(output.ParseInfo(virusCommand, "Virus Analysis", "starting virus analysis..."))
 				if err := adapter.Services.VirusScan(virusCommand, &entity.Virus); err != nil {
-						entity.HasVirus = false
+					entity.HasVirus = false
 					_ = adapter.Output.Error(output.ParseError(virusCommand, "Virus Analysis", err))
 					_ = adapter.Output.Logger(output.ParseWarning(command, analysisName,
 						fmt.Sprintf("skipping virus analysis, errored with: %s", err)))
-						return
+					return
 				}
 				_ = adapter.Output.Logger(output.ParseInfo(virusCommand, "Virus Analysis", "virus analysis completed!"))
 			}()

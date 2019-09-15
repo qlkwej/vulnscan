@@ -5,6 +5,7 @@ import (
 	"github.com/simplycubed/vulnscan/adapters"
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"github.com/simplycubed/vulnscan/entities"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -71,47 +72,46 @@ type ParsedPList struct {
 
 // Looks for the plist file in the folder. Depending on the isSrc flag, parses the folder differently.
 func findPListFile(command *entities.Command) error {
-	var (
-		plistPath string
-		path string
-	)
+	var plistPath string
 	if command.Source {
-		path = command.SourcePath
-	} else {
-		path = command.Path
-	}
-	files, err := ioutil.ReadDir(path)
-	if err != nil {
-		return fmt.Errorf("error reading the directory %s: %s", command.Path, err)
-	}
-	if command.Source {
-		for _, f := range files {
-			if strings.HasSuffix(f.Name(), ".xcodeproj") {
-				_, appname := filepath.Split(f.Name())
-				command.AppName = strings.Replace(appname, ".xcodeproj", "", 1)
-			}
-		}
-		walkErr := filepath.Walk(command.SourcePath, func(path string, info os.FileInfo, err error) error {
-			if !strings.Contains(path, "__MACOSX") && strings.HasSuffix(info.Name(), "Info.plist") {
-				plistPath = path
-			}
+		if walkErr := filepath.Walk(command.SourcePath, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
+			// We need these markers to be able to exit when both find jobs are done
+			var appName, plist bool
+			if strings.HasSuffix(path, ".xcodeproj") {
+				command.AppName = strings.Replace(filepath.Base(path), ".xcodeproj", "", 1)
+				appName = true
+				if plist {
+					return io.EOF
+				}
+			}
+			if !strings.Contains(path, "__MACOSX") && strings.HasSuffix(info.Name(), "Info.plist") {
+				plistPath = path
+				plist = true
+				if appName {
+					return io.EOF
+				}
+			}
 			return nil
-		})
-		if walkErr != nil {
+		}); walkErr != nil && walkErr != io.EOF {
 			return fmt.Errorf("error walking directory %s: %s", command.SourcePath, walkErr)
 		}
-
 	} else {
+		var appDir string
+		files, err := ioutil.ReadDir(command.Path)
+		if err != nil {
+			return fmt.Errorf("error reading directory %s: %s", command.Path, err)
+		}
 		for _, f := range files {
 			if strings.HasSuffix(f.Name(), ".app") {
-				command.AppName = f.Name()
+				appDir = filepath.Join(command.Path, f.Name())
 				break
 			}
 		}
-		plistPath = filepath.Join(filepath.Join(command.Path, command.AppName), "Info.plist")
+		command.AppName = strings.Replace(filepath.Base(appDir), ".app", "", 1)
+		plistPath = filepath.Join(appDir, "Info.plist")
 	}
 	if _, err := os.Stat(plistPath); os.IsNotExist(err) {
 		return fmt.Errorf("cannot find Info.plist file. Skipping PList Analysis")

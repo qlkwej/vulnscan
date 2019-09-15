@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+// performJtoolAnalysis calls jtool with the provided args. Args is a slice of slices, each of which can contain different
+// arguments. In case len(args) > 1, jtool will be called multiple times, in which case the output of the command will
+// be combined in the same string.
 func performJtoolAnalysis(command entities.Command, args [][]string) (out string, err error) {
 	com := filepath.Join(command.Tools, "jtool")
 	if _, err := os.Stat(com); os.IsNotExist(err) {
@@ -21,7 +24,7 @@ func performJtoolAnalysis(command entities.Command, args [][]string) (out string
 	var sb strings.Builder
 	for _, arg := range args {
 		if out, e := exec.Command(com, arg...).CombinedOutput(); e != nil {
-			return string(out), e
+			return string(out), fmt.Errorf("error executing command %s: %s", arg, e)
 		} else {
 			sb.WriteString(string(out))
 			sb.WriteString("\n")

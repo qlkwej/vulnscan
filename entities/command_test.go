@@ -8,17 +8,17 @@ import (
 var commandTestMap = map[string]interface{}{
 	"path":            "/usr/app/binary",
 	"source_path":     "/usr/app/source",
-	"source":		   false,
+	"source":          false,
 	"tools":           "/var/tools/folder",
 	"app_name":        "Binary",
 	"app_id":          "183948394",
 	"country":         "us",
 	"virus_total_key": "XXXXX-XXXXXX-XXXXXX-XXXXXX",
-	"analysis": 	   map[string]bool{
+	"analysis": map[string]bool{
 		"DoPList": true,
 		"DoFiles": false,
 	},
-	"silent": 		   true,
+	"silent": true,
 }
 
 func TestCommandMapTransformation(t *testing.T) {
