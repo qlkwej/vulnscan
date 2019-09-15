@@ -59,6 +59,8 @@ func TestAnalysis(t *testing.T) {
 		"binary.ipa":        binaryIpaTestAdapter,
 		"DVIA.ipa":          dviaTestAdapter,
 		"DVIA-v2-swift.ipa": dviaTestAdapter,
+		"ClashPlenix.ipa":   binaryIpaTestAdapter,
+		"AirRec.ipa":        binaryIpaTestAdapter,
 	} {
 		tf, err := test.FindTest("usecases", "static")
 		assert.NoError(t, err)

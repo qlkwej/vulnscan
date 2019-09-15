@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/simplycubed/vulnscan/adapters/output"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/simplycubed/vulnscan/adapters"
@@ -33,7 +34,9 @@ func Analysis(command entities.Command, entity *entities.BinaryAnalysis, adapter
 		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "application binary found on route %s", command.Path))
 		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "performing macho information extraction"))
 		if err := GetMachoInfo(command, entity); err != nil {
-			return err
+			_ = adapter.Output.Logger(output.ParseWarning(command, analysisName,
+				"error opening macho file, %s binary is probably damaged: %s", filepath.Base(command.Path), err))
+			entity.Macho.Err = true
 		}
 		_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "macho information extraction completed"))
 		getTypeInfo(command, entity)

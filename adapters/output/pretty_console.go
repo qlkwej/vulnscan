@@ -297,13 +297,20 @@ func createBinaryOutput(entity *entities.BinaryAnalysis) string {
 	sb.WriteString(title("Binary information"))
 	sb.WriteString(key("Binary language"))
 	sb.WriteString(value(string(entity.BinType)))
-	for k, v := range entity.Macho.ToMap() {
-		if t, ok := v.(uint); ok {
-			v = strconv.Itoa(int(t))
+	if entity.Macho.Err {
+		sb.WriteString("\n<red>ERROR EXTRACTING MACHO INFORMATION FROM BINARY</>\n")
+	} else {
+		for k, v := range entity.Macho.ToMap() {
+			if _, ok := v.(bool); !ok {
+				if t, ok := v.(uint); ok {
+					v = strconv.Itoa(int(t))
+				}
+				sb.WriteString(pretifyKey(k))
+				sb.WriteString(value(v.(string)))
+			}
 		}
-		sb.WriteString(pretifyKey(k))
-		sb.WriteString(value(v.(string)))
 	}
+
 	sb.WriteString(subTitle("Libraries found in the binary"))
 	if len(entity.Libraries) > 0 {
 		sb.WriteString(list(entity.Libraries))
@@ -366,11 +373,11 @@ func status(s entities.Status) string {
 	case entities.InsecureStatus:
 		col = "danger"
 	case entities.SecureStatus:
-		col = "green"
+		col = "suc"
 	case entities.WarningStatus:
 		col = "warn"
 	default:
-		col = "default"
+		col = "blue"
 	}
 	return value(fmt.Sprintf("<%s>%s</>", col, s))
 }
@@ -383,7 +390,7 @@ func level(s entities.Level) string {
 	case entities.WarningLevel:
 		col = "warn"
 	case entities.InfoLevel:
-		col = "info"
+		col = "blue"
 	default:
 		col = "suc"
 	}

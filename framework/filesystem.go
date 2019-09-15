@@ -42,7 +42,6 @@ func Normalize(command entities.Command, fn func(p string, sp string) error) (er
 			}
 			removeFile := tempDir
 			removeFunc = func() {
-				fmt.Printf("removing %s (%s)\n", removeFile, command.Path)
 				_ = os.RemoveAll(removeFile)
 			}
 			appDir, err := findAppFile(tempDir)
@@ -64,7 +63,6 @@ func Normalize(command entities.Command, fn func(p string, sp string) error) (er
 				return fmt.Errorf("error coping files from .app: %s", e)
 			}
 			removeFunc = func() {
-				fmt.Printf("removing %s (%s)\n", tempDir, command.Path)
 				_ = os.RemoveAll(tempDir)
 			}
 
