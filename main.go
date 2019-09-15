@@ -54,6 +54,13 @@ var (
 			Destination: b,
 		}
 	}
+	summaryFlag = func(b *bool) cli.BoolFlag {
+		return cli.BoolFlag{
+			Name:        "summary, u",
+			Usage:       "outputs a summarized report in console mode",
+			Destination: b,
+		}
+	}
 	binaryFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
 			Name: "binary, b",
@@ -123,6 +130,7 @@ func getApp() *cli.App {
 		useJSON         bool
 		makeDomainCheck bool
 		quiet           bool
+		summary 		bool
 
 		// Mark as true to skip command validation on download command
 		notCheckPath bool
@@ -132,6 +140,7 @@ func getApp() *cli.App {
 			configurationFlag(&configurationPath),
 			toolsFlag(&toolsFolder),
 			quietFlag(&quiet),
+			summaryFlag(&summary),
 		}
 
 		command = entities.Command{

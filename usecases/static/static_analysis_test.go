@@ -25,7 +25,7 @@ func binaryIpaTestAdapter(command entities.Command, entity entities.Entity) erro
 	return nil
 }
 
-func dviaTestAdapter(command entities.Command, entity entities.Entity) error {
+func notAppStoreTestAdapter(command entities.Command, entity entities.Entity) error {
 	if ent, ok := entity.(*entities.StaticAnalysis); ok {
 		assert.NotEmpty(command.T, ent.Files.Files)
 		assert.NotEmpty(command.T, ent.Plist.Xml)
@@ -57,10 +57,10 @@ func TestAnalysis(t *testing.T) {
 	var testMap = map[string]func(command entities.Command, entity entities.Entity) error{}
 	for k, v := range map[string]func(command entities.Command, entity entities.Entity) error{
 		"binary.ipa":        binaryIpaTestAdapter,
-		"DVIA.ipa":          dviaTestAdapter,
-		"DVIA-v2-swift.ipa": dviaTestAdapter,
-		"ClashPlenix.ipa":   binaryIpaTestAdapter,
-		"AirRec.ipa":        binaryIpaTestAdapter,
+		"DVIA.ipa":          notAppStoreTestAdapter,
+		"DVIA-v2-swift.ipa": notAppStoreTestAdapter,
+		"ClashPlenix.ipa":   notAppStoreTestAdapter,
+		"AirRec.ipa":        notAppStoreTestAdapter,
 	} {
 		tf, err := test.FindTest("usecases", "static")
 		assert.NoError(t, err)
