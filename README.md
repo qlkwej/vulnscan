@@ -196,7 +196,7 @@ Here is an example of each one of this formats using every option available:
   "tools": "tools/folder",
   "virus": "virus_scan_password",
   "country": "es",
-  "silent": true,
+  "quiet": true,
   "domains": true
 }
 ```
@@ -209,7 +209,7 @@ source: route/to/source
 tools: tools/folder	
 virus: virus_scan_password
 country: es
-silent: true
+quiet: true
 domains: true
 ```
 
@@ -221,7 +221,7 @@ source = "route/to/source"
 tools = "tools/folder"	
 virus = "virus_scan_password"
 country = "es"
-silent = true
+quiet = true
 domains = true
 ```
 
@@ -234,7 +234,7 @@ domains = true
 - __tools__: string, path to the tools folder
 - __virus__: string, VirusTotal key
 - __country__: string, country to use for appstore app lookup
-- __silent__: boolean, whether or not run using silent mode
+- __quiet__: boolean, whether or not run using quiet mode
 - __domains__: booean, whether or not run malware domains check (for code and scan commands)
 
 ## Help

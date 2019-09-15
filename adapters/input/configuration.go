@@ -167,9 +167,9 @@ func loadConfiguration(command entities.Command, configuration *entities.Configu
 		_ = adapter.Output.Logger(output.ParseInfo(command, "", "configured country for store search: %s", country))
 		entity.Country = country
 	}
-	if configuration.SilentMode {
-		_ = adapter.Output.Logger(output.ParseInfo(command, "", "configured silent mode"))
-		entity.Silent = true
+	if configuration.QuietMode {
+		_ = adapter.Output.Logger(output.ParseInfo(command, "", "configured quiet mode"))
+		entity.Quiet = true
 	}
 
 	// Adapter configuration

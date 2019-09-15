@@ -49,7 +49,7 @@ var (
 "tools": "tools/folder",
 "virus": "virus_scan_password",
 "country": "es",
-"silent": true,
+"quiet": true,
 "domains": true
 }`
 
@@ -60,7 +60,7 @@ source = "test_files/apps/source.zip"
 tools = "tools/folder"	
 virus = "virus_scan_password"
 country = "es"
-silent = true
+quiet = true
 domains = true`
 
 	yaml = `
@@ -70,7 +70,7 @@ source: test_files/apps/source.zip
 tools: tools/folder	
 virus: virus_scan_password
 country: es
-silent: true
+quiet: true
 domains: true`
 )
 

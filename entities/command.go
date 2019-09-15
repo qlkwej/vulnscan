@@ -22,7 +22,8 @@ type (
 		Analysis      map[AnalysisCheck]bool `json:"analysis" validate:"valid_analysis"`
 		Output        io.Writer              `json:"output"`
 		T             *testing.T             `json:"t"`
-		Silent        bool                   `json:"silent"`
+		Quiet         bool                   `json:"quiet"`
+		Summary       bool					 `json:"summary"`
 	}
 )
 
@@ -233,7 +234,8 @@ func (c Command) ToMap() map[string]interface{} {
 		"analysis":        map[string]bool{},
 		"output":          c.Output,
 		"t":               c.T,
-		"silent":          c.Silent,
+		"quiet":           c.Quiet,
+		"summary":         c.Summary,
 	}
 	for k, v := range c.Analysis {
 		m["analysis"].(map[string]bool)[string(k)] = v
@@ -333,12 +335,20 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			return ent, fmt.Errorf("erroneus t type, expected *testing.T, found: %T", v)
 		}
 	}
-	if v, ok := m["silent"]; ok {
+	if v, ok := m["quiet"]; ok {
 		switch v.(type) {
 		case bool:
-			c.Silent = v.(bool)
+			c.Quiet = v.(bool)
 		default:
-			return ent, fmt.Errorf("erroneus silent type, expected bool, found: %T", v)
+			return ent, fmt.Errorf("erroneus quiet type, expected bool, found: %T", v)
+		}
+	}
+	if v, ok := m["summary"]; ok {
+		switch v.(type) {
+		case bool:
+			c.Summary = v.(bool)
+		default:
+			return ent, fmt.Errorf("erroneus summary type, expected bool, found: %T", v)
 		}
 	}
 	return c, nil

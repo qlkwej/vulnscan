@@ -18,7 +18,8 @@ var commandTestMap = map[string]interface{}{
 		"DoPList": true,
 		"DoFiles": false,
 	},
-	"silent": true,
+	"quiet": 		   true,
+	"summary": 		   true,
 }
 
 func TestCommandMapTransformation(t *testing.T) {

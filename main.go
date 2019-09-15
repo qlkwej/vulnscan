@@ -47,7 +47,7 @@ var (
 			Destination: b,
 		}
 	}
-	silentFlag = func(b *bool) cli.BoolFlag {
+	quietFlag = func(b *bool) cli.BoolFlag {
 		return cli.BoolFlag{
 			Name:        "quiet, q",
 			Usage:       "do not log info messages",
@@ -122,7 +122,7 @@ func getApp() *cli.App {
 
 		useJSON         bool
 		makeDomainCheck bool
-		silent          bool
+		quiet           bool
 
 		// Mark as true to skip command validation on download command
 		notCheckPath bool
@@ -131,7 +131,7 @@ func getApp() *cli.App {
 			jsonFlag(&useJSON),
 			configurationFlag(&configurationPath),
 			toolsFlag(&toolsFolder),
-			silentFlag(&silent),
+			quietFlag(&quiet),
 		}
 
 		command = entities.Command{
@@ -157,13 +157,13 @@ func getApp() *cli.App {
 		}
 
 		parseConfiguration = func() {
-			if silent {
+			if quiet {
 				output.SetBasicLogger(os.Stderr, entities.Warn, false)
 			} else {
 				output.SetBasicLogger(os.Stderr, entities.Info, false)
 			}
 			input.ConfigurationAdapter(entities.Command{Path: configurationPath}, &command, &adapter)
-			if command.Silent && !silent {
+			if command.Quiet && !quiet {
 				output.SetBasicLogger(os.Stderr, entities.Warn, false)
 			}
 			if len(appID) > 0 {
