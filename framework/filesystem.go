@@ -3,16 +3,15 @@ package framework
 import (
 	"archive/zip"
 	"fmt"
-	"github.com/simplycubed/vulnscan/entities"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/otiai10/copy"
+	"github.com/simplycubed/vulnscan/entities"
 )
 
 // Normalize tries to adapt the input folder to different cases, so all the analysis can start from a common
@@ -29,52 +28,123 @@ import (
 //		and we wan't to treat the route as in the case where an ipa or zip is passed to the app.
 //
 //		If the file is a directory, we look for an app, ipa or zip file and call Normalize again with it.
-func Normalize(command entities.Command, fn func(p string) error) error {
-	if command.Source {
-		return fn(command.Path) // And don't look back
-	} else if filepath.Ext(command.Path) == ".zip" || filepath.Ext(command.Path) == ".ipa" {
-		// This unzips the content into the temp folder and remove it afterwards.
-		tempDir := filepath.Join(filepath.Dir(command.Path), "temp")
-		return withUnzip(command.Path, tempDir, fn)
-	} else if filepath.Ext(command.Path) == ".app" {
-		// Create a temp folder
-		tempDir := filepath.Join(filepath.Dir(command.Path), "temp")
-		_ = os.MkdirAll(tempDir, os.ModePerm)
-		_ = os.Chmod(tempDir, 0777)
-		// Copy the app to the temp folder
-		if e := copy.Copy(command.Path, filepath.Join(tempDir, filepath.Base(command.Path))); e != nil {
-			return e
-		}
-		// Return the function over the tempDir folder and delete it afterwards
-		return func(p string) error {
-			defer func() {
-				_ = os.RemoveAll(p)
-			}()
-			return fn(p)
-		}(tempDir)
+func Normalize(command entities.Command, fn func(p string, sp string) error) (err error) {
+	var tempDir, sourceTempDir string
+	removeFunc := func() {}
+	if len(command.Path) > 0 {
 
-	} else if len(filepath.Ext(command.Path)) == 0 {
-		// We have a directory, so let's search for a file suspicious of being our app
-		files, err := ioutil.ReadDir(command.Path)
-		if err != nil {
-			log.Fatal(err)
-		}
-		var appObj string
-		for _, f := range files {
-			for _, suffix := range []string{".app", ".ipa", ".zip"} {
-				if strings.HasSuffix(f.Name(), suffix) {
-					appObj = f.Name()
-					break
-				}
+		if filepath.Ext(command.Path) == ".zip" || filepath.Ext(command.Path) == ".ipa" {
+			// This unzips the content into the temp folder and remove it afterwards.
+			tempDir, _ = ioutil.TempDir(filepath.Dir(command.Path), "temp")
+			if err = unzipInTemp(command.Path, tempDir); err != nil {
+				_ = os.RemoveAll(tempDir)
+				return err
+			}
+			removeFile := tempDir
+			removeFunc = func() {
+				_ = os.RemoveAll(removeFile)
+			}
+			appDir, err := findAppFile(tempDir)
+			if err != nil {
+				return err
+			}
+			if appDir != "" {
+				tempDir = filepath.Dir(appDir)
 			}
 
-		}
-		if appObj != "" {
-			command.Path = filepath.Join(command.Path, appObj)
-			return Normalize(command, fn)
+		} else if filepath.Ext(command.Path) == ".app" {
+			// Create a temp folder
+			tempDir, _ = ioutil.TempDir(filepath.Dir(command.Path), "temp")
+			_ = os.MkdirAll(tempDir, os.ModePerm)
+			_ = os.Chmod(tempDir, 0777)
+			// Copy the app to the temp folder
+			if e := copy.Copy(command.Path, filepath.Join(tempDir, filepath.Base(command.Path))); e != nil {
+				_ = os.RemoveAll(tempDir)
+				return fmt.Errorf("error coping files from .app: %s", e)
+			}
+			removeFunc = func() {
+				_ = os.RemoveAll(tempDir)
+			}
+
+		} else if len(filepath.Ext(command.Path)) == 0 {
+			// We have a directory, so let's search for a file suspicious of being our app
+			appFile, err := findAppFile(command.Path)
+			if err != nil {
+				return err
+			}
+			if appFile != "" {
+				command.Path = appFile
+				return Normalize(command, fn)
+			} else {
+				return fmt.Errorf("unable to normalize path %s: app not found", command.Path)
+			}
+
+		} else {
+			return fmt.Errorf("unable to normalize path %s: %s extension not recognized", command.Path, filepath.Ext(command.Path))
 		}
 	}
-	return fmt.Errorf("unable to normalize path %s", command.Path)
+	removeSourceFunc := func() {}
+	if len(command.SourcePath) > 0 {
+		if len(filepath.Ext(command.SourcePath)) == 0 {
+			files, err := ioutil.ReadDir(command.SourcePath)
+			if err != nil {
+				return fmt.Errorf("error reading command.Path (%s) directory: %s", command.SourcePath, err)
+			}
+			if len(files) > 1 {
+				sourceTempDir = command.SourcePath
+			} else if len(files) == 1 && (files[0].IsDir() || filepath.Ext(files[0].Name()) == ".zip") {
+				command.SourcePath = filepath.Join(command.SourcePath, files[0].Name())
+				return Normalize(command, fn)
+			}
+		} else if filepath.Ext(command.SourcePath) == ".zip" {
+			sourceTempDir, _ = ioutil.TempDir(filepath.Dir(command.SourcePath), "source_temp")
+			if err = unzipInTemp(command.SourcePath, sourceTempDir); err != nil {
+				_ = os.RemoveAll(sourceTempDir)
+				return err
+			}
+			removeFile := sourceTempDir
+			files, err := ioutil.ReadDir(sourceTempDir)
+			if err != nil {
+				return err
+			}
+			if len(files) == 1 && files[0].Name() == strings.Replace(filepath.Base(command.SourcePath), ".zip", "", 1) {
+				sourceTempDir = filepath.Join(sourceTempDir, files[0].Name())
+			}
+			removeSourceFunc = func() {
+				_ = os.RemoveAll(removeFile)
+			}
+		}
+	}
+
+	// Return the function over the tempDir folder and delete it afterwards
+	return func(p string, sp string) error {
+		defer func() {
+			removeFunc()
+			removeSourceFunc()
+		}()
+		return fn(p, sp)
+	}(tempDir, sourceTempDir)
+}
+
+func findAppFile(p string) (string, error) {
+	var appFile string
+	if walkErr := filepath.Walk(p, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		for _, ext := range []string{".app", ".ipa", ".zip"} {
+			if filepath.Ext(path) == ext {
+				appFile = path
+				// We use EOF error just to mark that we have found the file (to return an error is the only way
+				// to exit early from the walk function)
+				return io.EOF
+			}
+		}
+		return nil
+	}); walkErr != nil && walkErr != io.EOF {
+		return "", fmt.Errorf("error walking directory %s to find the .app directory: %s", p, walkErr)
+	}
+	return appFile, nil
 }
 
 func ExtractBinPath(command *entities.Command) error {
@@ -103,30 +173,23 @@ func ExtractBinPath(command *entities.Command) error {
 	return nil
 }
 
-// withUnzip extracts file
-func withUnzip(zipFile, path string, fn func(p string) error) error {
-	_ = os.MkdirAll(path, os.ModePerm)
-	defer func() {
-		_ = os.RemoveAll(path)
-	}()
-	err := unzip(zipFile, path)
-	if err != nil {
+func unzipInTemp(filePath, tempPath string) error {
+	_ = os.MkdirAll(tempPath, os.ModePerm)
+
+	if err := unzip(filePath, tempPath); err != nil {
 		return fmt.Errorf("unzip error: %s", err)
 	}
-	// Here we have two situations: either we have a subfolder  with the app file or we have the app file inside a
+	// Here we have two situations: either we have a subfolder  with the app filePath or we have the app filePath inside a
 	// subfolder
-	files, err := ioutil.ReadDir(path)
+	files, err := ioutil.ReadDir(tempPath)
 	if err != nil {
-		return fmt.Errorf("error reading directory %s: %s", path, err)
+		return fmt.Errorf("error reading directory %s: %s", tempPath, err)
 	}
 	if len(files) == 0 {
 		return fmt.Errorf("extraction failed: the folder is empty")
 	}
-	if len(files) > 1 || filepath.Ext(files[0].Name()) == ".app" {
-		return fn(path)
-	}
-	// We have to run the function into the uncompressed folder in temp, that is named as the zipFile
-	return fn(filepath.Join(path, files[0].Name()))
+
+	return nil
 }
 
 func unzip(src, dest string) error {

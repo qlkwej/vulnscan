@@ -14,49 +14,49 @@ func PrettyConsoleAdapter(command entities.Command, entity entities.Entity) erro
 	var e error
 	switch entity.(type) {
 	case *entities.BinaryAnalysis:
-		_, e = color.Fprintf(command.Output, createBinaryOutput(entity.(*entities.BinaryAnalysis)))
+		_, e = color.Fprintf(command.Output, createBinaryOutput(command, entity.(*entities.BinaryAnalysis)))
 	case *entities.CodeAnalysis:
-		_, e = color.Fprintf(command.Output, createCodeOutput(entity.(*entities.CodeAnalysis)))
+		_, e = color.Fprintf(command.Output, createCodeOutput(command, entity.(*entities.CodeAnalysis)))
 	case *entities.FileAnalysis:
-		_, e = color.Fprintf(command.Output, createFilesOutput(entity.(*entities.FileAnalysis)))
+		_, e = color.Fprintf(command.Output, createFilesOutput(command, entity.(*entities.FileAnalysis)))
 	case *entities.PListAnalysis:
-		_, e = color.Fprintf(command.Output, createPlistOutput(entity.(*entities.PListAnalysis)))
+		_, e = color.Fprintf(command.Output, createPlistOutput(command, entity.(*entities.PListAnalysis)))
 	case *entities.StoreAnalysis:
-		_, e = color.Fprintf(command.Output, createStoreOutput(entity.(*entities.StoreAnalysis)))
+		_, e = color.Fprintf(command.Output, createStoreOutput(command, entity.(*entities.StoreAnalysis)))
 	case *entities.VirusAnalysis:
-		_, e = color.Fprintf(command.Output, createVirusOutput(entity.(*entities.VirusAnalysis)))
+		_, e = color.Fprintf(command.Output, createVirusOutput(command, entity.(*entities.VirusAnalysis)))
 	case *entities.StaticAnalysis:
-		_, e = color.Fprintf(command.Output, createStaticOutput(entity.(*entities.StaticAnalysis)))
+		_, e = color.Fprintf(command.Output, createStaticOutput(command, entity.(*entities.StaticAnalysis)))
 	default:
 		e = fmt.Errorf("printing error: unable to detect analysis kind")
 	}
 	return e
 }
 
-func createStaticOutput(entity *entities.StaticAnalysis) string {
+func createStaticOutput(command entities.Command, entity *entities.StaticAnalysis) string {
 	var sb strings.Builder
 	if entity.HasBinary {
-		sb.WriteString(createBinaryOutput(&entity.Binary))
+		sb.WriteString(createBinaryOutput(command, &entity.Binary))
 	}
 	if entity.HasStore {
-		sb.WriteString(createStoreOutput(&entity.Store))
+		sb.WriteString(createStoreOutput(command, &entity.Store))
 	}
 	if entity.HasFiles {
-		sb.WriteString(createFilesOutput(&entity.Files))
+		sb.WriteString(createFilesOutput(command, &entity.Files))
 	}
 	if entity.HasPlist {
-		sb.WriteString(createPlistOutput(&entity.Plist))
+		sb.WriteString(createPlistOutput(command, &entity.Plist))
 	}
 	if entity.HasCode {
-		sb.WriteString(createCodeOutput(&entity.Code))
+		sb.WriteString(createCodeOutput(command, &entity.Code))
 	}
 	if entity.HasVirus {
-		sb.WriteString(createVirusOutput(&entity.Virus))
+		sb.WriteString(createVirusOutput(command, &entity.Virus))
 	}
 	return sb.String()
 }
 
-func createVirusOutput(entity *entities.VirusAnalysis) string {
+func createVirusOutput(command entities.Command, entity *entities.VirusAnalysis) string {
 	var (
 		sb          strings.Builder
 		responseMap = entity.Response.ToMap()
@@ -81,18 +81,20 @@ func createVirusOutput(entity *entities.VirusAnalysis) string {
 		sb.WriteString(value(strconv.Itoa(entity.Report.Total)))
 		sb.WriteString(key("Number of positives"))
 		sb.WriteString(value(strconv.Itoa(entity.Report.Positives)))
-		for n, s := range entity.Report.Scans {
-			sb.WriteString(subTitle(fmt.Sprintf("Analysis name: %s", n)))
-			sb.WriteString(key("Detected"))
-			if s.Detected {
-				sb.WriteString(value("True"))
-			} else {
-				sb.WriteString(value("False"))
-			}
-			for k, v := range s.ToMap() {
-				if k != "detected" {
-					sb.WriteString(pretifyKey(k))
-					sb.WriteString(value(v.(string)))
+		if !command.Summary {
+			for n, s := range entity.Report.Scans {
+				sb.WriteString(subTitle(fmt.Sprintf("Analysis name: %s", n)))
+				sb.WriteString(key("Detected"))
+				if s.Detected {
+					sb.WriteString(value("True"))
+				} else {
+					sb.WriteString(value("False"))
+				}
+				for k, v := range s.ToMap() {
+					if k != "detected" {
+						sb.WriteString(pretifyKey(k))
+						sb.WriteString(value(v.(string)))
+					}
 				}
 			}
 		}
@@ -103,7 +105,7 @@ func createVirusOutput(entity *entities.VirusAnalysis) string {
 	return sb.String()
 }
 
-func createStoreOutput(entity *entities.StoreAnalysis) string {
+func createStoreOutput(command entities.Command, entity *entities.StoreAnalysis) string {
 	var sb strings.Builder
 	sb.WriteString(title("Information found on app store"))
 	sb.WriteString(key("Number of results found"))
@@ -141,7 +143,7 @@ func createStoreOutput(entity *entities.StoreAnalysis) string {
 	return sb.String()
 }
 
-func createPlistOutput(entity *entities.PListAnalysis) string {
+func createPlistOutput(command entities.Command, entity *entities.PListAnalysis) string {
 	var sb strings.Builder
 	sb.WriteString(title("Plist file analysis"))
 	for k, v := range entity.ToMap() {
@@ -190,16 +192,18 @@ func createPlistOutput(entity *entities.PListAnalysis) string {
 	} else {
 		sb.WriteString(value("None"))
 	}
-	sb.WriteString(subTitle("Complete XML output"))
-	sb.WriteString(formatXML(entity.Xml, "", "  "))
-	// Without this line (or something similar with open and close tags), the next element is interpreted on screen
-	// as xml.
-	// TODO: better solution?
-	sb.WriteString("<>End of xml</>\n")
+	if !command.Summary {
+		sb.WriteString(subTitle("Complete XML output"))
+		sb.WriteString(formatXML(entity.Xml, "", "  "))
+		// Without this line (or something similar with open and close tags), the next element is interpreted on screen
+		// as xml.
+		// TODO: better solution?
+		sb.WriteString("<>End of xml</>\n")
+	}
 	return sb.String()
 }
 
-func createFilesOutput(entity *entities.FileAnalysis) string {
+func createFilesOutput(command entities.Command, entity *entities.FileAnalysis) string {
 	var sb strings.Builder
 	sb.WriteString(title("Files found in application"))
 	sb.WriteString(subTitle("Certifications"))
@@ -220,12 +224,15 @@ func createFilesOutput(entity *entities.FileAnalysis) string {
 	} else {
 		sb.WriteString("<red>No plist files found</>\n")
 	}
-	// sb.WriteString(subTitle("Complete list of files"))
-	// sb.WriteString(list(entity.Files))
+	if !command.Summary {
+		sb.WriteString(subTitle("Complete list of files"))
+		sb.WriteString(list(entity.Files))
+	}
+
 	return sb.String()
 }
 
-func createCodeOutput(entity *entities.CodeAnalysis) string {
+func createCodeOutput(command entities.Command, entity *entities.CodeAnalysis) string {
 	var sb strings.Builder
 	sb.WriteString(title("Code Analysis"))
 	sb.WriteString(subTitle("Traits found analyzing the code"))
@@ -292,18 +299,25 @@ func createCodeOutput(entity *entities.CodeAnalysis) string {
 	return sb.String()
 }
 
-func createBinaryOutput(entity *entities.BinaryAnalysis) string {
+func createBinaryOutput(command entities.Command, entity *entities.BinaryAnalysis) string {
 	var sb strings.Builder
 	sb.WriteString(title("Binary information"))
 	sb.WriteString(key("Binary language"))
 	sb.WriteString(value(string(entity.BinType)))
-	for k, v := range entity.Macho.ToMap() {
-		if t, ok := v.(uint); ok {
-			v = strconv.Itoa(int(t))
+	if entity.Macho.Err {
+		sb.WriteString("\n<red>ERROR EXTRACTING MACHO INFORMATION FROM BINARY</>\n")
+	} else {
+		for k, v := range entity.Macho.ToMap() {
+			if _, ok := v.(bool); !ok {
+				if t, ok := v.(uint); ok {
+					v = strconv.Itoa(int(t))
+				}
+				sb.WriteString(pretifyKey(k))
+				sb.WriteString(value(v.(string)))
+			}
 		}
-		sb.WriteString(pretifyKey(k))
-		sb.WriteString(value(v.(string)))
 	}
+
 	sb.WriteString(subTitle("Libraries found in the binary"))
 	if len(entity.Libraries) > 0 {
 		sb.WriteString(list(entity.Libraries))
@@ -366,11 +380,11 @@ func status(s entities.Status) string {
 	case entities.InsecureStatus:
 		col = "danger"
 	case entities.SecureStatus:
-		col = "green"
+		col = "suc"
 	case entities.WarningStatus:
 		col = "warn"
 	default:
-		col = "default"
+		col = "blue"
 	}
 	return value(fmt.Sprintf("<%s>%s</>", col, s))
 }
@@ -383,7 +397,7 @@ func level(s entities.Level) string {
 	case entities.WarningLevel:
 		col = "warn"
 	case entities.InfoLevel:
-		col = "info"
+		col = "blue"
 	default:
 		col = "suc"
 	}

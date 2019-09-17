@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"github.com/kardianos/osext"
 	"github.com/simplycubed/vulnscan/framework"
+	"io"
 	"log"
 	"os"
 	"sort"
 
+	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/urfave/cli.v1"
 
 	"github.com/simplycubed/vulnscan/adapters"
@@ -47,10 +49,17 @@ var (
 			Destination: b,
 		}
 	}
-	silentFlag = func(b *bool) cli.BoolFlag {
+	quietFlag = func(b *bool) cli.BoolFlag {
 		return cli.BoolFlag{
 			Name:        "quiet, q",
 			Usage:       "do not log info messages",
+			Destination: b,
+		}
+	}
+	summaryFlag = func(b *bool) cli.BoolFlag {
+		return cli.BoolFlag{
+			Name:        "summary, u",
+			Usage:       "outputs a summarized report in console mode",
 			Destination: b,
 		}
 	}
@@ -98,7 +107,7 @@ var (
 
 	toolsFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
-			Name:  "tools_folder, tools, t",
+			Name:  "tools, t",
 			Usage: "folder where the external tools are / should be downloaded",
 			Value: func() string {
 				p, _ := osext.ExecutableFolder()
@@ -122,7 +131,8 @@ func getApp() *cli.App {
 
 		useJSON         bool
 		makeDomainCheck bool
-		silent          bool
+		quiet           bool
+		summary         bool
 
 		// Mark as true to skip command validation on download command
 		notCheckPath bool
@@ -131,7 +141,8 @@ func getApp() *cli.App {
 			jsonFlag(&useJSON),
 			configurationFlag(&configurationPath),
 			toolsFlag(&toolsFolder),
-			silentFlag(&silent),
+			quietFlag(&quiet),
+			summaryFlag(&summary),
 		}
 
 		command = entities.Command{
@@ -157,14 +168,20 @@ func getApp() *cli.App {
 		}
 
 		parseConfiguration = func() {
-			if silent {
-				output.SetBasicLogger(os.Stderr, entities.Warn, false)
+			var setLogger func(io.Writer, entities.LogLevel, bool)
+			if terminal.IsTerminal(int(os.Stderr.Fd())) {
+				setLogger = output.SetColorLogger
 			} else {
-				output.SetBasicLogger(os.Stderr, entities.Info, false)
+				setLogger = output.SetBasicLogger
+			}
+			if quiet {
+				setLogger(os.Stderr, entities.Warn, false)
+			} else {
+				setLogger(os.Stderr, entities.Info, false)
 			}
 			input.ConfigurationAdapter(entities.Command{Path: configurationPath}, &command, &adapter)
-			if command.Silent && !silent {
-				output.SetBasicLogger(os.Stderr, entities.Warn, false)
+			if command.Quiet && !quiet {
+				setLogger(os.Stderr, entities.Warn, false)
 			}
 			if len(appID) > 0 {
 				command.AppId = appID
@@ -174,11 +191,15 @@ func getApp() *cli.App {
 			}
 			// For now all we have is binary analysis. When we have a mix of binary and source analysis,
 			// we will just include two paths in the command entity.
-			if len(binaryPath) > 0 {
-				command.Path = binaryPath
-			} else if len(sourcePath) > 0 {
-				command.Path = sourcePath
-				command.Source = true
+			if len(binaryPath) > 0 || len(sourcePath) > 0 {
+				if len(binaryPath) > 0 {
+					command.Path = binaryPath
+				} else {
+					command.Source = true
+				}
+				if len(sourcePath) > 0 {
+					command.SourcePath = sourcePath
+				}
 			} else if len(command.Path) == 0 {
 				command.Path = func() string {
 					dir, _ := os.Getwd()
@@ -212,7 +233,7 @@ func getApp() *cli.App {
 			}
 		}
 	)
-
+	cli.AppHelpTemplate = appHelp
 	app := cli.NewApp()
 	app.Version = "0.0.1"
 	app.Name = "vulnscan"

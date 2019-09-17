@@ -65,6 +65,20 @@ func FindTools() (string, error) {
 	return filepath.Join(main, "test", "tools"), nil
 }
 
+func GetTestPaths(baseRoute []string, fileNames []string) ([]string, error) {
+	var paths []string
+	main, err := FindMainFolder()
+	if err != nil {
+		return paths, err
+	}
+	baseRoute = append([]string{main, "test", "data"}, baseRoute...)
+	for _, f := range fileNames {
+		route := append(baseRoute, f)
+		paths = append(paths, filepath.Join(route...))
+	}
+	return paths, nil
+}
+
 // WithPipeStdout writes to standard out
 func WithPipeStdout(printerFunc func() error) (string, error) {
 	// Let's hack the stdout to get the help message captured

@@ -11,17 +11,19 @@ type (
 	AnalysisCheck string
 
 	Command struct {
-		Path          string                 `json:"path" validate:"min=1"`
+		Path          string                 `json:"path" validate:"required_without=SourcePath"`
+		SourcePath    string                 `json:"source_path" validate:"required_without=Path"`
+		Source        bool                   `json:"source"`
 		Tools         string                 `json:"tools"`
 		AppName       string                 `json:"app_name"`
 		AppId         string                 `json:"app_id"`
 		Country       string                 `json:"country" validate:"valid_country_codes"`
 		VirusTotalKey string                 `json:"virus_total_key"`
-		Source        bool                   `json:"source"`
 		Analysis      map[AnalysisCheck]bool `json:"analysis" validate:"valid_analysis"`
 		Output        io.Writer              `json:"output"`
 		T             *testing.T             `json:"t"`
-		Silent        bool                   `json:"silent"`
+		Quiet         bool                   `json:"quiet"`
+		Summary       bool                   `json:"summary"`
 	}
 )
 
@@ -222,16 +224,18 @@ func analysisCheckValidator(fl validator.FieldLevel) bool {
 func (c Command) ToMap() map[string]interface{} {
 	m := map[string]interface{}{
 		"path":            c.Path,
+		"source_path":     c.SourcePath,
+		"source":          c.Source,
 		"tools":           c.Tools,
 		"app_name":        c.AppName,
 		"app_id":          c.AppId,
 		"country":         c.Country,
 		"virus_total_key": c.VirusTotalKey,
-		"source":          c.Source,
 		"analysis":        map[string]bool{},
 		"output":          c.Output,
 		"t":               c.T,
-		"silent":          c.Silent,
+		"quiet":           c.Quiet,
+		"summary":         c.Summary,
 	}
 	for k, v := range c.Analysis {
 		m["analysis"].(map[string]bool)[string(k)] = v
@@ -246,6 +250,22 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			c.Path = v.(string)
 		default:
 			return ent, fmt.Errorf("erroneus path type, expected string, found: %T", v)
+		}
+	}
+	if v, ok := m["source_path"]; ok {
+		switch v.(type) {
+		case string:
+			c.SourcePath = v.(string)
+		default:
+			return ent, fmt.Errorf("erroneus source path type, expected string, found: %T", v)
+		}
+	}
+	if v, ok := m["source"]; ok {
+		switch v.(type) {
+		case bool:
+			c.Source = v.(bool)
+		default:
+			return ent, fmt.Errorf("erroneus source type, expected bool, found: %T", v)
 		}
 	}
 	if v, ok := m["tools"]; ok {
@@ -288,14 +308,6 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			return ent, fmt.Errorf("erroneus virus_total_key type, expected string, found: %T", v)
 		}
 	}
-	if v, ok := m["source"]; ok {
-		switch v.(type) {
-		case bool:
-			c.Source = v.(bool)
-		default:
-			return ent, fmt.Errorf("erroneus source type, expected bool, found: %T", v)
-		}
-	}
 	if v, ok := m["analysis"]; ok {
 		switch v.(type) {
 		case map[string]bool:
@@ -323,12 +335,20 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			return ent, fmt.Errorf("erroneus t type, expected *testing.T, found: %T", v)
 		}
 	}
-	if v, ok := m["silent"]; ok {
+	if v, ok := m["quiet"]; ok {
 		switch v.(type) {
 		case bool:
-			c.Silent = v.(bool)
+			c.Quiet = v.(bool)
 		default:
-			return ent, fmt.Errorf("erroneus silent type, expected bool, found: %T", v)
+			return ent, fmt.Errorf("erroneus quiet type, expected bool, found: %T", v)
+		}
+	}
+	if v, ok := m["summary"]; ok {
+		switch v.(type) {
+		case bool:
+			c.Summary = v.(bool)
+		default:
+			return ent, fmt.Errorf("erroneus summary type, expected bool, found: %T", v)
 		}
 	}
 	return c, nil

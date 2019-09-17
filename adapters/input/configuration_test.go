@@ -49,7 +49,7 @@ var (
 "tools": "tools/folder",
 "virus": "virus_scan_password",
 "country": "es",
-"silent": true,
+"quiet": true,
 "domains": true
 }`
 
@@ -60,7 +60,7 @@ source = "test_files/apps/source.zip"
 tools = "tools/folder"	
 virus = "virus_scan_password"
 country = "es"
-silent = true
+quiet = true
 domains = true`
 
 	yaml = `
@@ -70,7 +70,7 @@ source: test_files/apps/source.zip
 tools: tools/folder	
 virus: virus_scan_password
 country: es
-silent: true
+quiet: true
 domains: true`
 )
 
@@ -81,8 +81,7 @@ func testConfigurationHelper(p string, t *testing.T) {
 		entities.DoCode:   true,
 		entities.DoPList:  true,
 	}, command.Analysis)
-	assert.Equal(t, "test_files/apps/source.zip", command.Path)
-	assert.Equal(t, true, command.Source)
+	assert.Equal(t, "test_files/apps/source.zip", command.SourcePath)
 	assert.Equal(t, "virus_scan_password", command.VirusTotalKey)
 	assert.Equal(t, "es", command.Country)
 	assert.NotNil(t, adapter.Services.MalwareDomains)

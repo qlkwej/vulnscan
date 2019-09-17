@@ -7,6 +7,7 @@ import (
 
 var (
 	machoInfoTestMap = map[string]interface{}{
+		"err":        false,
 		"bits":       uint(32),
 		"endianness": "BigEndian",
 		"cpu":        "i386",
@@ -14,6 +15,7 @@ var (
 	}
 
 	wrongMachoInfoTestMap = map[string]interface{}{
+		"err":        false,
 		"bits":       uint(17),
 		"endianness": "Something",
 		"cpu":        "i386",

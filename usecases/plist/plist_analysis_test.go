@@ -21,11 +21,11 @@ func codeTestAdapter(command entities.Command, entity entities.Entity) error {
 func TestPlistSearch(t *testing.T) {
 	// Source
 	zipFile, _ := test.FindTest("usecases", "plist", "source.zip")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{SourcePath: zipFile}, func(p, sp string) error {
 		command := entities.Command{
-			Path:   p,
-			Source: true,
-			T:      t,
+			SourcePath: sp,
+			Source:     true,
+			T:          t,
 		}
 		assert.NoError(t, findPListFile(&command))
 		_, err := os.Stat(command.Path)
@@ -35,7 +35,7 @@ func TestPlistSearch(t *testing.T) {
 	}))
 	// Binary
 	zipFile, _ = test.FindTest("usecases", "plist", "binary.ipa")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile}, func(p, sp string) error {
 		command := entities.Command{
 			Path:   p,
 			Source: false,
@@ -67,12 +67,13 @@ func TestAnalysis(t *testing.T) {
 	var adapter = mocks.GetTestMap(codeTestAdapter)
 	// Source
 	zipFile, _ := test.FindTest("usecases", "plist", "source.zip")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{SourcePath: zipFile}, func(p, sp string) error {
+		t.Logf("Source path: %s\n", sp)
 		Analysis(
 			entities.Command{
-				Path:   p,
-				Source: true,
-				T:      t,
+				SourcePath: sp,
+				Source:     true,
+				T:          t,
 			},
 			&entities.PListAnalysis{},
 			adapter,
@@ -81,11 +82,11 @@ func TestAnalysis(t *testing.T) {
 	}))
 	// Binary
 	zipFile, _ = test.FindTest("usecases", "plist", "binary.ipa")
-	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile, Source: false}, func(p string) error {
+	assert.NoError(t, framework.Normalize(entities.Command{Path: zipFile}, func(p, sp string) error {
 		Analysis(
 			entities.Command{
 				Path:   p,
-				Source: true,
+				Source: false,
 				T:      t,
 			},
 			&entities.PListAnalysis{},

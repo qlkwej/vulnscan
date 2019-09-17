@@ -15,10 +15,17 @@ import (
 func Analysis(command entities.Command, entity *entities.CodeAnalysis, adapter adapters.AdapterMap) {
 	output.CheckNil(adapter)
 	var analysisName = entities.Code
+	if len(command.SourcePath) == 0 {
+		_ = adapter.Output.Error(output.ParseError(command, analysisName,
+			fmt.Errorf("code analysis cannot be run on binary input")))
+		return
+	}
+
 	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, "starting"))
-	if walkErr := filepath.Walk(command.Path, func(path string, info os.FileInfo, err error) error {
+	var files int
+	if walkErr := filepath.Walk(command.SourcePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return err
+			return fmt.Errorf("walk error: %s", err)
 		}
 		if filepath.Ext(path) == ".m" || filepath.Ext(path) == ".swift" {
 			var jfilePath string
@@ -36,20 +43,24 @@ func Analysis(command entities.Command, entity *entities.CodeAnalysis, adapter a
 
 			var data string
 			if d, err := ioutil.ReadFile(jfilePath); err != nil {
+				fmt.Printf("ERROR ! %s\n", err)
 				return fmt.Errorf("error reading file %s: %s", jfilePath, err)
 			} else {
 				data = string(d)
 			}
-			relativeSrcPath := strings.Replace(jfilePath, command.Path, "", 1)
+			relativeSrcPath := strings.Replace(jfilePath, command.SourcePath, "", 1)
+			files += 1
 			ruleExtractor(data, relativeSrcPath, entity)
 			apiExtractor(data, relativeSrcPath, entity)
 			urlExtractor(data, relativeSrcPath, entity)
 			emailExtractor(data, relativeSrcPath, entity)
 		}
 		return nil
-	}); adapter.Output.Error(output.ParseError(command, analysisName, walkErr)) != nil {
+	}); walkErr != nil {
+		_ = adapter.Output.Error(output.ParseError(command, analysisName, walkErr))
 		return
 	}
+	_ = adapter.Output.Logger(output.ParseInfo(command, analysisName, fmt.Sprintf("%d files analyzed", files)))
 	if a := adapter.Services.MalwareDomains; a != nil {
 		if adapter.Output.Error(output.ParseError(command, analysisName, a(command, entity))) != nil {
 			return

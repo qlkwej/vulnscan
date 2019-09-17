@@ -14,6 +14,7 @@ type (
 	BinType    string
 
 	MachoInfo struct {
+		Err        bool       `json:"err"`
 		Bits       Bits       `json:"bits" validate:"required,valid_bits"`
 		Endianness Endianness `json:"endianness" validate:"required,valid_endianness"`
 		Cpu        CpuType    `json:"cpu" validate:"required,valid_cpu"`
@@ -408,11 +409,20 @@ func (e *MachoInfo) FromMap(m map[string]interface{}) (ent Entity, err error) {
 			return ent, fmt.Errorf("erroneus sub cpu type, expected string, found: %T", v)
 		}
 	}
+	if v, ok := m["err"]; ok {
+		switch v.(type) {
+		case bool:
+			e.Err = v.(bool)
+		default:
+			return ent, fmt.Errorf("erroneus err type, expected bool, found: %T", v)
+		}
+	}
 	return e, nil
 }
 
 func (e *MachoInfo) ToMap() map[string]interface{} {
 	return map[string]interface{}{
+		"err":        e.Err,
 		"bits":       uint(e.Bits),
 		"endianness": string(e.Endianness),
 		"cpu":        string(e.Cpu),
