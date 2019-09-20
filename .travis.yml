@@ -8,9 +8,12 @@ install: true
 env:
   - GO111MODULE=on
 script:
+  - go get -u github.com/haya14busa/goverage
+  - go get -u github.com/schrej/godacov
   - go build
   - go test
-  - go test -race -coverprofile=coverage.txt -covermode=atomic
+  - goverage -v -coverprofile=coverage.out ./...
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - godacov -t $CODACY_TOKEN -r ./coverage.out -c `git rev-parse HEAD`
+
