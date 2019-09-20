@@ -16,3 +16,4 @@ script:
 
 after_success:
   - godacov -t $CODACY_TOKEN -r ./coverage.out -c `git rev-parse HEAD`
+
