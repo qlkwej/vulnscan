@@ -19,7 +19,9 @@ func binaryIpaTestAdapter(command entities.Command, entity entities.Entity) erro
 		assert.NotEmpty(command.T, ent.Binary.Results)
 		assert.NotEmpty(command.T, ent.Binary.Libraries)
 		assert.NotEmpty(command.T, ent.Store.Results)
-		assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		if len(command.VirusTotalKey) > 0 {
+			assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		}
 		return nil
 	}
 	return nil
@@ -31,7 +33,9 @@ func notAppStoreTestAdapter(command entities.Command, entity entities.Entity) er
 		assert.NotEmpty(command.T, ent.Plist.Xml)
 		assert.NotEmpty(command.T, ent.Binary.Results)
 		assert.NotEmpty(command.T, ent.Binary.Libraries)
-		assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		if len(command.VirusTotalKey) > 0 {
+			assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		}
 		return nil
 	}
 	return nil
@@ -45,7 +49,9 @@ func doubleDviaTestAdapter(command entities.Command, entity entities.Entity) err
 		assert.NotEmpty(command.T, ent.Binary.Libraries)
 		assert.NotEmpty(command.T, ent.Code.Codes)
 		assert.NotEmpty(command.T, ent.Code.Apis)
-		assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		if len(command.VirusTotalKey) > 0 {
+			assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		}
 		return nil
 	}
 	return nil
@@ -53,7 +59,7 @@ func doubleDviaTestAdapter(command entities.Command, entity entities.Entity) err
 
 func TestAnalysis(t *testing.T) {
 	mainFolder, _ := test.FindMainFolder()
-	assert.NoError(t, godotenv.Load(mainFolder+string(os.PathSeparator)+".env"))
+	_ = godotenv.Load(mainFolder + string(os.PathSeparator) + ".env")
 	var testMap = map[string]func(command entities.Command, entity entities.Entity) error{}
 	for k, v := range map[string]func(command entities.Command, entity entities.Entity) error{
 		"binary.ipa":        binaryIpaTestAdapter,
@@ -92,7 +98,7 @@ func TestAnalysis(t *testing.T) {
 
 func TestDoubleAnalysis(t *testing.T) {
 	mainFolder, _ := test.FindMainFolder()
-	assert.NoError(t, godotenv.Load(mainFolder+string(os.PathSeparator)+".env"))
+	_ = godotenv.Load(mainFolder + string(os.PathSeparator) + ".env")
 	var testMap = map[[2]string]func(command entities.Command, entity entities.Entity) error{}
 	for k, v := range map[string]func(command entities.Command, entity entities.Entity) error{
 		"DVIA.ipa|DVIA.zip":             doubleDviaTestAdapter,

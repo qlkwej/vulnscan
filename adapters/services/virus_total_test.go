@@ -1,18 +1,16 @@
+// +build integration
+
 package services
 
 import (
-	"github.com/joho/godotenv"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"path/filepath"
 	"testing"
 )
 
 func TestVirusTotalAdapter(t *testing.T) {
-	mainFolder, _ := test.FindMainFolder()
-	assert.NoError(t, godotenv.Load(filepath.Join(mainFolder, ".env")))
 	apiKey := os.Getenv("VIRUS_TOTAL_API_KEY")
 	assert.NotEmpty(t, apiKey)
 	path, _ := test.FindTest("adapters", "services", "binary.ipa")
