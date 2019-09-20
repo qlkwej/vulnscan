@@ -53,7 +53,7 @@ func doubleDviaTestAdapter(command entities.Command, entity entities.Entity) err
 
 func TestAnalysis(t *testing.T) {
 	mainFolder, _ := test.FindMainFolder()
-	assert.NoError(t, godotenv.Load(mainFolder+string(os.PathSeparator)+".env"))
+	_ = godotenv.Load(mainFolder + string(os.PathSeparator) + ".env")
 	var testMap = map[string]func(command entities.Command, entity entities.Entity) error{}
 	for k, v := range map[string]func(command entities.Command, entity entities.Entity) error{
 		"binary.ipa":        binaryIpaTestAdapter,
@@ -92,7 +92,7 @@ func TestAnalysis(t *testing.T) {
 
 func TestDoubleAnalysis(t *testing.T) {
 	mainFolder, _ := test.FindMainFolder()
-	assert.NoError(t, godotenv.Load(mainFolder+string(os.PathSeparator)+".env"))
+	_ = godotenv.Load(mainFolder + string(os.PathSeparator) + ".env")
 	var testMap = map[[2]string]func(command entities.Command, entity entities.Entity) error{}
 	for k, v := range map[string]func(command entities.Command, entity entities.Entity) error{
 		"DVIA.ipa|DVIA.zip":             doubleDviaTestAdapter,
