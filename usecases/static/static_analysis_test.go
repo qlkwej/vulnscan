@@ -19,7 +19,9 @@ func binaryIpaTestAdapter(command entities.Command, entity entities.Entity) erro
 		assert.NotEmpty(command.T, ent.Binary.Results)
 		assert.NotEmpty(command.T, ent.Binary.Libraries)
 		assert.NotEmpty(command.T, ent.Store.Results)
-		assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		if len(command.VirusTotalKey) > 0 {
+			assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		}
 		return nil
 	}
 	return nil
@@ -31,7 +33,9 @@ func notAppStoreTestAdapter(command entities.Command, entity entities.Entity) er
 		assert.NotEmpty(command.T, ent.Plist.Xml)
 		assert.NotEmpty(command.T, ent.Binary.Results)
 		assert.NotEmpty(command.T, ent.Binary.Libraries)
-		assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		if len(command.VirusTotalKey) > 0 {
+			assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		}
 		return nil
 	}
 	return nil
@@ -45,7 +49,9 @@ func doubleDviaTestAdapter(command entities.Command, entity entities.Entity) err
 		assert.NotEmpty(command.T, ent.Binary.Libraries)
 		assert.NotEmpty(command.T, ent.Code.Codes)
 		assert.NotEmpty(command.T, ent.Code.Apis)
-		assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		if len(command.VirusTotalKey) > 0 {
+			assert.NotEmpty(command.T, ent.Virus.Report.Scans)
+		}
 		return nil
 	}
 	return nil
