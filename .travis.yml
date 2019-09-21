@@ -13,7 +13,4 @@ script:
   - go build
   - go test
   - goverage -v -coverprofile=coverage.out ./...
-
-after_success:
-  - godacov -t $CODACY_TOKEN -r ./coverage.out -c `git rev-parse HEAD`
-
+  - godacov -t $CODACY_TOKEN -r ./coverage.out -c $TRAVIS_COMMIT
