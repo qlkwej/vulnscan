@@ -278,7 +278,13 @@ COPYRIGHT:
 
 If you wish to work on Vulnerability Scanner you'll first need Go installed on your machine (version 1.11+ is required). Confirm Go is properly installed and that a [GOPATH](https://golang.org/doc/code.html#GOPATH) has been set. You will also need to add $GOPATH/bin to your $PATH.
 
-Next, using [Git](https://git-scm.com/), clone this repository using git clone https://github.com/simplycubed/vulnscan --recursive. The recursive flag is necessary in order to download the git submodules with the tools and the test files. Without it, you won't be able to run the tests.
+Next, using [Git](https://git-scm.com/), clone this repository. The recursive flag is necessary in order to download the git submodules with the tools and the test files. Without it, you won't be able to run the tests.
+
+```bash
+
+git clone https://github.com/simplycubed/vulnscan --recursive
+
+```
 
 Lastly, build and run the tests. If this exits with an exit status 0, and tests pass then everything is working!
 
