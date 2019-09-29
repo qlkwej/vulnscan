@@ -339,6 +339,12 @@ Vulnerability Scanner as a security tool will be highly dependent on having a co
 
 This project borrows heavily from the concepts in [OWASP Mobile Security Testing Guide](https://www.owasp.org/index.php/OWASP_Mobile_Security_Testing_Guide) and [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF). It's also based on our understanding of [HashiCorp's](https://github.com/hashicorp/) approach to open source projects.
 
+## Contributors
+
+A special thanks to the following members. They have made a significant contribution to the development and release of Vulnscan.
+
+- [José González, @joseincandenza](https://github.com/joseincandenza)
+
 ## License
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsimplycubed%2Fvulnscan.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsimplycubed%2Fvulnscan?ref=badge_large)
