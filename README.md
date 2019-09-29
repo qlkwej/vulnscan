@@ -7,10 +7,11 @@
 [![Build Status](https://travis-ci.org/simplycubed/vulnscan.svg?branch=master)](https://travis-ci.org/simplycubed/vulnscan)
 [![golangci](https://golangci.com/badges/github.com/simplycubed/vulnscan.svg)](https://golangci.com/r/github.com/simplycubed/vulnscan)
 
-## :warning: **WARNING**
+## :white_check_mark: **Release v0.2.0 released!**
 
-- This project is in very early stages, it is incomplete, unstable and under rapid development.
-- Expect breaking changes!
+- [Vulnscan v0.2.0 - Release](https://github.com/simplycubed/vulnscan/releases/tag/v0.2.0)
+- This project is still in very early stages, it is incompelte, unstable, and under rapid development.
+- At the same time, it would be great to get feedback, feature requests, and most importantly bug reports.
 
 ## Overview
 
@@ -18,7 +19,7 @@ Vulnerability Scanner is an opinionated static source code, binary, configuratio
 
 Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
 
-## Available commands
+## Commands
 
 Each of the commands can be called using its full name or its abreviation letter.
 
@@ -30,12 +31,17 @@ Search information about the application in the appstore.
 
 __Specific flags__:
 
-- --app/-a: string flag, itunes app/bundle ID. Required to make the search using this command.
-Usage example: -a com.easilydo.mail
+`--app/-a`: string flag, itunes app/bundle ID. Required to make the search using this command.
 
-- --country, --ct: the country code to make the lookup. It defaults to "us".
-You can check [here a complete list of iTunes supported country codes](https://github.com/simplycubed/vulnscan/blob/master/ITUNES_COUNTRY_CODES).
+```bash
+Usage example: -a com.easilydo.mail
+```
+
+`--country, --ct`: the country code to make the lookup. It defaults to "us". You can check [here a complete list of iTunes supported country codes](https://github.com/simplycubed/vulnscan/blob/master/ITUNES_COUNTRY_CODES).
+
+```bash
 Usage example: --ct fr
+```
 
 ### plist (p)
 
@@ -45,13 +51,19 @@ Extracts information from the application plist file, like permissions or insecu
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
-not provided. Usage example: -b /path/to/binary.ipa
+`--binary/-b`: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
-- Usage example: -s /path/to/source_code
+```bash
+Usage example: -b /path/to/binary.ipa
+```
 
-Note: if both binary and source paths are defined, the binary path would take preference.
+`--source/-s`: full path to the application source code folder. Required if binary flag is not provided.
+
+> Note: if both binary and source paths are defined, the binary path takes preference.
+
+```bash
+Usage example: -s /path/to/source_code
+```
 
 ### files (f)
 
@@ -61,13 +73,19 @@ General review of the files found on the application. Looks for databases, plist
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
+`--binary/-b`: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
+
+```bash
 Usage example: -b /path/to/binary.ipa
+```
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+`--source/-s`: full path to the application source code folder. Required if binary flag is not provided.
+
+> Note: if both binary and source paths are defined, the binary path takes preference.
+
+```bash
 Usage example: -s /path/to/source_code
-
-Note: if both binary and source paths are defined, the binary path would take preference.
+```
 
 ### binary (b)
 
@@ -75,18 +93,23 @@ __Description__:
 
 Extracts binary information like libraries used, macho files information or vulnerabilities.
 
-__Important__: this command requires the use of external tools. See the download command for
-instructions on how to get them.
+> This command requires the use of external tools. See the download command for instructions on how to get them.
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
+`--binary/-b`: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
+
+```bash
 Usage example: -b /path/to/binary.ipa
+```
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+`--source/-s`: full path to the application source code folder. Required if binary flag is not provided.
+
+> Note: if both binary and source paths are defined, the binary path would take preference.
+
+```bash
 Usage example: -s /path/to/source_code
-
-Note: if both binary and source paths are defined, the binary path would take preference.
+```
 
 ### code (c)
 
@@ -97,15 +120,26 @@ check if the urls embedded belong to malware domains (see domains flag.)
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
-not provided. Usage example: -b /path/to/binary.ipa
+`--binary/-b`: full path to the application binary file (.ipa/.app). Required if source flag is
+not provided.
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+```bash
+Usage example: -b /path/to/binary.ipa
+```
+
+`--source/-s`: full path to the application source code folder. Required if binary flag is not provided.
+
+```bash
 Usage example: -s /path/to/source_code
+```
 
-- --domains/d: whether or not check malware domains. Usage example: -d
+`--domains/-d`: whether or not check malware domains.
 
-Note: if both binary and source paths are defined, the binary path would take preference.
+> Note: if both binary and source paths are defined, the binary path takes preference.
+
+```bash
+Usage example: -d
+```
 
 ### virus (v)
 
@@ -115,16 +149,19 @@ Search the binary for virus using the virus total API.
 
 __Notes on usage__:
 
-- This is an optional vulnerability scan which requires registering a free account on [VirusTotal.com](https://www.virustotal.com/gui/join-us) and agreeing to their Terms of Service and Privacy Policy. Once your account is created you will receive an API key which is required when running the scan.
+This is an optional vulnerability scan which requires registering a free account on [VirusTotal.com](https://www.virustotal.com/gui/join-us) and agreeing to their Terms of Service and Privacy Policy. Once your account is created you will receive an API key which is required when running the scan.
 
-- __Important__: using this scan will send VirusTotal.com a copy of your binary file for analysis.
+> __Important__: using this scan will send VirusTotal.com a copy of your binary file for analysis.
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
-Usage example: -b /path/to/binary.ipa
+`--binary/-b`: full path to the application binary file (.ipa/.app). Required if source flag is not provided.
 
-- --virus/-v: API key required by the VirusTotal service.
+```bash
+Usage example: -b /path/to/binary.ipa
+```
+
+`--virus/-v`: API key required by the VirusTotal service.
 
 ### scan (s)
 
@@ -137,15 +174,26 @@ won't run if only a source path is provided.
 
 __Specific flags__:
 
-- --binary/-b: full path to the application binary file (.ipa/.app). Required if source flag is
+`--binary/-b`: full path to the application binary file (.ipa/.app). Required if source flag is
 not provided. Usage example: -b /path/to/binary.ipa
 
-- --source/-s: full path to the application source code folder. Required if binary flag is not provided.
+`--source/-s`: full path to the application source code folder. Required if binary flag is not provided.
+
+```bash
 Usage example: -s /path/to/source_code
+```
 
-- --virus/-v: API key required by the VirusTotal service. Usage example: -v xxdad0adadadslkadasdadadsasdade9ad09f
+`--virus/-v`: API key required by the VirusTotal service.
 
-- --domains/d: whether or not check malware domains. Usage example: -d
+```bash
+Usage example: -v xxdad0adadadslkadasdadadsasdade9ad09f
+```
+
+`--domains/-d`: whether or not check malware domains.
+
+```bash
+Usage example: -d
+```
 
 ### download (d)
 
@@ -158,18 +206,26 @@ these tools.
 
 ## Global flags
 
-- --json/-j: By default, the application will output to stdout a printable and human readable
+`--json/-j`: By default, the application will output to stdout a printable and human readable
 report of the analysis results. The user may use this flag to output a machine readable json
-instead, specially useful for CI solutions ingestion. Usage example: -j
+instead, specially useful for CI solutions ingestion.
 
-- --tools_folder/--tools/-t: Optional flag containing the folder where the external tools needed
+```bash
+Usage example: -j
+```
+
+`--tools/-t`: Optional flag containing the folder where the external tools needed
 to perform the binary analysis are located. When used with the download command, this flag is
-used to determine where the tools are downloaded. Usage example: -t /path/to/tools
+used to determine where the tools are downloaded.
 
-- --configuration/-c: Path to an optional configuration file to change the default behaviour of the
+```bash
+Usage example: -t /path/to/tools
+```
+
+`--configuration/-c`: Path to an optional configuration file to change the default behaviour of the
 program. See the configuration section for more information.
 
-- --quiet/-q: By default, the program logs information about execution to stderr. Passing this
+`--quiet/-q`: By default, the program logs information about execution to stderr. Passing this
 flag, only warnings and error will be logged.
 
 ## Configuration
@@ -180,8 +236,8 @@ provides this ability, using three common formats: TOML, YAML and JSON.
 
 The configuration file location may be passed as a flag. But the program can identify it automatically
 two, if it's located either in the current working directory or in the folder where the vulnscan
-binary is. For this to happen, the file shall have the name "vulnscan" and one of the accepted file
-extensions (.json, .yaml or .toml).
+binary is. For this to happen, the file shall have the name "`vulnscan`" and one of the accepted file
+extensions (`.json`, `.yaml` or `.toml`).
 
 Here is an example of each one of this formats using every option available:
 
@@ -204,7 +260,7 @@ scans: [binary, code, plist]
 json: true
 binary: route/to/binary.ipa
 source: route/to/source
-tools: tools/folder	
+tools: tools/folder
 virus: virus_scan_password
 country: es
 quiet: true
@@ -226,7 +282,7 @@ domains = true
 ### Available options
 
 - __scans__: array[string], scans to do in case of running a complete scan
-- __json__: boolean, whether or not output using json format 
+- __json__: boolean, whether or not output using json format
 - __binary__: string, route to the binary to analyze
 - __source__: string, route to the source code to analyze
 - __tools__: string, path to the tools folder
@@ -247,7 +303,7 @@ USAGE:
    app [global options] command [command options] [arguments...]
 
 VERSION:
-   0.0.1
+   0.2.0
 
 AUTHOR:
    Vulnscan Team <vulnscan@simplycubed.com>
@@ -270,20 +326,16 @@ GLOBAL OPTIONS:
 COPYRIGHT:
    (c) 2019 SimplyCubed, LLC - Mozilla Public License 2.0
 
-
 ```
 
+## Developing Vulnscan
 
-## Developing Vulnerability Scanner
-
-If you wish to work on Vulnerability Scanner you'll first need Go installed on your machine (version 1.11+ is required). Confirm Go is properly installed and that a [GOPATH](https://golang.org/doc/code.html#GOPATH) has been set. You will also need to add $GOPATH/bin to your $PATH.
+If you wish to work on Vulnscan you'll first need Go installed on your machine (version 1.11+ is required). Confirm Go is properly installed and that a [GOPATH](https://golang.org/doc/code.html#GOPATH) has been set. You will also need to add $GOPATH/bin to your $PATH.
 
 Next, using [Git](https://git-scm.com/), clone this repository. The recursive flag is necessary in order to download the git submodules with the tools and the test files. Without it, you won't be able to run the tests.
 
 ```bash
-
 git clone https://github.com/simplycubed/vulnscan --recursive
-
 ```
 
 Lastly, build and run the tests. If this exits with an exit status 0, and tests pass then everything is working!
