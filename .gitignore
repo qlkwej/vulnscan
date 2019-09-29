@@ -1,30 +1,12 @@
 # Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
 vulnscan
-ERRORS
 
 # Test binary, built with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
-# MacOS Artifacts
-.DS_Store
-
-
 # Test Artifacts
+coverage.out
 coverage.txt
-
-# local scratch pad
-temp.txt
-
-# Idea files
-.idea
 
 # Vendor system files	
 vendor
@@ -32,6 +14,13 @@ vendor
 # Env file with possibly confidential stuff
 .env
 
-# Folder where task creates the builds
-build
-app
+# Config files
+vulnscan.json
+vulnscan.toml
+vulnscan.yaml
+
+# Log files
+*.log
+
+# macOS Artifacts
+.DS_Store
