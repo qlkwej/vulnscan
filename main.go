@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/kardianos/osext"
-	"github.com/simplycubed/vulnscan/framework"
 	"io"
 	"log"
 	"os"
 	"sort"
+
+	"github.com/kardianos/osext"
+	"github.com/simplycubed/vulnscan/framework"
 
 	"golang.org/x/crypto/ssh/terminal"
 	"gopkg.in/urfave/cli.v1"
@@ -38,7 +39,7 @@ var (
 		return cli.StringFlag{
 			Name:        "virus, v",
 			Usage:       "activate the virus scan using Virus Total",
-			Value:       "",
+			Value:       os.Getenv("VIRUS_TOTAL_API_KEY"),
 			Destination: s,
 		}
 	}
@@ -65,8 +66,7 @@ var (
 	}
 	binaryFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
-			Name: "binary, b",
-
+			Name:        "binary, b",
 			Usage:       "full path to binary (ipa) file",
 			Destination: p,
 		}
@@ -79,7 +79,7 @@ var (
 			Destination: p,
 		}
 	}
-	appIdFlag = func(p *string) cli.StringFlag {
+	appIDFlag = func(p *string) cli.StringFlag {
 		return cli.StringFlag{
 			Name:        "app, a",
 			Value:       "",
@@ -122,12 +122,12 @@ func getApp() *cli.App {
 	var (
 		configurationPath string
 
-		appID       string
-		country     string
-		binaryPath  string
-		sourcePath  string
-		virusKey    string
-		toolsFolder string
+		appID      string
+		country    string
+		binaryPath string
+		sourcePath string
+		virusKey   string
+		toolsPath  string
 
 		useJSON         bool
 		makeDomainCheck bool
@@ -140,7 +140,7 @@ func getApp() *cli.App {
 		applicationFlags = []cli.Flag{
 			jsonFlag(&useJSON),
 			configurationFlag(&configurationPath),
-			toolsFlag(&toolsFolder),
+			toolsFlag(&toolsPath),
 			quietFlag(&quiet),
 			summaryFlag(&summary),
 		}
@@ -206,8 +206,8 @@ func getApp() *cli.App {
 					return dir
 				}()
 			}
-			if len(toolsFolder) > 0 {
-				command.Tools = toolsFolder
+			if len(command.Tools) == 0 {
+				command.Tools = toolsPath
 			}
 			if makeDomainCheck {
 				adapter.Services.MalwareDomains = services.MalwareDomainsAdapter
@@ -245,7 +245,10 @@ func getApp() *cli.App {
 			Name:    "lookup",
 			Aliases: []string{"l"},
 			Usage:   "store app lookup",
-			Flags:   append(applicationFlags, []cli.Flag{appIdFlag(&appID), countryFlag(&country)}...),
+			Flags: append(applicationFlags, []cli.Flag{
+				appIDFlag(&appID),
+				countryFlag(&country),
+			}...),
 			Action: func(c *cli.Context) error {
 				notCheckPath = true
 				parseConfiguration()
@@ -257,7 +260,10 @@ func getApp() *cli.App {
 			Name:    "plist",
 			Aliases: []string{"p"},
 			Usage:   "plists scan",
-			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Flags: append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				sourceFlag(&sourcePath),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				plist.Analysis(command, &entities.PListAnalysis{}, adapter)
@@ -283,7 +289,10 @@ func getApp() *cli.App {
 			Name:    "binary",
 			Aliases: []string{"b"},
 			Usage:   "search binary vulnerabilities",
-			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Flags: append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				sourceFlag(&sourcePath),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				binary.Analysis(command, &entities.BinaryAnalysis{}, adapter)
@@ -294,7 +303,10 @@ func getApp() *cli.App {
 			Name:    "files",
 			Aliases: []string{"f"},
 			Usage:   "lookup and clasify files",
-			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Flags: append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				sourceFlag(&sourcePath),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				files.Analysis(command, &entities.FileAnalysis{}, adapter)
@@ -309,8 +321,8 @@ func getApp() *cli.App {
 				binaryFlag(&binaryPath),
 				sourceFlag(&sourcePath),
 				virusFlag(&virusKey),
-				domainCheckFlag(&makeDomainCheck)}...,
-			),
+				domainCheckFlag(&makeDomainCheck),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				static.Analysis(command, &entities.StaticAnalysis{}, adapter)
@@ -343,7 +355,9 @@ func getApp() *cli.App {
 			Name:    "download",
 			Aliases: []string{"d"},
 			Usage:   "downloads the external tools used by vulnscan to work",
-			Flags:   []cli.Flag{toolsFlag(&toolsFolder)},
+			Flags: []cli.Flag{
+				toolsFlag(&toolsPath),
+			},
 			Action: func(c *cli.Context) error {
 				notCheckPath = true
 				parseConfiguration()
