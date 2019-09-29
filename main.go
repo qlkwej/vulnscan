@@ -235,7 +235,7 @@ func getApp() *cli.App {
 	)
 	cli.AppHelpTemplate = appHelp
 	app := cli.NewApp()
-	app.Version = "0.0.1"
+	app.Version = "0.2.0"
 	app.Name = "vulnscan"
 	app.Usage = "iOS and MacOS vulnerability scanner"
 	app.Authors = []cli.Author{{Name: "Vulnscan Team", Email: "vulnscan@simplycubed.com"}}
