@@ -175,7 +175,11 @@ won't run if only a source path is provided.
 __Specific flags__:
 
 `--binary/-b`: full path to the application binary file (.ipa/.app). Required if source flag is
-not provided. Usage example: -b /path/to/binary.ipa
+not provided.
+
+```bash
+Usage example: -b /path/to/binary.ipa
+```
 
 `--source/-s`: full path to the application source code folder. Required if binary flag is not provided.
 
