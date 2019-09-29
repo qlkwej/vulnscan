@@ -13,6 +13,8 @@ script:
   - go build
   - go test
   - goverage -v -coverprofile=coverage.out ./...
+  - godacov -t $CODACY_TOKEN -r ./coverage.out -c $TRAVIS_COMMIT
 
 after_success:
-  - godacov -t $CODACY_TOKEN -r ./coverage.out -c $TRAVIS_COMMIT
+  - echo $TRAVIS_COMMIT
+
