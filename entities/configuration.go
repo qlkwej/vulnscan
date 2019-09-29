@@ -1,5 +1,6 @@
 package entities
 
+// Configuration describes the optional vulscan configuration file
 type Configuration struct {
 
 	// Command flags
@@ -10,7 +11,7 @@ type Configuration struct {
 	BinaryPath string `id:"binary" desc:"Path to the binary .ipa file to analyze"`
 	// Folder where the external binary tools (jtool, etc.) are in the system. If nothing is passed, the application
 	// expects them to be in a sibling folder relative to the app binary.
-	ToolsFolder string `id:"tools" desc:"Folder where the program external binaries are located"`
+	ToolsPath string `id:"tools" desc:"Folder where the program external binaries are located"`
 
 	// String slice with the scans to make when calling scan command
 	Analysis []string `id:"scans" desc:"Test to do when calling scan command"`

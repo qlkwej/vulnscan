@@ -2,14 +2,18 @@ package entities
 
 import (
 	"fmt"
-	"gopkg.in/go-playground/validator.v9"
 	"io"
 	"testing"
+
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type (
+
+	// AnalysisCheck defines the check to be completed
 	AnalysisCheck string
 
+	// Command defines the commands arguments
 	Command struct {
 		Path          string                 `json:"path" validate:"required_without=SourcePath"`
 		SourcePath    string                 `json:"source_path" validate:"required_without=Path"`
@@ -36,6 +40,7 @@ const (
 )
 
 var (
+	// ItunesCountryCodes defines the iTunes Country Codes
 	ItunesCountryCodes = map[string]string{
 		"al": "Albania",
 		"dz": "Algeria",
@@ -354,6 +359,7 @@ func (c Command) FromMap(m map[string]interface{}) (ent Entity, err error) {
 	return c, nil
 }
 
+// Validate the command to be executed
 func (c Command) Validate() []validator.FieldError {
 	return Validate(c)
 }

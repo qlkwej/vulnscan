@@ -1,15 +1,16 @@
 package static
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+
 	"github.com/joho/godotenv"
 	"github.com/simplycubed/vulnscan/adapters/mocks"
 	"github.com/simplycubed/vulnscan/entities"
 	"github.com/simplycubed/vulnscan/test"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
-	"strings"
-	"testing"
 )
 
 func binaryIpaTestAdapter(command entities.Command, entity entities.Entity) error {
