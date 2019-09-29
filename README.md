@@ -1,8 +1,7 @@
 # Vulnerability Scanner
 
 [![Gitter chat](https://badges.gitter.im/simplycubed/Lobby.png)](https://gitter.im/simplycubed/Lobby)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/acb61eca797b46e099005f2a39f0e6ba)](https://www.codacy.com/manual/SimplyCubed/vulnscan?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=simplycubed/vulnscan&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/acb61eca797b46e099005f2a39f0e6ba)](https://www.codacy.com?utm_source=github.com&utm_medium=referral&utm_content=simplycubed/vulnscan&utm_campaign=Badge_Coverage)
+[![codecov](https://codecov.io/gh/simplycubed/vulnscan/branch/master/graph/badge.svg)](https://codecov.io/gh/simplycubed/vulnscan)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsimplycubed%2Fvulnscan.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsimplycubed%2Fvulnscan?ref=badge_shield)
 [![Build Status](https://travis-ci.org/simplycubed/vulnscan.svg?branch=master)](https://travis-ci.org/simplycubed/vulnscan)
 [![golangci](https://golangci.com/badges/github.com/simplycubed/vulnscan.svg)](https://golangci.com/r/github.com/simplycubed/vulnscan)

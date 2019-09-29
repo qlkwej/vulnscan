@@ -16,8 +16,4 @@ script:
   - goverage -v -coverprofile=coverage.txt ./...
 
 after_success:
-  - godacov -t $CODACY_TOKEN -r ./coverage.txt -c $TRAVIS_COMMIT
   - bash <(curl -s https://codecov.io/bash)
-
-after_failure:
-  - echo "Build failed" 
