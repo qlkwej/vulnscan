@@ -22,8 +22,8 @@ vulnscan.yaml
 # Log files
 *.log
 
-# VScode
-launch.json
-
 # macOS Artifacts
 .DS_Store
+
+# vscode
+.vscode/
