@@ -206,7 +206,7 @@ func getApp() *cli.App {
 					return dir
 				}()
 			}
-			if len(toolsPath) > 0 {
+			if len(command.Tools) == 0 {
 				command.Tools = toolsPath
 			}
 			if makeDomainCheck {
@@ -245,7 +245,10 @@ func getApp() *cli.App {
 			Name:    "lookup",
 			Aliases: []string{"l"},
 			Usage:   "store app lookup",
-			Flags:   append(applicationFlags, []cli.Flag{appIDFlag(&appID), countryFlag(&country)}...),
+			Flags: append(applicationFlags, []cli.Flag{
+				appIDFlag(&appID),
+				countryFlag(&country),
+			}...),
 			Action: func(c *cli.Context) error {
 				notCheckPath = true
 				parseConfiguration()
@@ -257,7 +260,10 @@ func getApp() *cli.App {
 			Name:    "plist",
 			Aliases: []string{"p"},
 			Usage:   "plists scan",
-			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Flags: append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				sourceFlag(&sourcePath),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				plist.Analysis(command, &entities.PListAnalysis{}, adapter)
@@ -283,7 +289,10 @@ func getApp() *cli.App {
 			Name:    "binary",
 			Aliases: []string{"b"},
 			Usage:   "search binary vulnerabilities",
-			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Flags: append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				sourceFlag(&sourcePath),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				binary.Analysis(command, &entities.BinaryAnalysis{}, adapter)
@@ -294,7 +303,10 @@ func getApp() *cli.App {
 			Name:    "files",
 			Aliases: []string{"f"},
 			Usage:   "lookup and clasify files",
-			Flags:   append(applicationFlags, []cli.Flag{binaryFlag(&binaryPath), sourceFlag(&sourcePath)}...),
+			Flags: append(applicationFlags, []cli.Flag{
+				binaryFlag(&binaryPath),
+				sourceFlag(&sourcePath),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				files.Analysis(command, &entities.FileAnalysis{}, adapter)
@@ -309,8 +321,8 @@ func getApp() *cli.App {
 				binaryFlag(&binaryPath),
 				sourceFlag(&sourcePath),
 				virusFlag(&virusKey),
-				domainCheckFlag(&makeDomainCheck)}...,
-			),
+				domainCheckFlag(&makeDomainCheck),
+			}...),
 			Action: func(c *cli.Context) error {
 				parseConfiguration()
 				static.Analysis(command, &entities.StaticAnalysis{}, adapter)
@@ -343,7 +355,9 @@ func getApp() *cli.App {
 			Name:    "download",
 			Aliases: []string{"d"},
 			Usage:   "downloads the external tools used by vulnscan to work",
-			Flags:   []cli.Flag{toolsFlag(&toolsPath)},
+			Flags: []cli.Flag{
+				toolsFlag(&toolsPath),
+			},
 			Action: func(c *cli.Context) error {
 				notCheckPath = true
 				parseConfiguration()
