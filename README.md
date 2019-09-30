@@ -6,9 +6,9 @@
 [![Build Status](https://travis-ci.org/simplycubed/vulnscan.svg?branch=master)](https://travis-ci.org/simplycubed/vulnscan)
 [![golangci](https://golangci.com/badges/github.com/simplycubed/vulnscan.svg)](https://golangci.com/r/github.com/simplycubed/vulnscan)
 
-## :white_check_mark: **Release v0.2.0 released!**
+## :white_check_mark: **Vulnscan v0.2.0 released!**
 
-- [Vulnscan v0.2.0 - Release](https://github.com/simplycubed/vulnscan/releases/tag/v0.2.0)
+- [Download](https://github.com/simplycubed/vulnscan/releases/tag/v0.2.0)
 - This project is still in very early stages, it is incompelte, unstable, and under rapid development.
 - At the same time, it would be great to get feedback, feature requests, and most importantly bug reports.
 
@@ -17,6 +17,10 @@
 Vulnerability Scanner is an opinionated static source code, binary, configuration, and dependency analyzer for iOS and MacOS applications.
 
 Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
+
+## Documentation
+
+How-to's and more information has been moved to the [wiki](https://github.com/simplycubed/vulnscan/wiki).
 
 ## Help
 
