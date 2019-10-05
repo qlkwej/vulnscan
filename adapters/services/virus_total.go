@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/simplycubed/vulnscan/entities"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -13,16 +12,20 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/simplycubed/vulnscan/entities"
 )
 
 const virusTotalBaseURL = "https://www.virustotal.com/vtapi/v2/"
 
+// VirusTotalClient is used to connect to VirusTotal
 type VirusTotalClient struct {
 	apiKey string
 	url    string
 	c      *http.Client
 }
 
+// VirusTotalAdapter is used to get the request from VirusTotal
 func VirusTotalAdapter(command entities.Command, entity *entities.VirusAnalysis) error {
 	client, e := newVirusTotalClient(command.VirusTotalKey)
 	if e != nil {
@@ -68,10 +71,10 @@ func newVirusTotalClient(apiKey string) (*VirusTotalClient, error) {
 	}, nil
 }
 
-// Makes a call to virus scan api to scan file. First it tries to call to file/report endpoint with the md5 hash of
-// the file to check if the analysis was already generated, if it wasn"t, it uploads the file to the file/scan endpoint.
-// The returned report depends on the type of action that it"s triggered. If the report is not ready, and the function
-// proceeds to upload the file, the response will have the following fields:
+// GetResult makes a call to virus scan api to scan file. First it tries to call to file/report endpoint with the md5
+// hash of the file to check if the analysis was already generated, if it wasn"t, it uploads the file to the file/scan
+// endpoint. The returned report depends on the type of action that it"s triggered. If the report is not ready, and
+// the function proceeds to upload the file, the response will have the following fields:
 //		"response_code": 	int
 //		"verbose_msg": 		string
 //		"resource": 		string
@@ -93,7 +96,7 @@ func newVirusTotalClient(apiKey string) (*VirusTotalClient, error) {
 //			}
 // 		}
 func (client *VirusTotalClient) GetResult(path, hash string) (r map[string]interface{}, err error) {
-	r, err = client.makeApiRequest("GET", "file/report", map[string]string{"resource": hash})
+	r, err = client.makeAPIRequest("GET", "file/report", map[string]string{"resource": hash})
 	if err != nil {
 		return nil, err
 	}
@@ -102,20 +105,20 @@ func (client *VirusTotalClient) GetResult(path, hash string) (r map[string]inter
 			return r, nil
 		}
 	}
-	r, err = client.makeApiRequest("POST", "file/scan", map[string]string{"file": path})
+	r, err = client.makeAPIRequest("POST", "file/scan", map[string]string{"file": path})
 	if err != nil {
 		return nil, err
 	}
 	return r, nil
 }
 
-func (client *VirusTotalClient) makeApiRequest(
+func (client *VirusTotalClient) makeAPIRequest(
 	method, apiURL string, parameters map[string]string) (result map[string]interface{}, err error) {
-	fullUrl := client.url + apiURL
+	fullURL := client.url + apiURL
 	parameters["apikey"] = client.apiKey
 	var resp *http.Response
 	if _, ok := parameters["file"]; ok && method == "POST" {
-		resp, err = client.makeApiUploadRequest(fullUrl, parameters)
+		resp, err = client.makeAPIUploadRequest(fullURL, parameters)
 	} else {
 		values := url.Values{}
 		for k, v := range parameters {
@@ -123,7 +126,7 @@ func (client *VirusTotalClient) makeApiRequest(
 		}
 		switch strings.ToUpper(method) {
 		case "GET":
-			req, err := http.NewRequest("GET", fullUrl+"?"+values.Encode(), nil)
+			req, err := http.NewRequest("GET", fullURL+"?"+values.Encode(), nil)
 			if err != nil {
 				return result, err
 			}
@@ -132,7 +135,7 @@ func (client *VirusTotalClient) makeApiRequest(
 				return result, err
 			}
 		case "POST":
-			resp, err = client.c.PostForm(fullUrl, values)
+			resp, err = client.c.PostForm(fullURL, values)
 		default:
 			return result, fmt.Errorf("invalid method %s", method)
 		}
@@ -153,8 +156,8 @@ func (client *VirusTotalClient) makeApiRequest(
 	return result, nil
 }
 
-func (client *VirusTotalClient) makeApiUploadRequest(
-	fullUrl string, parameters map[string]string) (resp *http.Response, err error) {
+func (client *VirusTotalClient) makeAPIUploadRequest(
+	fullURL string, parameters map[string]string) (resp *http.Response, err error) {
 	file, err := os.Open(parameters["file"])
 	if err != nil {
 		return nil, err
@@ -188,7 +191,7 @@ func (client *VirusTotalClient) makeApiUploadRequest(
 		errChan <- writer.Close()
 	}()
 
-	postReq, err := http.NewRequest("POST", fullUrl, bodyReader)
+	postReq, err := http.NewRequest("POST", fullURL, bodyReader)
 	if err != nil {
 		return resp, err
 	}
