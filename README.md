@@ -1,4 +1,4 @@
-# Vulnerability Scanner
+# Vulnscan (Vulnerability Scanner)
 
 [![Gitter chat](https://badges.gitter.im/simplycubed/Lobby.png)](https://gitter.im/simplycubed/Lobby)
 [![codecov](https://codecov.io/gh/simplycubed/vulnscan/branch/master/graph/badge.svg)](https://codecov.io/gh/simplycubed/vulnscan)
@@ -14,7 +14,7 @@
 
 ## Overview
 
-Vulnerability Scanner is an opinionated static source code, binary, configuration, and dependency analyzer for iOS and MacOS applications.
+Vulnscan is an opinionated static source code, binary, configuration, and dependency analyzer for iOS and MacOS applications.
 
 Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
 
