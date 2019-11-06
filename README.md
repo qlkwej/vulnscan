@@ -1,4 +1,4 @@
-# Vulnerability Scanner
+# Vulnscan (Vulnerability Scanner)
 
 ![vulnscan](/vulnscan.png)
 
@@ -16,7 +16,7 @@
 
 ## Overview
 
-Vulnerability Scanner is an opinionated static source code, binary, configuration, and dependency analyzer for iOS and MacOS applications.
+Vulnscan is an opinionated static source code, binary, configuration, and dependency analyzer for iOS and macOS applications.
 
 Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
 
@@ -30,7 +30,7 @@ How-to's and more information has been moved to the [wiki](https://github.com/si
 $ vulnscan -h
 
 NAME:
-   vulnscan - iOS and MacOS vulnerability scanner
+   vulnscan - iOS and macOS vulnerability scanner
 
 USAGE:
    app [global options] command [command options] [arguments...]
