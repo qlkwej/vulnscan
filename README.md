@@ -1,5 +1,3 @@
-# Vulnscan (Vulnerability Scanner)
-
 ![vulnscan](/vulnscan.png)
 
 [![Gitter chat](https://badges.gitter.im/simplycubed/Lobby.png)](https://gitter.im/simplycubed/Lobby)
