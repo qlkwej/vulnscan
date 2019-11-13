@@ -11,6 +11,11 @@
 - [Download](https://github.com/simplycubed/vulnscan/releases/tag/v0.2.0)
 - This project is still in very early stages, it is incompelte, unstable, and under rapid development.
 - At the same time, it would be great to get feedback, feature requests, and most importantly bug reports.
+- [Active tickets / improvements](https://github.com/simplycubed/vulnscan/projects/4)
+
+## :warning:
+
+The new version of macOS 10.15 Catalina has dropped support for 32bit apps and while Vulnscan is 64bit some of it's external dependencies (class-dump-z) is 32bit. This has created a breaking change. Working now to replace this depedency with a different 64bit port. Expecting to deliver a fixed version in the coming week or so. More details can be found in this [ticket](https://github.com/simplycubed/vulnscan/issues/127).
 
 ## Overview
 
@@ -25,7 +30,7 @@ How-to's and more information has been moved to the [wiki](https://github.com/si
 ## Help
 
 ```bash
-$ vulnscan -h
+vulnscan -h
 
 NAME:
    vulnscan - iOS and macOS vulnerability scanner
