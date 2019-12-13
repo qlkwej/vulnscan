@@ -15,7 +15,7 @@
 
 ## :warning: macOS 10.15 Catalina - breaking change
 
-The new version of macOS 10.15 Catalina has dropped support for 32bit apps and while Vulnscan is 64bit some of it's external dependencies (class-dump-z) is 32bit. This has created a breaking change. Working now to replace this depedency with a different 64bit port. Expecting to deliver a fixed version in the coming week or so. More details can be found in this [ticket](https://github.com/simplycubed/vulnscan/issues/127).
+The new version of macOS 10.15 Catalina has dropped support for 32-bit apps and while Vulnscan is 64-bit one of it's external dependencies (class-dump-z) is 32-bit. This has created a breaking change. Working now to replace this depedency with a different 64bit port. Expecting to deliver a fixed version in the coming week or so. More details can be found in this [ticket](https://github.com/simplycubed/vulnscan/issues/127).
 
 ## Overview
 
