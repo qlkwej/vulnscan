@@ -21,7 +21,7 @@ The new version of macOS 10.15 Catalina has dropped support for 32-bit apps and 
 
 Vulnscan is an opinionated static source code, binary, configuration, and dependency analyzer for iOS and macOS applications.
 
-Written in Golang with smart defaults to make it it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
+Written in Golang with smart defaults to make it highly portable and easy to use locally as part of the local development toolchain or integrated into an automated CI/CD process with few or no configuration.
 
 ## Documentation
 
